@@ -1,8 +1,9 @@
 # Equipment Profile (SAM)
 
 The equipment profile screen of SAM, built with the [Syn design system](https://github.com/easyvibesuxui-sketch/Syn-Design-System).
-This first version is the **Overview** tab, from the Figma frame
-[Equipment Profile Home](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=13767-3742).
+The **Overview** tab is from the Figma frame
+[Equipment Profile Home](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=13767-3742);
+the **Telemetry** tab from [Equipment Accessories](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=14571-18707).
 
 ## Live site
 
@@ -57,6 +58,7 @@ for are named constants in `src/styles/app.css` (`--ep-*`).
 | `src/overview/LocationWidget.tsx` | Current location map: Leaflet inside Syn `MapView`; Map Button opens the full map |
 | `src/overview/widgets.tsx` | Specifications, Location, Identifications, Dependence, Check ins / Charging, History |
 | `src/overview/charts.tsx` | Operating Hours, Operation Hours by hour, Distance travelled |
+| `src/telemetry/` | Telemetry tab: speed gauge, last known location and map, status tiles, Tracker sensors, Digital and Analogue inputs, Dashcam |
 | `src/data/equipment.ts` | Mock data taken from the design, to be replaced by the API |
 | `src/assets` | Photos, map and QR codes exported from Figma; `icons/` holds Figma icons Syn does not have, used as CSS masks |
 

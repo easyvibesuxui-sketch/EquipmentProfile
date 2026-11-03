@@ -1,0 +1,231 @@
+/* Telemetry tab (Figma "Equipment Accecories"). Colours without a Syn token are --ep-* in styles/app.css. */
+.ep-telemetry { display: flex; flex-direction: column; gap: var(--syn-space-24); }
+.ep-telemetry p, .ep-telemetry dl, .ep-telemetry dd, .ep-telemetry figure { margin: 0; }
+.ep-tele-muted { color: var(--syn-text-muted); }
+.ep-tele-sep { display: inline-block; width: 4px; height: 4px; margin: 0 var(--syn-space-6); border-radius: var(--syn-radius-full); background: var(--syn-border-muted); vertical-align: middle; }
+
+/* Hero: white, 96px top corners, the Smoke slot (312px) over the status tiles. */
+.ep-tele-hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--syn-space-24);
+  padding: var(--syn-space-12) var(--syn-space-12) var(--syn-space-16);
+  border: 2px solid var(--syn-color-white-white);
+  border-radius: 96px 96px var(--syn-radius-widget) var(--syn-radius-widget);
+  background: var(--syn-surface-default);
+  box-shadow: var(--syn-shadow-default);
+}
+.ep-tele-hero__slot {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: var(--syn-space-40);
+  height: 312px;
+  overflow: hidden;
+  border-radius: 96px 96px var(--syn-radius-element) var(--syn-radius-element);
+  background: var(--syn-surface-subtle);
+}
+.ep-tele-hero__gauge { display: flex; align-items: center; justify-content: center; padding: var(--syn-space-12); }
+.ep-tele-hero__info { display: flex; padding: var(--syn-space-16) 0; }
+.ep-tele-hero__map { display: flex; padding: var(--syn-space-16) var(--syn-space-12) var(--syn-space-16) 0; }
+.ep-tele-map {
+  flex: 1;
+  overflow: hidden;
+  border-radius: var(--syn-radius-widget) 80px var(--syn-radius-widget) var(--syn-radius-widget);
+  background: var(--syn-surface-muted);
+  font: var(--syn-type-text-caption-2);
+}
+.ep-tele-hero__tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--syn-space-24);
+  padding: 9px var(--syn-space-12);
+  border-radius: var(--syn-radius-element);
+  background: var(--syn-surface-subtle);
+}
+
+/* Last known location */
+.ep-tele-loc { display: flex; flex: 1; flex-direction: column; gap: var(--syn-space-24); padding: var(--syn-space-12) var(--syn-space-24); border-radius: var(--syn-radius-widget); background: var(--syn-surface-default); }
+.ep-tele-loc__head { display: flex; flex-direction: column; gap: var(--syn-space-12); padding-bottom: var(--syn-space-20); border-bottom: 1px dashed var(--syn-border-default); font: var(--syn-type-text-body-s); }
+.ep-tele-loc__place { display: flex; align-items: center; gap: var(--syn-space-10); font: var(--syn-type-titles-title-4); }
+.ep-tele-loc__address { font: var(--syn-type-text-body-xs); }
+.ep-tele-loc__facts { display: flex; flex-direction: column; gap: var(--syn-space-24); font: var(--syn-type-text-body-s); }
+.ep-tele-loc__facts > div { display: flex; align-items: center; justify-content: space-between; gap: var(--syn-space-16); }
+.ep-tele-loc__facts dt { color: var(--syn-text-muted); }
+.ep-tele-loc__facts dd { text-align: right; }
+
+/* Gauge */
+.ep-gauge { position: relative; width: 100%; max-width: 298px; aspect-ratio: 300 / 270; }
+.ep-gauge svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.ep-gauge__ring { fill: var(--syn-color-white-white); stroke: var(--syn-surface-muted); stroke-width: 10; filter: drop-shadow(0 2px 4px rgb(21 21 21 / 0.06)); }
+.ep-gauge__track { fill: none; stroke: var(--syn-surface-muted); stroke-width: 10; }
+.ep-gauge__value { fill: none; stroke: var(--ep-gauge-accent); stroke-width: 10; }
+.ep-gauge__tick { stroke: var(--syn-color-secondary-jet); stroke-width: 1; }
+.ep-gauge__label { fill: var(--syn-color-secondary-jet); font: 600 9px var(--syn-font-family-body); }
+.ep-gauge__needle { stroke: var(--ep-gauge-accent); stroke-width: 2; stroke-linecap: round; }
+.ep-gauge__core { fill: var(--syn-color-white-white); stroke: var(--syn-surface-muted); stroke-width: 1; filter: drop-shadow(0 2px 8px rgb(21 21 21 / 0.08)); }
+.ep-gauge__speed { fill: var(--syn-text-primary); font: 700 16px var(--syn-font-family-body); }
+.ep-gauge__unit { fill: var(--syn-text-muted); font: 400 8px var(--syn-font-family-body); }
+.ep-gauge__center { position: absolute; top: 51.85%; left: 50%; display: flex; gap: var(--syn-space-16); transform: translate(-50%, -50%); }
+.ep-gauge__stat { display: flex; flex-direction: column; align-items: center; gap: var(--syn-space-2); color: var(--syn-color-secondary-jet); }
+.ep-gauge__stat strong { font: 700 12px/15px var(--syn-font-family-body); }
+.ep-gauge__stat strong.is-on { color: var(--syn-status-success); }
+.ep-gauge__stat > span:last-child { color: var(--syn-text-muted); font: 400 7px/9px var(--syn-font-family-body); }
+.ep-gauge__engine { position: relative; display: inline-flex; height: 16px; align-items: center; }
+.ep-gauge__live { position: absolute; top: -2px; right: -4px; width: 5px; height: 5px; border-radius: var(--syn-radius-full); background: var(--syn-status-success); }
+
+/* Sensor tile (Figma "Component 1431"): 64px. */
+.ep-sensor {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto auto;
+  align-items: center;
+  column-gap: var(--syn-space-8);
+  height: 64px;
+  padding: 0 var(--syn-space-8);
+  border-radius: var(--syn-radius-element);
+  background: var(--syn-surface-default);
+  box-shadow: var(--syn-shadow-default);
+}
+.ep-sensor.is-off { background: var(--ep-sensor-off); }
+.ep-sensor.is-value { background: var(--syn-surface-subtle); }
+.ep-sensor__icon { display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: var(--syn-radius-full); background: var(--syn-color-secondary-silver-chalince); color: var(--syn-color-white-white); }
+.ep-sensor__body { display: flex; min-width: 0; flex-direction: column; justify-content: space-between; gap: var(--syn-space-10); padding: var(--syn-space-8) 0 var(--syn-space-6); align-self: stretch; }
+.ep-sensor__label { overflow: hidden; font: var(--syn-type-titles-title-5); text-overflow: ellipsis; white-space: nowrap; }
+.ep-sensor__state, .ep-sensor__value { display: flex; align-items: center; gap: var(--syn-space-4); font: var(--syn-type-text-body-xs); white-space: nowrap; }
+.ep-sensor__value { overflow: hidden; text-overflow: ellipsis; padding-left: var(--syn-space-8); }
+.ep-sensor__value .is-muted { color: var(--syn-text-muted); }
+.ep-sensor__signal { align-self: center; }
+.ep-sensor.is-value .ep-sensor__signal { opacity: 0.4; }
+.ep-sensor__time { display: flex; gap: var(--syn-space-4); align-self: end; padding-bottom: var(--syn-space-8); color: var(--syn-text-muted); font: 300 10px/12px var(--syn-font-family-body); white-space: nowrap; }
+.ep-sensor.is-off .ep-sensor__time { color: var(--syn-text-primary); }
+.ep-tele-hero__tiles .ep-sensor { box-shadow: var(--syn-shadow-default); }
+
+/* Tracker */
+.ep-tele-tracker.syn-card { height: 450px; }
+.ep-tele-count { color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+.ep-tele-tracker__grid { display: grid; flex: 1; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--syn-space-16); min-height: 0; overflow-y: auto; padding: var(--syn-space-4) var(--syn-space-2); }
+.ep-tele-tracker__col { display: flex; flex-direction: column; gap: 2px; }
+
+/* Digital inputs: 92px white rows */
+.ep-tele-digital.syn-card { height: 450px; }
+.ep-tele-digital__list { display: flex; flex: 1; flex-direction: column; justify-content: space-between; gap: var(--syn-space-4); margin: 0; padding: var(--syn-space-4) var(--syn-space-2); list-style: none; }
+.ep-tele-input {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto 1fr auto;
+  height: 88px;
+  padding: var(--syn-space-12);
+  border-radius: var(--syn-radius-element);
+  background: var(--syn-surface-default);
+  box-shadow: var(--syn-shadow-default);
+}
+.ep-tele-input__label { grid-column: 1; grid-row: 1; font: var(--syn-type-titles-title-4); }
+.ep-tele-input__state { display: flex; grid-column: 1; grid-row: 3; align-items: center; gap: var(--syn-space-6); font: var(--syn-type-text-body-xs); }
+.ep-tele-input__art { position: absolute; top: 50%; left: 50%; max-height: 52px; transform: translate(-30%, -50%); pointer-events: none; }
+.ep-tele-input__channel { grid-column: 2; grid-row: 1; align-self: end; color: var(--syn-text-muted); font: var(--syn-type-text-body-xs-2); text-align: right; }
+.ep-tele-input__history.syn-icon-button { grid-column: 2; grid-row: 2 / 4; align-self: center; justify-self: end; background: transparent; }
+
+/* Analogue inputs */
+.ep-tele-analogue.syn-card { height: auto; align-self: start; }
+.ep-tele-row3 { align-items: start; }
+.ep-tele-analogue__row {
+  display: flex;
+  align-items: center;
+  gap: var(--syn-space-6);
+  height: 32px;
+  padding: var(--syn-space-4) var(--syn-space-8);
+  border-radius: var(--syn-radius-element);
+  background: var(--syn-surface-default);
+  box-shadow: var(--syn-shadow-default);
+}
+.ep-tele-analogue__label { flex: 1; font: var(--syn-type-titles-title-4); }
+.ep-tele-analogue__value { margin-right: var(--syn-space-12); font: var(--syn-type-text-body-xs-2); }
+.ep-tele-analogue__row img { margin-right: var(--syn-space-40); }
+.ep-tele-analogue__row .syn-icon-button { background: transparent; }
+
+/* Dashcam device */
+.ep-tele-device.syn-card { height: 450px; justify-content: space-between; }
+.ep-tele-device__photo { display: block; width: 270px; max-width: 100%; height: auto; }
+.ep-tele-device__info { display: flex; flex-direction: column; gap: var(--syn-space-8); padding-bottom: var(--syn-space-8); }
+.ep-tele-device__info dt { color: var(--syn-text-muted); font: var(--syn-type-text-caption-1); -webkit-font-smoothing: auto; -moz-osx-font-smoothing: auto; -webkit-text-stroke: var(--syn-text-crisp-stroke) currentColor; }
+.ep-tele-device__name dd { font: var(--syn-type-titles-title-4); }
+.ep-tele-device__info > div { display: flex; flex-direction: column; gap: var(--syn-space-2); }
+.ep-tele-device__row { display: grid !important; grid-template-columns: 1fr 1fr; }
+.ep-tele-device__row > div { display: flex; flex-direction: column; gap: var(--syn-space-2); }
+.ep-tele-device__imei { display: flex; align-items: center; gap: var(--syn-space-4); font: var(--syn-type-text-body-s-2); }
+.ep-tele-device__update { display: flex; align-items: center; gap: var(--syn-space-2); font: var(--syn-type-text-body-xs); white-space: nowrap; }
+.ep-tele-device__update .syn-color-dot--plain { box-sizing: content-box; padding: 1px; border: 1px solid var(--syn-border-muted); background-clip: content-box; }
+.ep-tele-copy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--syn-space-16);
+  height: var(--syn-space-16);
+  padding: 0;
+  border: 1px solid var(--syn-border-default);
+  border-radius: var(--syn-radius-full);
+  background: var(--syn-surface-default);
+  color: var(--syn-text-primary);
+  cursor: pointer;
+}
+.ep-tele-copy:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+
+/* Dashcam player: 2 x 2 cameras, play in the middle, expand top right. */
+.ep-tele-player { height: 100%; }
+.ep-tele-player__card.syn-card { height: 450px; }
+.ep-tele-player__grid { position: relative; display: grid; flex: 1; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 2px; min-height: 0; }
+.ep-tele-cam { position: relative; min-height: 0; padding-bottom: var(--syn-space-8); }
+.ep-tele-cam img { display: block; width: 100%; height: 100%; border: 2px solid var(--syn-color-white-white); border-radius: var(--syn-radius-widget); object-fit: cover; }
+.ep-tele-cam__status { position: absolute; top: 14px; left: 14px; width: 12px; height: 12px; border-radius: var(--syn-radius-full); background: var(--syn-text-error); }
+.ep-tele-cam__status.is-online { background: var(--syn-status-success); }
+.ep-tele-player__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  padding: 0;
+  border: 1px solid var(--syn-color-white-white);
+  border-radius: var(--syn-radius-full);
+  background: var(--syn-surface-muted);
+  color: var(--syn-text-primary);
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+}
+.ep-tele-player__play .syn-icon { width: 28px; height: 28px; }
+.ep-tele-player__expand {
+  position: absolute;
+  top: var(--syn-space-12);
+  right: var(--syn-space-12);
+  display: flex;
+  padding: var(--syn-space-4);
+  border: 1px solid var(--syn-border-default);
+  border-radius: var(--syn-radius-element);
+  background: var(--syn-color-white-white);
+  color: var(--syn-text-primary);
+  cursor: pointer;
+}
+.ep-tele-player__play:focus-visible, .ep-tele-player__expand:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.ep-tele-player.is-expanded { position: fixed; inset: 0; z-index: 1000; padding: var(--syn-space-24); background: var(--syn-surface-muted); }
+.ep-tele-player.is-expanded .ep-tele-player__card.syn-card { height: 100%; }
+
+@media (max-width: 1599px) {
+  .ep-tele-hero__slot { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); height: auto; }
+  .ep-tele-hero__map { grid-column: 1 / -1; height: 280px; padding: 0 var(--syn-space-12) var(--syn-space-12); }
+  .ep-tele-hero__tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 639px) {
+  .ep-tele-hero { border-radius: 48px 48px var(--syn-radius-widget) var(--syn-radius-widget); }
+  .ep-tele-hero__slot { grid-template-columns: 1fr; border-radius: 48px 48px var(--syn-radius-element) var(--syn-radius-element); }
+  .ep-tele-hero__info { padding: 0 var(--syn-space-12); }
+  .ep-tele-loc { padding: var(--syn-space-12); }
+  .ep-tele-loc__facts > div { flex-direction: column; align-items: flex-start; gap: var(--syn-space-2); }
+  .ep-tele-loc__facts dd { text-align: left; }
+  .ep-tele-hero__tiles, .ep-tele-tracker__grid { grid-template-columns: 1fr; }
+  .ep-tele-tracker.syn-card, .ep-tele-digital.syn-card, .ep-tele-device.syn-card { height: auto; }
+  .ep-sensor__signal { display: none; }
+  .ep-tele-player__card.syn-card { height: 360px; }
+}

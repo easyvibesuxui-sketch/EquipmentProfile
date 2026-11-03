@@ -9,6 +9,9 @@
   --ep-dot-violet: #8a38f5;
   --ep-dot-rose: #ff0048;
   --ep-dot-orange: #ff6a00;
+  /* Telemetry: an OFF sensor tile, and the speed gauge's arc and needle. */
+  --ep-sensor-off: #d9d9d9;
+  --ep-gauge-accent: #00d2ff;
 }
 
 html, body { margin: 0; background: var(--ep-page-bg); }
