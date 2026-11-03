@@ -57,13 +57,13 @@
   left: var(--syn-space-20);
   width: var(--syn-size-control-lg);
   height: var(--syn-size-control-lg);
-  padding: 0;
+  padding: var(--syn-space-2);
   overflow: hidden;
   border: 1px solid var(--syn-border-strong);
   border-radius: var(--syn-radius-element);
   cursor: pointer;
 }
-.ep-map__view img { display: block; width: 100%; height: 100%; }
+.ep-map__view img { display: block; width: 100%; height: 100%; border-radius: calc(var(--syn-radius-element) - var(--syn-space-2)); object-fit: cover; }
 .ep-map__view[aria-pressed='true'] { outline: 2px solid var(--syn-action-brand); outline-offset: -2px; }
 .ep-map__view:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
 .ep-map__controls { position: absolute; right: var(--syn-space-20); bottom: var(--syn-space-24); display: flex; align-items: flex-end; gap: var(--syn-space-16); }
