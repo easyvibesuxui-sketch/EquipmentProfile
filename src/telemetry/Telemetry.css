@@ -53,25 +53,22 @@
 .ep-tele-loc__facts dt { color: var(--syn-text-muted); }
 .ep-tele-loc__facts dd { text-align: right; }
 
-/* Gauge */
-.ep-gauge { position: relative; width: 100%; max-width: 298px; aspect-ratio: 300 / 270; }
+/* Gauge: geometry in Gauge.tsx (Figma 324 x 288). */
+.ep-gauge { width: 100%; max-width: 324px; aspect-ratio: 324 / 288; }
 .ep-gauge svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.ep-gauge__ring { fill: var(--syn-color-white-white); stroke: var(--syn-surface-muted); stroke-width: 10; filter: drop-shadow(0 2px 4px rgb(21 21 21 / 0.06)); }
-.ep-gauge__track { fill: none; stroke: var(--syn-surface-muted); stroke-width: 10; }
-.ep-gauge__value { fill: none; stroke: var(--ep-gauge-accent); stroke-width: 10; }
-.ep-gauge__tick { stroke: var(--syn-color-secondary-jet); stroke-width: 1; }
-.ep-gauge__label { fill: var(--syn-color-secondary-jet); font: 600 9px var(--syn-font-family-body); }
+.ep-gauge__ring { fill: var(--syn-color-white-white); filter: drop-shadow(0 2px 6px rgb(21 21 21 / 0.06)); }
+.ep-gauge__track { fill: none; stroke: var(--syn-surface-muted); stroke-width: 13; }
+.ep-gauge__value { fill: none; stroke: var(--ep-gauge-accent); stroke-width: 13; }
+.ep-gauge__tick { stroke: var(--syn-border-muted); stroke-width: 1; }
+.ep-gauge__label { fill: var(--syn-color-secondary-jet); font: 600 10.5px var(--syn-font-family-body); }
+.ep-gauge__core { fill: var(--syn-surface-raised); stroke: var(--syn-surface-muted); stroke-width: 1; filter: drop-shadow(0 2px 8px rgb(21 21 21 / 0.06)); }
 .ep-gauge__needle { stroke: var(--ep-gauge-accent); stroke-width: 2; stroke-linecap: round; }
-.ep-gauge__core { fill: var(--syn-color-white-white); stroke: var(--syn-surface-muted); stroke-width: 1; filter: drop-shadow(0 2px 8px rgb(21 21 21 / 0.08)); }
-.ep-gauge__speed { fill: var(--syn-text-primary); font: 700 16px var(--syn-font-family-body); }
-.ep-gauge__unit { fill: var(--syn-text-muted); font: 400 8px var(--syn-font-family-body); }
-.ep-gauge__center { position: absolute; top: 51.85%; left: 50%; display: flex; gap: var(--syn-space-16); transform: translate(-50%, -50%); }
-.ep-gauge__stat { display: flex; flex-direction: column; align-items: center; gap: var(--syn-space-2); color: var(--syn-color-secondary-jet); }
-.ep-gauge__stat strong { font: 700 12px/15px var(--syn-font-family-body); }
-.ep-gauge__stat strong.is-on { color: var(--syn-status-success); }
-.ep-gauge__stat > span:last-child { color: var(--syn-text-muted); font: 400 7px/9px var(--syn-font-family-body); }
-.ep-gauge__engine { position: relative; display: inline-flex; height: 16px; align-items: center; }
-.ep-gauge__live { position: absolute; top: -2px; right: -4px; width: 5px; height: 5px; border-radius: var(--syn-radius-full); background: var(--syn-status-success); }
+.ep-gauge__state { fill: var(--syn-text-muted); font: 700 11px var(--syn-font-family-body); }
+.ep-gauge__state.is-on { fill: var(--syn-status-success); }
+.ep-gauge__hours { fill: var(--syn-color-secondary-jet); font: 700 13px var(--syn-font-family-body); }
+.ep-gauge__caption, .ep-gauge__unit { fill: var(--syn-text-muted); font: 400 7px var(--syn-font-family-body); }
+.ep-gauge__speed { fill: var(--syn-text-primary); font: 700 17px var(--syn-font-family-body); }
+.ep-gauge__unit { font-size: 8px; }
 
 /* Sensor tile (Figma "Component 1431"): 64px. */
 .ep-sensor {
