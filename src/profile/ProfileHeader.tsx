@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Grid, GridItem, Icon, IconButton, Switch, Tag } from '@syn/design-system';
+import { Grid, GridItem, Icon, Switch, Tag } from '@syn/design-system';
 import { MaskIcon } from '../layout/AppShell';
 import { ColorDot } from '../shared/ColorDot';
+import { ActionMenu } from '../shared/ActionMenu';
+import { TrackerDrawer } from './TrackerDrawer';
 import { equipment, type HeaderFact } from '../data/equipment';
 import photo from '../assets/equipment-photo.png';
 import trackerPhoto from '../assets/tracker-photo.png';
@@ -51,6 +53,7 @@ function CopyButton({ value, label }: { value: string; label: string }) {
 /** Figma "Frame 1": the equipment card (8 columns) and the Tracker and Tag cards (2 columns each). */
 export function ProfileHeader() {
   const [as4u, setAs4u] = useState(equipment.as4uEnabled);
+  const [trackerOpen, setTrackerOpen] = useState(false);
   const { tracker, tag } = equipment;
   return (
     <Grid gap={24} className="ep-header">
@@ -75,7 +78,14 @@ export function ProfileHeader() {
                   </ul>
                 </div>
               </div>
-              <IconButton icon="dotshorizontal" label="More actions" variant="outline" />
+              <ActionMenu
+                label="Equipment actions"
+                actions={[
+                  { id: 'status', label: 'Update Status', icon: 'refresh-change' },
+                  { id: 'archive', label: 'Archive equipment', icon: 'archive' },
+                ]}
+                note="To delete equipment, archive it first."
+              />
             </div>
             <div className="ep-header__bottom">
               <dl className="ep-header__facts">
@@ -102,7 +112,8 @@ export function ProfileHeader() {
       </GridItem>
 
       <GridItem span={2} className="ep-header__col-device">
-        <section className="ep-header__device" aria-label="Tracker">
+        <section className="ep-header__device ep-header__device--link" aria-label="Tracker">
+          <button type="button" className="ep-header__device-open" aria-label="Open tracking information" onClick={() => setTrackerOpen(true)} />
           <div className="ep-header__device-media">
             <img src={trackerPhoto} alt="Tracker device" width={96} height={133} />
             <img className="ep-header__qr" src={qrCode} alt="Tracker QR code" width={40} height={40} />
@@ -123,6 +134,7 @@ export function ProfileHeader() {
             </div>
           </dl>
         </section>
+        <TrackerDrawer open={trackerOpen} onClose={() => setTrackerOpen(false)} />
       </GridItem>
 
       <GridItem span={2} className="ep-header__col-device">
