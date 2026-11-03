@@ -25,7 +25,7 @@ function InfoList({ rows }: { rows: Array<[string, string | null]> }) {
 
 export function SpecificationsWidget() {
   return (
-    <Card title="Specifications" className="ep-widget">
+    <Card title="Technical specifications" className="ep-widget">
       <div className="ep-info__body">
         <InfoList rows={specifications.rows} />
         <p className="ep-info__footer">+{specifications.more} Specifications listed</p>
@@ -36,7 +36,7 @@ export function SpecificationsWidget() {
 
 export function IdentificationsWidget() {
   return (
-    <Card title="Identifications" className="ep-widget">
+    <Card title="Specific machine information" className="ep-widget">
       <div className="ep-info__body">
         <InfoList rows={identifications} />
         <div className="ep-info__stack">

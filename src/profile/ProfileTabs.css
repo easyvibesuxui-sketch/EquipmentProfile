@@ -7,5 +7,7 @@
      The default keeps the Medium weight Figma shows. */
   -webkit-font-smoothing: auto;
   -moz-osx-font-smoothing: auto;
+  /* A hairline stroke so 10px Medium reads as Medium on macOS and Windows too, as it does in Figma. */
+  -webkit-text-stroke: 0.2px currentColor;
 }
 .ep-profile-tabs .syn-segmented__option[aria-selected='true'] { color: var(--syn-surface-muted); }
