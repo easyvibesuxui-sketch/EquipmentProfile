@@ -73,7 +73,7 @@ export function ActionMenu({ label, actions, note }: { label: string; actions: M
               className="ep-menu__item"
               onClick={() => { a.onSelect?.(); close(); }}
             >
-              <Icon name={a.icon} size={20} />
+              <span className="ep-menu__icon" aria-hidden><Icon name={a.icon} size={18} /></span>
               <span>{a.label}</span>
             </button>
           ))}
