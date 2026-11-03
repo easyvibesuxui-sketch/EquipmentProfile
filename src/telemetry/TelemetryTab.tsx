@@ -50,7 +50,7 @@ function CopyButton({ value }: { value: string }) {
 }
 
 /** Figma hero: the gauge, the last known location and the map over a Smoke slot with 96px top corners, then the status tiles. */
-function TelemetryHero() {
+export function TelemetryHero() {
   return (
     <section className="ep-tele-hero" aria-label="Live telemetry">
       <div className="ep-tele-hero__slot">
@@ -78,7 +78,7 @@ function TelemetryHero() {
   );
 }
 
-function TrackerWidget() {
+export function TrackerWidget() {
   return (
     <Card title="Tracker" actions={<span className="ep-tele-count">{trackerSensors.count} in count</span>} className="ep-widget ep-tele-tracker">
       <div className="ep-tele-tracker__grid">

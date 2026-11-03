@@ -65,6 +65,10 @@ export const dependence = {
   inventoryList: 8,
   crew: 'Road construction',
   connectedPerson: 'Max Mustermann',
+  warehouse: 'Bremen Lagerplatz',
+  operator: 'Max Musterman',
+  assigning: 'Bremen Roadworks',
+  tag: 'Tag-L',
 };
 
 export interface CheckEvent {
@@ -186,4 +190,79 @@ export const location = {
   lat: 53.5458,
   lng: 9.9813,
   zoom: 14,
+};
+
+/* Widgets that can be added from "Manage Widgets". Not in the Overview Figma yet: placeholder content. */
+export const equipmentDetails: Array<[string, string | null]> = [
+  ['Manufacturer', 'Caterpillar'],
+  ['Model', 'ZX350LC-5N'],
+  ['Year of manufacture', '2013'],
+  ['Category', 'Heavy Dozer'],
+  ['Operating weight', '34 500 kg'],
+  ['Purchase date', '12.03.2014'],
+];
+
+export const calculationType: Array<[string, string | null]> = [
+  ['Calculation type', 'Internal rate'],
+  ['Billing unit', 'Day'],
+  ['Rate', '420,00 €'],
+  ['Cost centre', 'KST 4100'],
+  ['Valid from', '01.01.2026'],
+];
+
+export const bglInformation: Array<[string, string | null]> = [
+  ['BGL number', 'D.1.12.0350'],
+  ['Characteristic size', '35 t'],
+  ['Average new value', '312 400 €'],
+  ['Depreciation and interest', '7 810 € / month'],
+  ['Repair costs', '4 060 € / month'],
+];
+
+export interface DocumentFile { name: string; meta: string; format: 'pdf' | 'doc' | 'xls' | 'jpg' }
+
+export const documents: Record<'technical' | 'other', { title: string; files: DocumentFile[] }> = {
+  technical: {
+    title: 'Technical documents',
+    files: [
+      { name: 'Operating manual.pdf', meta: '4.2 MB', format: 'pdf' },
+      { name: 'Spare parts catalogue.pdf', meta: '12.8 MB', format: 'pdf' },
+      { name: 'CE declaration.pdf', meta: '320 KB', format: 'pdf' },
+      { name: 'Wiring diagram.pdf', meta: '1.1 MB', format: 'pdf' },
+    ],
+  },
+  other: {
+    title: 'Other documents',
+    files: [
+      { name: 'Purchase contract.pdf', meta: '860 KB', format: 'pdf' },
+      { name: 'Insurance policy.doc', meta: '210 KB', format: 'doc' },
+      { name: 'Cost overview 2026.xls', meta: '95 KB', format: 'xls' },
+      { name: 'Delivery photo.jpg', meta: '2.4 MB', format: 'jpg' },
+    ],
+  },
+};
+
+export type CheckTone = 'success' | 'warning' | 'error' | 'neutral';
+
+export interface ScheduledItem { name: string; date: string; status: string; tone: CheckTone }
+
+export const technicalChecks: ScheduledItem[] = [
+  { name: 'UVV inspection', date: 'Due 14.09.2026', status: 'Overdue', tone: 'error' },
+  { name: 'Crane inspection', date: 'Due 02.12.2026', status: 'Due soon', tone: 'warning' },
+  { name: 'Electrical test (DGUV V3)', date: 'Done 10.03.2026', status: 'Passed', tone: 'success' },
+  { name: 'Exhaust emission test', date: 'Done 22.01.2026', status: 'Passed', tone: 'success' },
+];
+
+export const workshopOrders: ScheduledItem[] = [
+  { name: 'Hydraulic hose replaced', date: '28.10.2026', status: 'In progress', tone: 'warning' },
+  { name: 'Track tension adjusted', date: '04.10.2026', status: 'Done', tone: 'success' },
+  { name: 'Cab air filter', date: '17.09.2026', status: 'Done', tone: 'success' },
+];
+
+export const maintenance = {
+  next: { name: '500 h service', due: 'in 42 h', at: '7 500 h' },
+  items: [
+    { name: '250 h service', date: 'Done 02.08.2026', status: 'Done', tone: 'success' },
+    { name: 'Engine oil change', date: 'Done 02.08.2026', status: 'Done', tone: 'success' },
+    { name: 'Annual service', date: 'Due 15.01.2027', status: 'Planned', tone: 'neutral' },
+  ] as ScheduledItem[],
 };

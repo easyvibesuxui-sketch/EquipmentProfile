@@ -27,6 +27,22 @@ A tracker with a camera (`tracker.camera`, the syniotec DASHCAM in the mock data
 frame, Play (opens the Dashcam Player on Telemetry, full screen) and the live dot. Open the page with `#no-camera` to see
 the plain tracker card.
 
+## Manage Widgets
+
+The gear at the end of the profile tabs (Overview only) opens *Manage Widgets*, laid out after the Figma
+[Mail Notifications](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=11612-41869) drawer:
+one group per category (Overview, Specifications, Documents, Connected entities, Telemetry), a switch per widget,
+"Show all" per group and "All widgets" at the top. Drag a row by its handle (or focus the handle and press
+Arrow Up/Down) to change its place on the Overview; a widget moves only among the widgets of its own category.
+Changes apply on **Submit**; Discard and Close drop them, and the arrow icon resets to the Figma defaults.
+The layout is saved in the browser (`localStorage`, key `ep-overview-widgets-v1`), not per user yet.
+
+- `src/widgets/registry.tsx` lists every widget: category, label, width on the grid, default visibility.
+- `src/widgets/layout.ts` holds the order and hidden list, the reorder rule and the storage.
+- Connected entities are the rows of the Dependance card, which sits where the first of them is.
+- Equipment Details, Calculation type, BGL Information and the Documents widgets have no Figma design yet:
+  their content in `src/overview/moreWidgets.tsx` is a placeholder.
+
 ## Getting started
 
 ```bash
@@ -63,6 +79,8 @@ for are named constants in `src/styles/app.css` (`--ep-*`).
 | `src/profile/ProfileTabs.tsx` | The profile tabs, on Syn `Segmented` |
 | `src/overview/LocationWidget.tsx` | Current location map: Leaflet inside Syn `MapView`; Map Button opens the full map |
 | `src/overview/widgets.tsx` | Specifications, Location, Identifications, Dependence, Check ins / Charging, History |
+| `src/overview/moreWidgets.tsx` | Widgets added from Manage Widgets: Equipment Details, Calculation type, BGL, documents, checks, workshop, maintenance |
+| `src/widgets/` | Manage Widgets: registry, layout state, drawer |
 | `src/overview/charts.tsx` | Operating Hours, Operation Hours by hour, Distance travelled |
 | `src/telemetry/` | Telemetry tab: speed gauge, last known location and map, status tiles, Tracker sensors, Digital and Analogue inputs, Dashcam |
 | `src/data/equipment.ts` | Mock data taken from the design, to be replaced by the API |
@@ -71,7 +89,7 @@ for are named constants in `src/styles/app.css` (`--ep-*`).
 ### Syn components used
 
 `Grid`/`GridItem`, `Card`, `Property`, `Segmented`, `Tag`, `Switch`, `Button`, `IconButton`, `Tooltip`, `Icon`, `Drawer`, `Section`,
-`TextField`, `Select`, and the map set (`MapView`, `MapControls`, `MapZoomControls`, `MapLayerSwitch`, `MapExpandButton`,
+`TextField`, `Select`, `FileItem`, `StatusBadge`, `EmptyState`, and the map set (`MapView`, `MapControls`, `MapZoomControls`, `MapLayerSwitch`, `MapExpandButton`,
 `MapStreetViewButton`).
 
 ## Open points from the design

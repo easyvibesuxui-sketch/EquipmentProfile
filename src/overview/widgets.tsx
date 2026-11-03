@@ -11,7 +11,7 @@ function OpenLink({ label }: { label: string }) {
   return <IconButton icon="next" label={label} className="ep-widget__open" />;
 }
 
-function InfoList({ rows }: { rows: Array<[string, string | null]> }) {
+export function InfoList({ rows }: { rows: Array<[string, string | null]> }) {
   return (
     <dl className="ep-info">
       {rows.map(([label, value]) => (
@@ -49,31 +49,42 @@ export function IdentificationsWidget() {
   );
 }
 
-export function DependenceWidget() {
+export type ConnectedId = 'primary' | 'linked' | 'warehouse' | 'crew' | 'person' | 'operator' | 'assigning' | 'tag' | 'inventory';
+
+const strong = (text: string, dot?: Parameters<typeof ColorDot>[0]['color']) => (
+  <span className={dot ? 'ep-dep__strong ep-dep__crew' : 'ep-dep__strong'}>
+    {dot && <ColorDot color={dot} />}<span className="syn-title-text">{text}</span>
+  </span>
+);
+const count = (n: number) => <span className="ep-dep__count"><span>Count</span>{n}</span>;
+
+/** Connected entities: the rows of the Dependance card. Labels and the empty wording follow Figma. */
+export const connectedEntities: Record<ConnectedId, { label: string; empty: string; value: () => ReactNode }> = {
+  primary: { label: 'Primary asset', empty: 'Not linked yet', value: () => strong(dependence.primaryAsset) },
+  linked: { label: 'Linked asset', empty: 'Not linked yet', value: () => count(dependence.linkedAssets) },
+  warehouse: { label: 'Warehouse', empty: 'Not linked yet', value: () => strong(dependence.warehouse) },
+  crew: { label: 'Crew', empty: 'Not linked yet', value: () => strong(dependence.crew, 'brand') },
+  person: { label: 'Connected Person', empty: 'Not linked yet', value: () => strong(dependence.connectedPerson) },
+  operator: { label: 'Operator', empty: 'Not linked yet', value: () => strong(dependence.operator, 'orange') },
+  assigning: { label: 'Assigning', empty: 'Not linked yet', value: () => strong(dependence.assigning, 'violet') },
+  tag: { label: 'Tag', empty: 'Not linked yet', value: () => strong(dependence.tag) },
+  inventory: { label: 'Inventory list', empty: 'Not attached yet', value: () => count(dependence.inventoryList) },
+};
+
+export function DependenceWidget({ rows = ['primary', 'linked', 'inventory', 'crew', 'person'] }: { rows?: ConnectedId[] }) {
   const empty = useEmptyDemo();
-  const none = (text: string) => <span className="ep-dep__none syn-title-text">{text}</span>;
-  const rows: Array<[string, ReactNode]> = empty ? [
-    ['Primary asset', none('Not linked yet')],
-    ['Linked asset', none('Not linked yet')],
-    ['Inventory list', none('Not attached yet')],
-    ['Crew', none('Not linked yet')],
-    ['Connected Person', none('Not linked yet')],
-  ] : [
-    ['Primary asset', <span className="ep-dep__strong"><span className="syn-title-text">{dependence.primaryAsset}</span></span>],
-    ['Linked asset', <span className="ep-dep__count"><span>Count</span>{dependence.linkedAssets}</span>],
-    ['Inventory list', <span className="ep-dep__count"><span>Count</span>{dependence.inventoryList}</span>],
-    ['Crew', <span className="ep-dep__strong ep-dep__crew"><ColorDot color="brand" /><span className="syn-title-text">{dependence.crew}</span></span>],
-    ['Connected Person', <span className="ep-dep__strong"><span className="syn-title-text">{dependence.connectedPerson}</span></span>],
-  ];
   return (
     // Empty: Figma hides the chevron, as there is nothing to open.
     <Card title="Dependance" actions={empty ? undefined : <OpenLink label="Open dependence" />} className="ep-widget">
       <div className={empty ? 'ep-dep is-empty' : 'ep-dep'}>
-        {rows.map(([label, value]) => (
-          <Property key={label} label={label} variant="tile" className="ep-dep__row">
-            {empty ? value : <span className="ep-dep__value">{value}</span>}
-          </Property>
-        ))}
+        {rows.map((id) => {
+          const e = connectedEntities[id];
+          return (
+            <Property key={id} label={e.label} variant="tile" className="ep-dep__row">
+              {empty ? <span className="ep-dep__none syn-title-text">{e.empty}</span> : <span className="ep-dep__value">{e.value()}</span>}
+            </Property>
+          );
+        })}
       </div>
     </Card>
   );

@@ -1,0 +1,87 @@
+/* "Manage Widgets", after the Figma "Mail Notifications" drawer (11612:41869): 640 wide, 24px top-left corner. */
+.ep-widgets-drawer .syn-drawer__panel { border-top-left-radius: var(--ep-radius-panel); }
+.ep-widgets-drawer .syn-drawer__header { height: auto; padding: var(--syn-space-16) var(--syn-space-16) var(--syn-space-16) var(--syn-grid-margin); }
+.ep-widgets-drawer__title {
+  position: relative;
+  top: var(--syn-title-offset);
+  margin: 0;
+  color: var(--syn-text-muted);
+  font: var(--syn-type-titles-title-3);
+}
+.ep-widgets-drawer .syn-drawer__footer { height: auto; padding: var(--syn-space-20) var(--syn-space-24) var(--syn-space-20) var(--syn-grid-margin); }
+.ep-widgets-drawer__submit.syn-button { width: 168px; }
+
+/* "All widgets": Medium 14, padding 16/16/12/32. */
+.ep-widgets-drawer__all {
+  display: flex;
+  align-items: center;
+  gap: var(--syn-space-8);
+  padding: var(--syn-space-16) var(--syn-space-16) var(--syn-space-12) var(--syn-grid-margin);
+  font: var(--syn-type-titles-title-4);
+}
+.ep-widgets-drawer__all > span { flex: 1; position: relative; top: var(--syn-title-offset); }
+
+/* A group: Cultured 1px box, 8px corners; White head and foot rows, rows of 40px in between. */
+.ep-widgets-group { padding: var(--syn-space-8) var(--syn-space-16) var(--syn-space-8) var(--syn-grid-margin); }
+.ep-widgets-group__box { border: 1px solid var(--syn-border-default); border-radius: var(--syn-radius-element); }
+.ep-widgets-group__head, .ep-widgets-group__foot {
+  display: flex;
+  align-items: center;
+  gap: var(--syn-space-8);
+  margin: 0;
+  padding: var(--syn-space-8);
+  background: var(--syn-surface-default);
+  font: var(--syn-type-titles-title-6);
+}
+.ep-widgets-group__head { min-height: 31px; border-bottom: 1px solid var(--syn-border-default); border-radius: var(--syn-radius-element) var(--syn-radius-element) 0 0; }
+.ep-widgets-group__foot { border-top: 1px solid var(--syn-border-default); border-radius: 0 0 var(--syn-radius-element) var(--syn-radius-element); }
+.ep-widgets-group__head > span:first-child, .ep-widgets-group__foot > span { flex: 1; position: relative; top: var(--syn-title-offset); }
+.ep-widgets-group__count { color: var(--syn-text-muted); }
+
+.ep-widgets-group__list { display: flex; flex-direction: column; gap: var(--syn-space-2); margin: 0; padding: var(--syn-space-8) var(--syn-space-4); list-style: none; }
+.ep-widgets-row {
+  display: flex;
+  align-items: center;
+  gap: var(--syn-space-8);
+  min-height: 40px;
+  padding: var(--syn-space-4) var(--syn-space-8) var(--syn-space-4) var(--syn-space-4);
+  border: 1px solid var(--syn-border-default);
+  border-radius: var(--syn-radius-element);
+  background: var(--syn-surface-default);
+  font: var(--syn-type-titles-title-6);
+  transition: box-shadow var(--syn-duration-fast), border-color var(--syn-duration-fast);
+}
+.ep-widgets-row__label { flex: 1; min-width: 0; position: relative; top: var(--syn-title-offset); }
+.ep-widgets-row.is-off .ep-widgets-row__label { color: var(--syn-text-muted); }
+.ep-widgets-row.is-dragging { position: relative; z-index: 1; border-color: var(--syn-border-strong); box-shadow: var(--syn-shadow-hover); }
+
+.ep-widgets-row__handle {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--syn-radius-xs);
+  background: transparent;
+  color: var(--syn-text-muted);
+  cursor: grab;
+  touch-action: none;
+}
+.ep-widgets-row__handle:hover { color: var(--syn-text-primary); }
+.ep-widgets-row.is-dragging .ep-widgets-row__handle { color: var(--syn-text-primary); cursor: grabbing; }
+.ep-widgets-row__handle:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 0; }
+
+@media (max-width: 640px) {
+  .ep-widgets-drawer__all, .ep-widgets-group { padding-left: var(--syn-space-16); }
+}
+
+/* The gear at the end of the profile tabs. */
+.ep-profile-tabs-row { display: flex; align-items: flex-start; gap: var(--syn-space-16); }
+.ep-profile-tabs-row > .ep-profile-tabs { flex: 1; min-width: 0; }
+.ep-profile-tabs-row__manage { flex: none; }
+
+/* Overview with every widget switched off. */
+.ep-overview__empty { display: flex; justify-content: center; padding: var(--syn-space-48) 0; }

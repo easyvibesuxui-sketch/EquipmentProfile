@@ -4,11 +4,13 @@
   .ep-header__col-main { --span: 12 !important; }
   .ep-header__col-device { --span: 6 !important; }
   .ep-col--half { --span: 6 !important; }
-  .ep-col--wide { --span: 12 !important; order: 1; }
+  .ep-col--wide, .ep-col--full { --span: 12 !important; order: 1; }
+  /* The Overview is one dense grid: the half widgets close up around the wide ones without reordering. */
+  .ep-overview__grid .ep-col { order: 0; }
 }
 
 @media (max-width: 639px) {
-  .ep-header__col-main, .ep-header__col-device, .ep-col--half, .ep-col--wide { --span: 12 !important; }
+  .ep-header__col-main, .ep-header__col-device, .ep-col--half, .ep-col--wide, .ep-col--full { --span: 12 !important; }
   .ep-shell__main { padding: var(--syn-space-16); }
   .ep-nav { width: 48px; padding: 0 var(--syn-space-2) var(--syn-space-24); }
   .ep-nav__item { width: 44px; }
