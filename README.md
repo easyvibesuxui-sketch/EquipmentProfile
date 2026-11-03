@@ -4,6 +4,16 @@ The equipment profile screen of SAM, built with the [Syn design system](https://
 This first version is the **Overview** tab, from the Figma frame
 [Equipment Profile Home](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=13767-3742).
 
+## Live site
+
+https://easyvibesuxui-sketch.github.io/EquipmentProfile/ — GitHub Pages, served from the `gh-pages` branch.
+To update it, build and push `dist/` to that branch:
+
+```bash
+npm run build && touch dist/.nojekyll
+npx gh-pages -d dist --dotfiles   # or commit dist/ to gh-pages by hand
+```
+
 ## Getting started
 
 ```bash
