@@ -50,7 +50,7 @@
   align-items: center;
   align-self: stretch;
   height: var(--syn-space-32);
-  padding: 0 var(--syn-space-12);
+  padding: 0 var(--syn-space-8);
   border-radius: var(--syn-radius-element);
   background: var(--syn-surface-default);
 }
