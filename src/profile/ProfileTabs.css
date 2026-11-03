@@ -3,5 +3,9 @@
   min-width: 0;
   padding: 0 var(--syn-space-24);
   font: var(--syn-type-text-caption-1);
+  /* Syn's base sets antialiased smoothing, which on macOS thins 10px Medium until it reads as Regular.
+     The default keeps the Medium weight Figma shows. */
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
 }
 .ep-profile-tabs .syn-segmented__option[aria-selected='true'] { color: var(--syn-surface-muted); }
