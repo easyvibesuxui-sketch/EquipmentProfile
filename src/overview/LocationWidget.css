@@ -4,10 +4,12 @@
 .ep-map.syn-card { position: relative; }
 .ep-map .syn-map { flex: 1; min-height: 0; height: auto; }
 .ep-map__canvas { font: var(--syn-type-text-caption-2); }
-.ep-map__canvas .leaflet-control-attribution { margin-right: 76px; font: var(--syn-type-text-caption-2); background: rgb(255 255 255 / 0.8); }
-/* Syn Map Button at the top right of the map, 16px in from the frame (where Close map sits on the full map). */
+.ep-map__canvas .leaflet-control-attribution { font: var(--syn-type-text-caption-2); background: rgb(255 255 255 / 0.8); }
+/* Map card controls, as Figma places them: 8px in from the frame along the bottom. */
 .ep-map__stage { position: relative; display: flex; flex: 1; min-height: 0; }
-.ep-map__expand.syn-map-control { position: absolute; top: var(--syn-space-16); right: var(--syn-space-16); z-index: 2; }
+.ep-map__layer.syn-map-layer { position: absolute; bottom: var(--syn-space-8); left: var(--syn-space-8); z-index: 2; }
+.ep-map__zoom.syn-map-zoom { position: absolute; right: var(--syn-space-8); bottom: var(--syn-space-8); z-index: 2; }
+.ep-map__expand.syn-map-control { position: absolute; right: calc(var(--syn-space-8) + var(--syn-size-control-sm) + var(--syn-space-16)); bottom: var(--syn-space-8); z-index: 2; }
 
 /* Equipment pin: Candy Apple dot, white gap, Eerie Black ring. */
 .ep-pin { background: none; border: 0; }

@@ -41,8 +41,9 @@ export function LocationWidget() {
 
   useEffect(() => {
     if (!el.current) return;
-    const m = L.map(el.current, { center, zoom: location.zoom, minZoom: MIN_ZOOM, zoomControl: false });
-    m.attributionControl.setPrefix(false);
+    const m = L.map(el.current, { center, zoom: location.zoom, minZoom: MIN_ZOOM, zoomControl: false, attributionControl: false });
+    // Attribution at the top right, clear of the Figma controls along the bottom.
+    L.control.attribution({ position: 'topright', prefix: false }).addTo(m);
     L.marker(center, {
       icon: L.divIcon({ className: 'ep-pin', html: '<span></span>', iconSize: [24, 24], iconAnchor: [12, 12] }),
       title: location.address,
@@ -78,6 +79,12 @@ export function LocationWidget() {
     return () => { window.clearTimeout(t); document.removeEventListener('keydown', onKey); };
   }, [expanded]);
 
+  const zoomProps = {
+    onZoomIn: () => map.current?.zoomIn(),
+    onZoomOut: () => map.current?.zoomOut(),
+    canZoomIn: zoom < MAX_ZOOM,
+    canZoomOut: zoom > MIN_ZOOM,
+  };
   const streetView = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${location.lat},${location.lng}`;
 
   return (
@@ -87,27 +94,27 @@ export function LocationWidget() {
         className="ep-widget ep-map"
       >
         <div className="ep-map__stage">
-        <MapView
-          label={`Map of ${location.address}`}
-          onClose={expanded ? () => setExpanded(false) : undefined}
-          controls={(
-            <MapControls>
-              <MapStreetViewButton onClick={() => window.open(streetView, '_blank', 'noopener')} />
-              <MapLayerSwitch value={view} onChange={setView} />
-              <MapZoomControls
-                onZoomIn={() => map.current?.zoomIn()}
-                onZoomOut={() => map.current?.zoomOut()}
-                canZoomIn={zoom < MAX_ZOOM}
-                canZoomOut={zoom > MIN_ZOOM}
-              />
-            </MapControls>
-          )}
-        >
-          <div ref={el} className="ep-map__canvas" />
-        </MapView>
-        {!expanded && (
-          <MapExpandButton expanded={false} expandLabel="Open full map" className="ep-map__expand" onClick={() => setExpanded(true)} />
-        )}
+          <MapView
+            label={`Map of ${location.address}`}
+            variant={expanded ? 'page' : 'widget'}
+            onClose={expanded ? () => setExpanded(false) : undefined}
+            controls={expanded ? (
+              <MapControls>
+                <MapStreetViewButton onClick={() => window.open(streetView, '_blank', 'noopener')} />
+                <MapLayerSwitch value={view} onChange={setView} />
+                <MapZoomControls {...zoomProps} />
+              </MapControls>
+            ) : (
+              // Figma map card (SAM Overview): the 56px layer switch bottom left, the Map Button and zoom bottom right.
+              <>
+                <MapLayerSwitch value={view} onChange={setView} size="lg" className="ep-map__layer" />
+                <MapExpandButton expanded={false} expandLabel="Open full map" className="ep-map__expand" onClick={() => setExpanded(true)} />
+                <MapZoomControls {...zoomProps} className="ep-map__zoom" />
+              </>
+            )}
+          >
+            <div ref={el} className="ep-map__canvas" />
+          </MapView>
         </div>
         {tilesFailed && (
           <p className="ep-map__offline">
