@@ -98,7 +98,16 @@
   pointer-events: none;
 }
 .ep-topbar__actions { display: flex; align-items: center; gap: var(--syn-space-24); }
-.ep-topbar__create .syn-icon { color: var(--syn-action-brand); }
+/* Figma "Smallest Button": white with a Cultured border; Cultured fill on hover. */
+.ep-topbar__create.syn-button--secondary {
+  gap: var(--syn-space-6);
+  padding-inline: var(--syn-space-16);
+  border-color: var(--syn-border-default);
+  background: var(--syn-surface-default);
+  font: var(--syn-type-button-text-button-secondary-m);
+}
+.ep-topbar__create.syn-button--secondary:hover:not(:disabled) { border-color: var(--syn-border-default); background: var(--syn-surface-muted); }
+.ep-topbar__create .syn-icon { width: 14px; height: 14px; color: var(--syn-action-brand); }
 .ep-topbar__bell {
   display: inline-flex;
   align-items: center;

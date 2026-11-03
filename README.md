@@ -63,5 +63,5 @@ for are named constants in `src/styles/app.css` (`--ep-*`).
   "H" as the unit of *Distance travelled*, and weekdays in *Operation Hours by hour* (Aug 10, 11, 13, 14 all "Mon").
 - *Operation Hours by hour*: Figma labels noon "12 AM" and stops at 10 PM; the build labels all 24 hours (… 12 PM … 12 AM).
 - The AS4U toggle is Mantis in Figma; Syn's switch is Dark Sienna. The page sets the switch's token to Mantis.
-- The top bar "Create" button has a Cultured border in Figma; Syn's secondary button has an Eerie Black one.
+- The top bar "Create" button follows Figma (Cultured border), overriding Syn's secondary button (Eerie Black border).
 - Map, satellite and photos are static images from Figma; the map is not interactive beyond zoom.
