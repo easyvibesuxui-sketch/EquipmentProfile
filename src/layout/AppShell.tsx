@@ -63,7 +63,7 @@ function Sidebar({ current }: { current: string }) {
       </ul>
       <ul className="ep-nav__list ep-nav__list--end">
         <li>
-          <button type="button" className="ep-nav__item ep-nav__lang" aria-label="Language: Deutsch. Click to change">DE</button>
+          <button type="button" className="ep-nav__item ep-nav__lang" aria-label="Language: Deutsch. Click to change"><span className="syn-title-text">DE</span></button>
         </li>
         <NavButton item={{ id: 'settings', label: 'Settings', hint: 'Settings', icon: settingsIcon }} current={current === 'settings'} />
       </ul>
@@ -90,7 +90,7 @@ function TopBar({ module }: { module: string }) {
           aria-expanded={profileOpen}
           onClick={() => setProfileOpen(!profileOpen)}
         >
-          M.M.
+          <span className="syn-title-text">M.M.</span>
         </button>
       </div>
     </header>

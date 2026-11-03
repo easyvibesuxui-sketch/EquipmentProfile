@@ -75,7 +75,7 @@
 .ep-nav__item:focus-visible { outline: 1px solid var(--syn-color-white-white); outline-offset: 2px; }
 .ep-nav__lang { color: var(--syn-text-muted); font: var(--syn-type-titles-title-4); }
 .ep-nav__tooltip { display: flex; flex-direction: column; gap: var(--syn-space-2); white-space: nowrap; }
-.ep-nav__tooltip strong { font: var(--syn-type-titles-title-5); color: var(--syn-surface-subtle); }
+.ep-nav__tooltip strong { position: relative; top: var(--syn-title-offset); font: var(--syn-type-titles-title-5); color: var(--syn-surface-subtle); }
 
 /* Top bar */
 .ep-topbar {
@@ -87,12 +87,12 @@
   padding: var(--syn-space-4) var(--syn-space-16) var(--syn-space-4) var(--syn-space-24);
   background: var(--syn-surface-default);
 }
-.ep-topbar__module { margin: 0; font: var(--syn-type-titles-title-3); line-height: 24px; }
+.ep-topbar__module { position: relative; top: var(--syn-title-offset); margin: 0; font: var(--syn-type-titles-title-3); line-height: 24px; }
 .ep-topbar__brand {
   position: absolute;
   left: 50%;
   margin: 0;
-  transform: translateX(-50%);
+  transform: translate(-50%, var(--syn-title-offset));
   color: var(--syn-border-default);
   font: 500 36px/1 var(--syn-font-family-title);
   pointer-events: none;

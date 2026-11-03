@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { Card, Icon, IconButton, Property, Segmented } from '@syn/design-system';
 import { ColorDot } from '../shared/ColorDot';
+import { useEmptyDemo } from '../shared/useEmptyDemo';
 import {
   checkEvents, dependence, history, identifications, specifications, type HistoryEntry,
 } from '../data/equipment';
@@ -49,19 +50,28 @@ export function IdentificationsWidget() {
 }
 
 export function DependenceWidget() {
-  const rows: Array<[string, ReactNode]> = [
-    ['Primary asset', <span className="ep-dep__strong">{dependence.primaryAsset}</span>],
+  const empty = useEmptyDemo();
+  const none = (text: string) => <span className="ep-dep__none syn-title-text">{text}</span>;
+  const rows: Array<[string, ReactNode]> = empty ? [
+    ['Primary asset', none('Not linked yet')],
+    ['Linked asset', none('Not linked yet')],
+    ['Inventory list', none('Not attached yet')],
+    ['Crew', none('Not linked yet')],
+    ['Connected Person', none('Not linked yet')],
+  ] : [
+    ['Primary asset', <span className="ep-dep__strong"><span className="syn-title-text">{dependence.primaryAsset}</span></span>],
     ['Linked asset', <span className="ep-dep__count"><span>Count</span>{dependence.linkedAssets}</span>],
     ['Inventory list', <span className="ep-dep__count"><span>Count</span>{dependence.inventoryList}</span>],
-    ['Crew', <span className="ep-dep__strong ep-dep__crew"><ColorDot color="brand" size={16} />{dependence.crew}</span>],
-    ['Connected Person', <span className="ep-dep__strong">{dependence.connectedPerson}</span>],
+    ['Crew', <span className="ep-dep__strong ep-dep__crew"><ColorDot color="brand" size={16} /><span className="syn-title-text">{dependence.crew}</span></span>],
+    ['Connected Person', <span className="ep-dep__strong"><span className="syn-title-text">{dependence.connectedPerson}</span></span>],
   ];
   return (
-    <Card title="Dependance" actions={<OpenLink label="Open dependence" />} className="ep-widget">
-      <div className="ep-dep">
+    // Empty: Figma hides the chevron, as there is nothing to open.
+    <Card title="Dependance" actions={empty ? undefined : <OpenLink label="Open dependence" />} className="ep-widget">
+      <div className={empty ? 'ep-dep is-empty' : 'ep-dep'}>
         {rows.map(([label, value]) => (
           <Property key={label} label={label} variant="tile" className="ep-dep__row">
-            <span className="ep-dep__value">{value}</span>
+            {empty ? value : <span className="ep-dep__value">{value}</span>}
           </Property>
         ))}
       </div>
@@ -98,7 +108,7 @@ export function CheckInsWidget() {
                     />
                   </span>
                 </td>
-                <td><span className="ep-moves__place"><Icon name="bmti-warehouyse" size={14} />{e.place}</span></td>
+                <td><span className="ep-moves__place"><Icon name="bmti-warehouyse" size={14} /><span className="syn-title-text">{e.place}</span></span></td>
                 <td className="ep-moves__date">{e.date}</td>
               </tr>
             ))}

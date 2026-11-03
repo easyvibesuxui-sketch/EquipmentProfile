@@ -14,6 +14,12 @@ npm run build && touch dist/.nojekyll
 npx gh-pages -d dist --dotfiles   # or commit dist/ to gh-pages by hand
 ```
 
+## Empty states
+
+Open the page with `#empty` (for example https://easyvibesuxui-sketch.github.io/EquipmentProfile/#empty) to see the
+widgets with nothing linked: the map "No tracker" view and Dependance with "Not linked yet". `src/shared/useEmptyDemo.ts`
+is the switch; replace it with real data checks once the API exists.
+
 ## Getting started
 
 ```bash

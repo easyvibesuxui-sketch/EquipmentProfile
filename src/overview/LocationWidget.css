@@ -43,3 +43,8 @@
 /* Full "Equipment Map": the whole window on Cultured with a 24px margin, as in Figma. */
 .ep-location.is-expanded { position: fixed; inset: 0; z-index: 1000; padding: var(--syn-space-24); background: var(--syn-surface-muted); }
 .ep-location.is-expanded .ep-widget.syn-card { height: 100%; padding: 0; background: transparent; box-shadow: none; }
+
+/* No tracker: a 47px white header over the Cultured body, as in Figma. */
+.ep-widget.ep-map--empty.syn-card { gap: 0; padding: 0; overflow: hidden; }
+.ep-map--empty .syn-card__header { min-height: 47px; padding: 0 var(--syn-space-16); }
+.ep-map--empty .syn-map-empty { flex: 1; }

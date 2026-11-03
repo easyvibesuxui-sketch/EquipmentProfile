@@ -55,6 +55,8 @@
   background: var(--syn-surface-default);
 }
 .ep-dep__strong { display: inline-flex; align-items: center; gap: var(--syn-space-8); font: var(--syn-type-titles-title-5); }
+.ep-dep.is-empty .ep-dep__row.syn-property--tile { border: 1px solid var(--syn-color-white-white); }
+.ep-dep__none { color: var(--syn-text-disabled); font: var(--syn-type-titles-title-5); }
 .ep-dep__count { display: inline-flex; gap: var(--syn-space-8); font: var(--syn-type-text-body-s); }
 .ep-dep__count span { color: var(--syn-text-muted); }
 
@@ -86,7 +88,7 @@
 .ep-history__item > .syn-icon { flex: none; }
 .ep-history__body { display: flex; min-width: 0; flex-direction: column; gap: var(--syn-space-6); }
 .ep-history p { margin: 0; }
-.ep-history__title { display: flex; flex-wrap: wrap; gap: var(--syn-space-6); font: var(--syn-type-titles-title-5); }
+.ep-history__title { position: relative; top: var(--syn-title-offset); display: flex; flex-wrap: wrap; gap: var(--syn-space-6); font: var(--syn-type-titles-title-5); }
 .ep-history__title .is-sienna { color: var(--syn-color-secondary-dark-sienna); }
 .ep-history__line { color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
 .ep-history__change { display: flex; flex-wrap: wrap; align-items: center; gap: var(--syn-space-8); }

@@ -157,7 +157,7 @@ export function OperationByHourWidget() {
       actions={(
         <span className="ep-week">
           <IconButton icon="back" label="Previous week" />
-          <span className="ep-week__label">{week} <span className="is-muted">{year}</span></span>
+          <span className="ep-week__label"><span className="syn-title-text">{week} <span className="is-muted">{year}</span></span></span>
           <IconButton icon="next" label="Next week" />
         </span>
       )}

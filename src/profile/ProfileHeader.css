@@ -25,6 +25,8 @@
 .ep-header__top { display: flex; align-items: flex-start; gap: var(--syn-space-12); }
 .ep-header__heading { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: var(--syn-space-12); }
 .ep-header__title {
+  position: relative;
+  top: var(--syn-title-offset);
   margin: 0;
   overflow: hidden;
   font: var(--syn-type-titles-display-2);

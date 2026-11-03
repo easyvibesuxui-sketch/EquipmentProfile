@@ -26,7 +26,7 @@ function Fact({ fact }: { fact: HeaderFact }) {
         <MaskIcon src={factIcons[fact.id]} size={14} />
         {fact.label}
       </dt>
-      <dd><ColorDot color={fact.dot} />{fact.value}</dd>
+      <dd><ColorDot color={fact.dot} /><span className="syn-title-text">{fact.value}</span></dd>
     </div>
   );
 }
@@ -67,8 +67,8 @@ export function ProfileHeader() {
                 <div className="ep-header__labels">
                   <span className="ep-header__category">
                     <Icon name="categories" size={12} />
-                    <span className="ep-header__category-label">Category:</span>
-                    {equipment.category}
+                    <span className="ep-header__category-label syn-title-text">Category:</span>
+                    <span className="syn-title-text">{equipment.category}</span>
                   </span>
                   <ul className="ep-header__tags" aria-label="Tags">
                     {equipment.tags.map((t) => (
@@ -91,7 +91,7 @@ export function ProfileHeader() {
               <dl className="ep-header__facts">
                 <div className="ep-header__fact ep-header__fact--inventory">
                   <dt>Inventory Number</dt>
-                  <dd>{equipment.inventoryNumber}</dd>
+                  <dd><span className="syn-title-text">{equipment.inventoryNumber}</span></dd>
                 </div>
                 {equipment.facts.map((f) => <Fact key={f.id} fact={f} />)}
               </dl>
@@ -119,7 +119,7 @@ export function ProfileHeader() {
             <img className="ep-header__qr" src={qrCode} alt="Tracker QR code" width={40} height={40} />
           </div>
           <dl className="ep-header__device-info">
-            <div><dt>Tracker</dt><dd className="ep-header__strong">{tracker.name}</dd></div>
+            <div><dt>Tracker</dt><dd className="ep-header__strong"><span className="syn-title-text">{tracker.name}</span></dd></div>
             <div>
               <dt>IMEI Number</dt>
               <dd className="ep-header__imei">{tracker.imei}<CopyButton value={tracker.imei} label="Copy IMEI number" /></dd>
@@ -145,7 +145,7 @@ export function ProfileHeader() {
             <img className="ep-header__qr ep-header__qr--custom" src={qrCode} alt="Tag QR code" width={40} height={40} />
           </div>
           <dl className="ep-header__device-info ep-header__device-info--tag">
-            <div><dt>Tag</dt><dd className="ep-header__strong">{tag.name}</dd></div>
+            <div><dt>Tag</dt><dd className="ep-header__strong"><span className="syn-title-text">{tag.name}</span></dd></div>
             <div><dt>Tag ID</dt><dd>{tag.id}</dd></div>
           </dl>
         </section>

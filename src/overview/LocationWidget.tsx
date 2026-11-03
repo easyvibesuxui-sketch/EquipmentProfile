@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
-  Card, MapControls, MapExpandButton, MapLayerSwitch, MapStreetViewButton, MapView, MapZoomControls, type MapLayer,
+  Card, MapControls, MapEmptyState, MapExpandButton, MapLayerSwitch, MapStreetViewButton, MapView, MapZoomControls, type MapLayer,
 } from '@syn/design-system';
 import { location } from '../data/equipment';
+import { useEmptyDemo } from '../shared/useEmptyDemo';
 import './LocationWidget.css';
 
 const LIVE_SITE = 'https://easyvibesuxui-sketch.github.io/EquipmentProfile/';
@@ -30,6 +31,21 @@ const layers: Record<MapLayer, () => L.Layer> = {
  * switch, zoom) and the Map Button, which opens the full "Equipment Map" with Close map.
  */
 export function LocationWidget() {
+  return useEmptyDemo() ? <NoTrackerLocation /> : <LiveLocation />;
+}
+
+/** Figma "No tracker" map card: "Current Location" over Syn's MapEmptyState. */
+function NoTrackerLocation() {
+  return (
+    <div className="ep-location">
+      <Card title="Current Location" className="ep-widget ep-map ep-map--empty">
+        <MapEmptyState />
+      </Card>
+    </div>
+  );
+}
+
+function LiveLocation() {
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
   const layer = useRef<L.Layer | null>(null);
