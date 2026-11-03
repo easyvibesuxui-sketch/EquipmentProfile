@@ -2,33 +2,12 @@
 .ep-location .syn-card__title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ep-location__address { color: var(--syn-text-primary); }
 .ep-map.syn-card { position: relative; }
-.ep-map__frame {
-  position: relative;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-  border: 2px solid var(--syn-border-default);
-  border-radius: var(--syn-radius-element);
-  background: var(--syn-surface-muted);
-}
-.ep-map__canvas { position: absolute; inset: 0; z-index: 0; background: var(--syn-surface-muted); font: var(--syn-type-text-caption-2); }
-.ep-map__canvas .leaflet-control-attribution { font: var(--syn-type-text-caption-2); background: rgb(255 255 255 / 0.8); }
-.ep-map__offline {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 500;
-  max-width: 280px;
-  margin: 0;
-  padding: var(--syn-space-12) var(--syn-space-16);
-  border-radius: var(--syn-radius-element);
-  background: var(--syn-surface-default);
-  box-shadow: var(--syn-shadow-default);
-  font: var(--syn-type-text-body-xs-2);
-  text-align: center;
-  transform: translate(-50%, calc(-50% + 40px));
-}
-.ep-map__offline a { color: var(--syn-text-brand); }
+.ep-map .syn-map { flex: 1; min-height: 0; height: auto; }
+.ep-map__canvas { font: var(--syn-type-text-caption-2); }
+.ep-map__canvas .leaflet-control-attribution { margin-right: 76px; font: var(--syn-type-text-caption-2); background: rgb(255 255 255 / 0.8); }
+/* Syn Map Button at the top right of the map, 16px in from the frame (where Close map sits on the full map). */
+.ep-map__stage { position: relative; display: flex; flex: 1; min-height: 0; }
+.ep-map__expand.syn-map-control { position: absolute; top: var(--syn-space-16); right: var(--syn-space-16); z-index: 2; }
 
 /* Equipment pin: Candy Apple dot, white gap, Eerie Black ring. */
 .ep-pin { background: none; border: 0; }
@@ -42,46 +21,23 @@
   box-shadow: inset 0 0 0 2px var(--syn-surface-default);
 }
 
-.ep-map .syn-icon-button--outline { position: relative; z-index: 500; color: var(--syn-text-primary); }
-.ep-map__fullscreen.syn-icon-button { position: absolute; top: var(--syn-space-12); right: var(--syn-space-12); }
-.ep-map__controls { position: absolute; right: var(--syn-space-12); bottom: var(--syn-space-24); z-index: 500; display: flex; align-items: flex-end; gap: var(--syn-space-16); }
-.ep-map__zoom { display: flex; flex-direction: column; gap: var(--syn-space-8); }
-.ep-map__view {
+.ep-map__offline {
   position: absolute;
-  bottom: var(--syn-space-12);
-  left: var(--syn-space-8);
-  z-index: 500;
-  width: var(--syn-size-control-lg);
-  height: var(--syn-size-control-lg);
-  padding: var(--syn-space-2);
-  overflow: hidden;
-  border: 1px solid var(--syn-border-strong);
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  max-width: 280px;
+  margin: 0;
+  padding: var(--syn-space-12) var(--syn-space-16);
   border-radius: var(--syn-radius-element);
   background: var(--syn-surface-default);
-  cursor: pointer;
-}
-.ep-map__view img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: calc(var(--syn-radius-element) - var(--syn-space-2));
-  object-fit: cover;
-}
-/* The satellite thumbnail has Figma's "Satellite" text baked in at the bottom: show its top part only. */
-.ep-map__view img.is-satellite { height: 150%; object-position: top; }
-.ep-map__view span {
-  position: absolute;
-  inset: auto 2px 2px;
-  padding: var(--syn-space-10) 0 var(--syn-space-4);
-  border-radius: 0 0 calc(var(--syn-radius-element) - var(--syn-space-2)) calc(var(--syn-radius-element) - var(--syn-space-2));
-  background: linear-gradient(to bottom, transparent, rgb(21 21 21 / 0.73));
-  color: var(--syn-color-white-white);
-  font: var(--syn-type-text-caption-1);
+  box-shadow: var(--syn-shadow-default);
+  font: var(--syn-type-text-body-xs-2);
   text-align: center;
+  transform: translate(-50%, calc(-50% + 40px));
 }
-.ep-map__view:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.ep-map__offline a { color: var(--syn-text-brand); }
 
-/* Full screen: the browser's, or a fixed overlay where the Fullscreen API is refused. */
-.ep-location:fullscreen { padding: var(--syn-space-16); background: var(--syn-surface-muted); }
-.ep-location.is-fullscreen:not(:fullscreen) { position: fixed; inset: 0; z-index: 1000; padding: var(--syn-space-16); background: var(--syn-surface-muted); }
-.ep-location.is-fullscreen .ep-widget.syn-card { height: 100%; }
+/* Full "Equipment Map": the whole window on Cultured with a 24px margin, as in Figma. */
+.ep-location.is-expanded { position: fixed; inset: 0; z-index: 1000; padding: var(--syn-space-24); background: var(--syn-surface-muted); }
+.ep-location.is-expanded .ep-widget.syn-card { height: 100%; padding: 0; background: transparent; box-shadow: none; }

@@ -48,7 +48,7 @@ for are named constants in `src/styles/app.css` (`--ep-*`).
 | `src/layout/AppShell.tsx` | Sidebar (Figma *Side bar*) and top bar (*TopNavigation*) |
 | `src/profile/ProfileHeader.tsx` | Equipment card, Tracker card, Tag card |
 | `src/profile/ProfileTabs.tsx` | The profile tabs, on Syn `Segmented` |
-| `src/overview/LocationWidget.tsx` | Current location map (Leaflet) |
+| `src/overview/LocationWidget.tsx` | Current location map: Leaflet inside Syn `MapView`; Map Button opens the full map |
 | `src/overview/widgets.tsx` | Specifications, Location, Identifications, Dependence, Check ins / Charging, History |
 | `src/overview/charts.tsx` | Operating Hours, Operation Hours by hour, Distance travelled |
 | `src/data/equipment.ts` | Mock data taken from the design, to be replaced by the API |
@@ -56,7 +56,9 @@ for are named constants in `src/styles/app.css` (`--ep-*`).
 
 ### Syn components used
 
-`Grid`/`GridItem`, `Card`, `Property`, `Segmented`, `Tag`, `Switch`, `Button`, `IconButton`, `Tooltip`, `Icon`.
+`Grid`/`GridItem`, `Card`, `Property`, `Segmented`, `Tag`, `Switch`, `Button`, `IconButton`, `Tooltip`, `Icon`, `Drawer`, `Section`,
+`TextField`, `Select`, and the map set (`MapView`, `MapControls`, `MapZoomControls`, `MapLayerSwitch`, `MapExpandButton`,
+`MapStreetViewButton`).
 
 ## Open points from the design
 
