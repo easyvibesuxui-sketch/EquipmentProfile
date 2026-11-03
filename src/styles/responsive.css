@@ -1,0 +1,40 @@
+/* The Figma frame is 1920 wide. Below that the 12-column spans regroup; GridItem sets --span inline,
+   so these overrides need !important. */
+@media (max-width: 1599px) {
+  .ep-header__col-main { --span: 12 !important; }
+  .ep-header__col-device { --span: 6 !important; }
+  .ep-col--half { --span: 6 !important; }
+  .ep-col--wide { --span: 12 !important; order: 1; }
+}
+
+@media (max-width: 639px) {
+  .ep-header__col-main, .ep-header__col-device, .ep-col--half, .ep-col--wide { --span: 12 !important; }
+  .ep-shell__main { padding: var(--syn-space-16); }
+  .ep-nav { width: 48px; padding: 0 var(--syn-space-2) var(--syn-space-24); }
+  .ep-nav__item { width: 44px; }
+  .ep-topbar { padding: var(--syn-space-4) var(--syn-space-16); }
+  .ep-topbar__brand { display: none; }
+  .ep-topbar__actions { gap: var(--syn-space-12); }
+  .ep-topbar__create .syn-button__label, .ep-topbar__create > span:not(.syn-icon) { display: none; }
+
+  .ep-header__main { flex-direction: column; height: auto; }
+  .ep-header__photo { align-self: flex-start; width: 96px; height: 96px; }
+  .ep-header__title { white-space: normal; font: var(--syn-type-titles-title-2); }
+  .ep-header__tags { flex-wrap: wrap; padding-left: 0; border-left: 0; }
+  .ep-header__bottom { flex-direction: column; }
+  .ep-header__facts { gap: var(--syn-space-12); }
+  .ep-header__as4u { align-items: flex-start; }
+  .ep-header__device { height: auto; min-height: 157px; }
+  .ep-header__device-media { height: 133px; }
+
+  .ep-widget.syn-card { height: auto; min-height: 360px; }
+  .ep-map.syn-card { height: 360px; }
+  .ep-chart .syn-card__header { flex-wrap: wrap; }
+  .ep-chart .syn-card__actions { flex-wrap: wrap; gap: var(--syn-space-12); }
+  .ep-plot { overflow-x: auto; }
+  .ep-plot__area, .ep-plot__x { min-width: 640px; }
+  .ep-heat .syn-card__header { flex-wrap: wrap; }
+  .ep-chart__footer { flex-wrap: wrap; gap: var(--syn-space-12); }
+  .ep-history__title, .ep-history__line { white-space: normal; }
+  .ep-moves__date { white-space: normal; }
+}

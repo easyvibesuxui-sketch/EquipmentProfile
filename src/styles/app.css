@@ -1,0 +1,14 @@
+/* App-level constants. Everything else comes from the Syn tokens (--syn-*). */
+:root {
+  --ep-page-bg: var(--syn-surface-muted);
+  --ep-sidebar-width: 64px;
+  /* Figma draws the sidebar buttons with 6px corners; Syn has no 6px radius token. */
+  --ep-radius-nav: 6px;
+  --ep-nav-ink: var(--syn-text-muted);
+  /* Status dot colours from the Figma header that have no Syn colour. */
+  --ep-dot-violet: #8a38f5;
+  --ep-dot-rose: #ff0048;
+  --ep-dot-orange: #ff6a00;
+}
+
+html, body { margin: 0; background: var(--ep-page-bg); }

@@ -1,0 +1,7 @@
+.ep-profile-tabs { flex-wrap: wrap; gap: var(--syn-space-8); }
+.ep-profile-tabs .syn-segmented__option {
+  min-width: 0;
+  padding: 0 var(--syn-space-24);
+  font: var(--syn-type-text-caption-1);
+}
+.ep-profile-tabs .syn-segmented__option[aria-selected='true'] { color: var(--syn-surface-muted); }

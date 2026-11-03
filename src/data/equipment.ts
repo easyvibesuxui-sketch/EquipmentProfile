@@ -1,0 +1,178 @@
+/**
+ * Mock data for the Overview tab, taken from the Figma design (SAM — Equipment Profile Home).
+ * Replace with API data once the backend contract exists.
+ */
+
+export type DotColor = 'success' | 'violet' | 'rose' | 'orange' | 'brand';
+
+export interface HeaderFact {
+  id: 'status' | 'assigning' | 'garage' | 'operator';
+  label: string;
+  value: string;
+  dot: DotColor;
+}
+
+export const equipment = {
+  title: '2013 Caterpillar ZX350LC-5N',
+  category: 'Heavy Dozer',
+  tags: ['Dump Truck', 'Excavator', 'Bulldozer'],
+  moreTags: 3,
+  inventoryNumber: '45DB48484884',
+  facts: [
+    { id: 'status', label: 'Status', value: 'Active', dot: 'success' },
+    { id: 'assigning', label: 'Assigning', value: 'Bremen Roadworks', dot: 'violet' },
+    { id: 'garage', label: 'Assigning', value: 'Bremen Lagerplatz', dot: 'rose' },
+    { id: 'operator', label: 'Operator', value: 'Max Musterman', dot: 'orange' },
+  ] satisfies HeaderFact[],
+  as4uLabel: 'AS4U-Gereteversetsung',
+  as4uEnabled: true,
+  tracker: { name: 'Link 3', imei: '56456489454', lastUpdate: '14/05/2025 07:02:59', ago: '8 h ago' },
+  tag: { name: 'Tag-L', id: '849844214' },
+};
+
+export const profileTabs = [
+  'Overview', 'Specifications', 'Documents', '?Dependence?', 'Images', 'Utilization', 'Movement', 'Fuel',
+  'Telemetry', 'Fault Codes', 'Maintenance', 'History', 'Tacho',
+];
+
+export const specifications = {
+  rows: [
+    ['Displacement', '4'],
+    ['Lifting Capacity', '3000'],
+    ['Max Lifting Height', '3000'],
+    ['Dimensions', '2.41m x 2.44m x 5.3m'],
+    ['Max Travel Speed', '32 Km/h'],
+    ['Power', '7300 hp'],
+  ] as Array<[string, string]>,
+  more: 3,
+};
+
+/** `null` renders as "--" in the muted colour, as in Figma. */
+export const identifications: Array<[string, string | null]> = [
+  ['Inventory number', '54564DB8454'],
+  ['UEID/TOID', null],
+  ['Serial number', null],
+  ['Numberplate', null],
+  ['VIN', 'JH4DB1542MS007683'],
+];
+
+export const dependence = {
+  primaryAsset: '2020 Volvo EC950F',
+  linkedAssets: 8,
+  inventoryList: 8,
+  crew: 'Road construction',
+  connectedPerson: 'Max Mustermann',
+};
+
+export interface CheckEvent {
+  kind: 'in' | 'out';
+  place: string;
+  date: string;
+}
+
+export const checkEvents: CheckEvent[][] = Array.from({ length: 4 }, () => [
+  { kind: 'in', place: 'Bremen Warehouse', date: '14.07.2022 14:09' },
+  { kind: 'out', place: 'Bremen Warehouse', date: '14.07.2022 14:09' },
+]);
+
+export interface HistoryChange {
+  label: string;
+  from: string;
+  to: string;
+  /** The new value is highlighted in Candy Apple unless it is a "None". */
+  highlight?: boolean;
+}
+
+export interface HistoryEntry {
+  action: 'Created' | 'Edited';
+  subject: string;
+  /** Dark Sienna subject, as Figma draws "Clearance request". */
+  subjectTone?: 'sienna';
+  by: string;
+  notes?: Array<{ label: string; value: string; detail?: string }>;
+  booking?: { from: [string, string]; to: [string, string] };
+  changes?: HistoryChange[];
+  date: string;
+  time: string;
+}
+
+export const history: HistoryEntry[] = [
+  { action: 'Created', subject: 'Project Request', by: 'Max Mustermann', date: '10.01.2027', time: '16:32' },
+  {
+    action: 'Created', subject: 'Clearance request', subjectTone: 'sienna', by: 'Max Mustermann',
+    notes: [{ label: 'Destination:', value: 'Project KST Saxony', detail: '(Bremen Roadworks)' }],
+    booking: { from: ['10.01.2027', '16:32'], to: ['10.01.2027', '16:32'] },
+    date: '10.01.2027', time: '16:32',
+  },
+  {
+    action: 'Edited', subject: 'Request', by: 'Max Mustermann',
+    changes: [
+      { label: 'Start date', from: '10.01.2027 16:32', to: '10.01.2027 16:32', highlight: true },
+      { label: 'Location', from: 'Bremen, Am wall 146', to: 'Bremen, Am wall 146', highlight: true },
+      { label: 'Tags', from: 'Bremen, Am wall 146', to: 'None' },
+    ],
+    date: '10.01.2027', time: '16:32',
+  },
+  {
+    action: 'Edited', subject: 'Request', by: 'Max Mustermann',
+    changes: [{ label: 'Category', from: 'Scaffolding', to: 'Rollerguste', highlight: true }],
+    date: '10.01.2027', time: '16:32',
+  },
+  {
+    action: 'Edited', subject: 'Request', by: 'Max Mustermann',
+    changes: [{ label: 'Amount', from: '3', to: '5', highlight: true }],
+    date: '10.01.2027', time: '16:32',
+  },
+  {
+    action: 'Edited', subject: 'Request', by: 'Max Mustermann',
+    changes: [{ label: 'Weight min:', from: '10 kg', to: 'None', highlight: true }],
+    date: '10.01.2027', time: '16:32',
+  },
+];
+
+/** Operating hours: 10 days, six readings a day, in hours (Figma bar heights at 10px per hour). */
+export const operatingHours = {
+  days: ['19 Aug. Mon', '20 Aug. Tue', '21 Aug. Wed', '22 Aug. Thu', '23 Aug. Fri', '24 Aug. Sat', '25 Aug. Sun', '26 Aug. Mon', '27 Aug. Tue', '28 Aug. Wed'],
+  weekend: [5, 6],
+  values: [
+    6.7, 6.7, 0, 0, 9.1, 0,
+    3.2, 7.4, 6.7, 7.0, 4.4, 6.7,
+    12.0, 4.2, 6.7, 14.1, 3.8, 6.7,
+    5.1, 3.7, 7.0, 6.7, 12.2, 6.7,
+    12.2, 5.0, 6.7, 6.2, 5.8, 6.7,
+    2.6, 5.8, 6.0, 6.7, 12.2, 6.7,
+    12.2, 5.6, 7.4, 6.7, 11.7, 4.2,
+    6.7, 14.1, 3.8, 4.2, 6.7, 14.1,
+    3.8, 4.2, 6.7, 14.1, 3.8, 4.2,
+    6.7, 14.1, 3.8, 0, 0, 0,
+  ],
+};
+
+/** Distance travelled, monthly view: one bar a day from 19 Aug; long trips drawn in Dark Sienna. */
+export const distance = {
+  labels: ['19 Aug', '23 Aug', '27 Aug', '1 Sep', '5 Sep', '9 Sep', '13 Sep', '17 Sep', '21 Sep', '25 Sep', '29 Sep', '3 Oct', '8 Oct', '12 Oct'],
+  values: [
+    6.7, 6.7, 0, 9.1, 0, 3.2, 7.4, 6.7, 7.0, 4.4, 6.7, 12.0, 4.2, 6.7, 14.1, 3.8, 6.7, 5.1, 3.7, 7.0, 6.7,
+    12.2, 6.7, 12.2, 5.0, 6.7, 6.2, 5.8, 6.7, 2.6, 5.8, 6.0, 6.7, 12.2, 6.7, 12.2, 5.6, 7.4, 6.7, 11.7, 4.2,
+    6.7, 14.1, 3.8, 4.2, 6.7, 14.1, 3.8, 4.2, 6.7, 14.1, 3.8, 4.2, 6.7, 14.1, 3.8,
+  ],
+  /** Readings above this are long trips. */
+  longTrip: 11.5,
+};
+
+/** Operation by hour, week KW32: per day, the hours (1–24) the machine ran. */
+export interface HourRun { from: number; to: number; joined?: boolean; planned?: boolean }
+
+export const operationByHour = {
+  week: 'KW32',
+  year: '2026',
+  days: [
+    { month: 'Aug', day: '08', weekday: 'Mon', runs: [{ from: 5, to: 7, planned: true }] },
+    { month: 'Aug', day: '09', weekday: 'Tue', runs: [{ from: 6, to: 12, joined: true }, { from: 13, to: 15 }, { from: 19, to: 19 }] },
+    { month: 'Aug', day: '10', weekday: 'Mon', runs: [{ from: 8, to: 10 }] },
+    { month: 'Aug', day: '11', weekday: 'Mon', runs: [{ from: 13, to: 18 }] },
+    { month: 'Aug', day: '12', weekday: 'Tue', runs: [{ from: 9, to: 12 }] },
+    { month: 'Aug', day: '13', weekday: 'Mon', runs: [], upcoming: true },
+    { month: 'Aug', day: '14', weekday: 'Mon', runs: [], upcoming: true },
+  ] as Array<{ month: string; day: string; weekday: string; runs: HourRun[]; upcoming?: boolean }>,
+};

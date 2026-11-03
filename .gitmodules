@@ -1,0 +1,3 @@
+[submodule "vendor/syn-design-system"]
+	path = vendor/syn-design-system
+	url = https://github.com/easyvibesuxui-sketch/Syn-Design-System.git

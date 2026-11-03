@@ -1,0 +1,132 @@
+/* App shell: Figma "Side bar" (64px, Eerie Black) over the left edge and "TopNavigation" (56px, white). */
+.ep-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--ep-page-bg);
+}
+.ep-shell__body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.ep-shell__main {
+  flex: 1;
+  min-width: 0;
+  padding: var(--syn-space-16) var(--syn-space-16) var(--syn-space-40) var(--syn-space-24);
+}
+
+.ep-mask-icon {
+  display: inline-block;
+  flex: none;
+  background: currentColor;
+  -webkit-mask: var(--mask) center / contain no-repeat;
+  mask: var(--mask) center / contain no-repeat;
+}
+
+/* Sidebar */
+.ep-nav {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  width: var(--ep-sidebar-width);
+  height: 100vh;
+  padding: 0 var(--syn-space-10) var(--syn-space-40);
+  background: var(--syn-surface-inverse);
+  color: var(--ep-nav-ink);
+}
+.ep-nav__opener {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--syn-space-64);
+  margin: 0 calc(var(--syn-space-10) * -1);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.ep-nav__list { display: flex; flex-direction: column; gap: var(--syn-space-12); margin: 0; padding: 0; list-style: none; }
+.ep-nav__opener + .ep-nav__list { margin-top: var(--syn-space-40); }
+.ep-nav__separator + .ep-nav__list { gap: var(--syn-space-16); margin-top: var(--syn-space-32); }
+.ep-nav__list--end { gap: var(--syn-space-16); margin-top: auto; }
+.ep-nav__separator {
+  width: 100%;
+  margin: var(--syn-space-64) 0 0;
+  border: 0;
+  border-top: 1px dashed var(--ep-nav-ink);
+  opacity: 0.5;
+}
+.ep-nav__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ep-radius-nav);
+  background: transparent;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--syn-duration-fast);
+}
+.ep-nav__item:hover { background: var(--syn-color-secondary-jet); }
+.ep-nav__item[aria-current='page'] { background: var(--syn-action-brand); color: var(--syn-color-white-white); }
+.ep-nav__item:focus-visible { outline: 1px solid var(--syn-color-white-white); outline-offset: 2px; }
+.ep-nav__lang { color: var(--syn-text-muted); font: var(--syn-type-titles-title-4); }
+.ep-nav__tooltip { display: flex; flex-direction: column; gap: var(--syn-space-2); white-space: nowrap; }
+.ep-nav__tooltip strong { font: var(--syn-type-titles-title-5); color: var(--syn-surface-subtle); }
+
+/* Top bar */
+.ep-topbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--syn-size-control-lg);
+  padding: var(--syn-space-4) var(--syn-space-16) var(--syn-space-4) var(--syn-space-24);
+  background: var(--syn-surface-default);
+}
+.ep-topbar__module { margin: 0; font: var(--syn-type-titles-title-3); line-height: 24px; }
+.ep-topbar__brand {
+  position: absolute;
+  left: 50%;
+  margin: 0;
+  transform: translateX(-50%);
+  color: var(--syn-border-default);
+  font: 500 36px/1 var(--syn-font-family-title);
+  pointer-events: none;
+}
+.ep-topbar__actions { display: flex; align-items: center; gap: var(--syn-space-24); }
+.ep-topbar__create .syn-icon { color: var(--syn-action-brand); }
+.ep-topbar__bell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--syn-size-control-xs);
+  height: var(--syn-size-control-xs);
+  padding: 0;
+  border: 0;
+  border-radius: var(--syn-radius-xs);
+  background: var(--syn-surface-default);
+  color: var(--syn-text-muted);
+  cursor: pointer;
+}
+.ep-topbar__bell:hover { color: var(--syn-text-primary); }
+.ep-topbar__profile {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: var(--syn-radius-full);
+  background: var(--syn-surface-muted);
+  color: var(--syn-text-primary);
+  font: var(--syn-type-titles-title-6);
+  cursor: pointer;
+}
+.ep-topbar__profile:hover,
+.ep-topbar__profile[aria-expanded='true'] { border-color: var(--syn-border-muted); }
+.ep-topbar__bell:focus-visible,
+.ep-topbar__profile:focus-visible,
+.ep-nav__opener:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.ep-nav__opener:focus-visible { outline-color: var(--syn-color-white-white); }
