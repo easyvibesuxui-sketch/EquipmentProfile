@@ -4,8 +4,6 @@ import { ColorDot } from '../shared/ColorDot';
 import {
   checkEvents, dependence, history, identifications, specifications, type HistoryEntry,
 } from '../data/equipment';
-import mapImage from '../assets/map-bremen.png';
-import satelliteImage from '../assets/map-satellite.png';
 
 /** Opens the matching profile tab; Figma draws a 16px chevron at the widget's top right. */
 function OpenLink({ label }: { label: string }) {
@@ -44,40 +42,6 @@ export function IdentificationsWidget() {
         <div className="ep-info__stack">
           <span>Specific info</span>
           <span>Not indicated</span>
-        </div>
-      </div>
-    </Card>
-  );
-}
-
-/** Location: the map with the satellite switch, the layers button and zoom. */
-export function LocationWidget() {
-  const [view, setView] = useState<'map' | 'satellite'>('map');
-  const [zoom, setZoom] = useState(1);
-  return (
-    <Card className="ep-widget ep-map">
-      <div className="ep-map__frame">
-        <img
-          className="ep-map__image"
-          src={mapImage}
-          alt="Equipment location: Bremen"
-          style={{ transform: `scale(${zoom})`, filter: view === 'satellite' ? 'saturate(0.4) contrast(1.1)' : undefined }}
-        />
-      </div>
-      <button
-        type="button"
-        className="ep-map__view"
-        aria-pressed={view === 'satellite'}
-        aria-label="Satellite view"
-        onClick={() => setView(view === 'map' ? 'satellite' : 'map')}
-      >
-        <img src={satelliteImage} alt="" width={56} height={56} />
-      </button>
-      <div className="ep-map__controls">
-        <IconButton icon="expand" label="Full screen map" variant="outline" size="sm" />
-        <div className="ep-map__zoom">
-          <IconButton icon="plus-in-circle" label="Zoom in" variant="outline" size="sm" onClick={() => setZoom((z) => Math.min(2, z + 0.25))} />
-          <IconButton icon="minus-in-circle" label="Zoom out" variant="outline" size="sm" onClick={() => setZoom((z) => Math.max(1, z - 0.25))} />
         </div>
       </div>
     </Card>
@@ -126,11 +90,13 @@ export function CheckInsWidget() {
             {pair.map((e, j) => (
               <tr key={j}>
                 <td>
-                  <Icon
-                    name={view === 'charging' ? (e.kind === 'in' ? 'charged' : 'notcharging') : e.kind === 'in' ? 'check-in' : 'check-out'}
-                    size={24}
-                    title={view === 'charging' ? (e.kind === 'in' ? 'Charging started' : 'Charging ended') : e.kind === 'in' ? 'Checked in' : 'Checked out'}
-                  />
+                  <span className={e.kind === 'in' ? 'ep-moves__action is-in' : 'ep-moves__action'}>
+                    <Icon
+                      name={view === 'charging' ? (e.kind === 'in' ? 'charged' : 'notcharging') : e.kind === 'in' ? 'check-in' : 'check-out'}
+                      size={e.kind === 'in' ? 18 : 24}
+                      title={view === 'charging' ? (e.kind === 'in' ? 'Charging started' : 'Charging ended') : e.kind === 'in' ? 'Checked in' : 'Checked out'}
+                    />
+                  </span>
                 </td>
                 <td><span className="ep-moves__place"><Icon name="bmti-warehouyse" size={14} />{e.place}</span></td>
                 <td className="ep-moves__date">{e.date}</td>

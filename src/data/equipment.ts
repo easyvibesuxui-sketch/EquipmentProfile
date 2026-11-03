@@ -176,3 +176,11 @@ export const operationByHour = {
     { month: 'Aug', day: '14', weekday: 'Mon', runs: [], upcoming: true },
   ] as Array<{ month: string; day: string; weekday: string; runs: HourRun[]; upcoming?: boolean }>,
 };
+
+/** Last reported position of the tracker. */
+export const location = {
+  address: 'Steinhöft 11, 20459 Hamburg, Germany',
+  lat: 53.5458,
+  lng: 9.9813,
+  zoom: 14,
+};

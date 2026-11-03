@@ -1,7 +1,8 @@
 import { Grid, GridItem } from '@syn/design-system';
 import {
-  CheckInsWidget, DependenceWidget, HistoryWidget, IdentificationsWidget, LocationWidget, SpecificationsWidget,
+  CheckInsWidget, DependenceWidget, HistoryWidget, IdentificationsWidget, SpecificationsWidget,
 } from './widgets';
+import { LocationWidget } from './LocationWidget';
 import { DistanceWidget, OperatingHoursWidget, OperationByHourWidget } from './charts';
 import './Overview.css';
 

@@ -41,35 +41,6 @@
   font: var(--syn-type-text-body-s);
 }
 
-/* Location */
-.ep-map.syn-card { position: relative; }
-.ep-map__frame {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-  border: 2px solid var(--syn-border-default);
-  border-radius: var(--syn-radius-element);
-}
-.ep-map__image { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform var(--syn-duration-base); }
-.ep-map__view {
-  position: absolute;
-  bottom: var(--syn-space-24);
-  left: var(--syn-space-20);
-  width: var(--syn-size-control-lg);
-  height: var(--syn-size-control-lg);
-  padding: var(--syn-space-2);
-  overflow: hidden;
-  border: 1px solid var(--syn-border-strong);
-  border-radius: var(--syn-radius-element);
-  cursor: pointer;
-}
-.ep-map__view img { display: block; width: 100%; height: 100%; border-radius: calc(var(--syn-radius-element) - var(--syn-space-2)); object-fit: cover; }
-.ep-map__view[aria-pressed='true'] { outline: 2px solid var(--syn-action-brand); outline-offset: -2px; }
-.ep-map__view:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
-.ep-map__controls { position: absolute; right: var(--syn-space-20); bottom: var(--syn-space-24); display: flex; align-items: flex-end; gap: var(--syn-space-16); }
-.ep-map__zoom { display: flex; flex-direction: column; gap: var(--syn-space-8); }
-.ep-map .syn-icon-button--outline { color: var(--syn-text-primary); }
-
 /* Dependence */
 .ep-dep { display: flex; flex: 1; flex-direction: column; justify-content: space-between; min-height: 0; }
 .ep-dep__row.syn-property--tile { height: 64px; padding: var(--syn-space-6) var(--syn-space-8); background: var(--syn-surface-muted); }
@@ -99,7 +70,10 @@
 .ep-moves th:first-child, .ep-moves td:first-child { width: 72px; }
 .ep-moves th:last-child, .ep-moves td:last-child { text-align: right; }
 .ep-moves td { padding: var(--syn-space-4) 0; vertical-align: middle; }
-.ep-moves td:first-child .syn-icon { display: block; }
+.ep-moves__action { display: inline-flex; align-items: center; justify-content: center; width: var(--syn-space-24); height: var(--syn-space-24); vertical-align: middle; }
+.ep-moves__action .syn-icon { display: block; }
+/* Figma draws the "in" action (check in, charging started) in a 24px circle with an Amber ring. */
+.ep-moves__action.is-in { box-sizing: border-box; border: 1px solid var(--syn-action-accent); border-radius: var(--syn-radius-full); }
 .ep-moves tbody tr:first-child td { padding-top: var(--syn-space-12); }
 .ep-moves tbody tr:last-child td { padding-bottom: var(--syn-space-12); border-bottom: 1px solid var(--syn-border-default); }
 .ep-moves__place { display: inline-flex; align-items: center; gap: var(--syn-space-16); font: var(--syn-type-titles-title-5); }
