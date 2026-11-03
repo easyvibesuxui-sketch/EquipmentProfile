@@ -21,6 +21,12 @@ Open the page with `#empty` (for example https://easyvibesuxui-sketch.github.io/
 widgets with nothing linked: the map "No tracker" view and Dependance with "Not linked yet". `src/shared/useEmptyDemo.ts`
 is the switch; replace it with real data checks once the API exists.
 
+## Tracker card
+
+A tracker with a camera (`tracker.camera`, the syniotec DASHCAM in the mock data) gets the Figma player card: the last
+frame, Play (opens the Dashcam Player on Telemetry, full screen) and the live dot. Open the page with `#no-camera` to see
+the plain tracker card.
+
 ## Getting started
 
 ```bash

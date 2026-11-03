@@ -3,6 +3,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Card, Grid, GridItem, Icon, IconButton } from '@syn/design-system';
 import { ColorDot } from '../shared/ColorDot';
+import { consumeDashcamPlay } from '../shared/dashcamBus';
 import { Gauge } from './Gauge';
 import { SensorTile } from './SensorTile';
 import {
@@ -143,8 +144,10 @@ function DashcamDeviceWidget() {
 }
 
 function DashcamPlayerWidget() {
-  const [playing, setPlaying] = useState(false);
-  const [expanded, setExpanded] = useState(false);
+  // Opened from the header's camera Play: start full screen and playing.
+  const [autoplay] = useState(consumeDashcamPlay);
+  const [playing, setPlaying] = useState(autoplay);
+  const [expanded, setExpanded] = useState(autoplay);
   useEffect(() => {
     if (!expanded) return;
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setExpanded(false); };

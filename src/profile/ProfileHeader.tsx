@@ -4,6 +4,8 @@ import { MaskIcon } from '../layout/AppShell';
 import { ColorDot } from '../shared/ColorDot';
 import { ActionMenu } from '../shared/ActionMenu';
 import { TrackerDrawer } from './TrackerDrawer';
+import { requestDashcamPlay } from '../shared/dashcamBus';
+import cabFrame from '../assets/telemetry/dashcam-cab.jpg';
 import { equipment, type HeaderFact } from '../data/equipment';
 import photo from '../assets/equipment-photo.png';
 import trackerPhoto from '../assets/tracker-photo.png';
@@ -54,7 +56,8 @@ function CopyButton({ value, label }: { value: string; label: string }) {
 export function ProfileHeader() {
   const [as4u, setAs4u] = useState(equipment.as4uEnabled);
   const [trackerOpen, setTrackerOpen] = useState(false);
-  const { tracker, tag } = equipment;
+  const { tag } = equipment;
+  const tracker = typeof window !== 'undefined' && window.location.hash === '#no-camera' ? equipment.plainTracker : equipment.tracker;
   return (
     <Grid gap={24} className="ep-header">
       <GridItem span={8} className="ep-header__col-main">
@@ -114,10 +117,23 @@ export function ProfileHeader() {
       <GridItem span={2} className="ep-header__col-device">
         <section className="ep-header__device ep-header__device--link" aria-label="Tracker">
           <button type="button" className="ep-header__device-open" aria-label="Open tracking information" onClick={() => setTrackerOpen(true)} />
-          <div className="ep-header__device-media">
-            <img src={trackerPhoto} alt="Tracker device" width={96} height={133} />
-            <img className="ep-header__qr" src={qrCode} alt="Tracker QR code" width={40} height={40} />
-          </div>
+          {tracker.camera ? (
+            // Figma camera tracker: the last frame under a 45% shade, Play in the middle, the live dot and a 32px QR.
+            <div className="ep-header__device-media ep-header__device-media--camera">
+              <img src={cabFrame} alt="Last dashcam frame" />
+              <span className="ep-header__shade" aria-hidden />
+              {tracker.online && <span className="ep-header__live" aria-hidden />}
+              <button type="button" className="ep-header__play" aria-label="Play dashcam" onClick={requestDashcamPlay}>
+                <Icon name="play" size={20} />
+              </button>
+              <img className="ep-header__qr ep-header__qr--camera" src={qrCode} alt="Tracker QR code" width={32} height={32} />
+            </div>
+          ) : (
+            <div className="ep-header__device-media">
+              <img src={trackerPhoto} alt="Tracker device" width={96} height={133} />
+              <img className="ep-header__qr" src={qrCode} alt="Tracker QR code" width={40} height={40} />
+            </div>
+          )}
           <dl className="ep-header__device-info">
             <div><dt>Tracker</dt><dd className="ep-header__strong"><span className="syn-title-text">{tracker.name}</span></dd></div>
             <div>
@@ -127,7 +143,7 @@ export function ProfileHeader() {
             <div>
               <dt>Last Update</dt>
               <dd className="ep-header__update">
-                <ColorDot color="success" />
+                {tracker.camera ? <ColorDot color="amber" size={8} /> : <ColorDot color="success" />}
                 <span>{tracker.lastUpdate}</span>
                 <span className="ep-header__muted">{tracker.ago}</span>
               </dd>

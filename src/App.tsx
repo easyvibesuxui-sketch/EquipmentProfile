@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { DASHCAM_PLAY_EVENT } from './shared/dashcamBus';
 import { AppShell } from './layout/AppShell';
 import { ProfileHeader } from './profile/ProfileHeader';
 import { ProfileTabs } from './profile/ProfileTabs';
@@ -10,6 +11,11 @@ import './styles/responsive.css';
 
 export function App() {
   const [tab, setTab] = useState(profileTabs[0]);
+  useEffect(() => {
+    const open = () => setTab('Telemetry');
+    window.addEventListener(DASHCAM_PLAY_EVENT, open);
+    return () => window.removeEventListener(DASHCAM_PLAY_EVENT, open);
+  }, []);
   return (
     <AppShell module="Fleet" current="planner">
       <div className="ep-profile">

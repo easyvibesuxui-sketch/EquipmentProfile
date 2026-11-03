@@ -26,7 +26,10 @@ export const equipment = {
   ] satisfies HeaderFact[],
   as4uLabel: 'AS4U-Gereteversetsung',
   as4uEnabled: true,
-  tracker: { name: 'Link 3', imei: '56456489454', lastUpdate: '14/05/2025 07:02:59', ago: '8 h ago' },
+  /** A tracker with a camera (dashcam) gets the player card in the header. */
+  tracker: { name: 'syniotec DASHCAM', camera: true, online: true, imei: '56456489454', lastUpdate: '14/05/2025 07:02:59', ago: '8 h ago' },
+  /** The same slot with a plain tracker; open the page with #no-camera to see it. */
+  plainTracker: { name: 'Link 3', camera: false, online: true, imei: '56456489454', lastUpdate: '14/05/2025 07:02:59', ago: '8 h ago' },
   tag: { name: 'Tag-L', id: '849844214' },
 };
 

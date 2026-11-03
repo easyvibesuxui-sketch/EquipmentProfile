@@ -163,3 +163,31 @@
 }
 .ep-header__device-open:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
 .ep-header__copy { position: relative; z-index: 2; }
+
+/* Camera tracker (Figma): 94 x 133 frame with a 45% shade, a 48px Cultured Play, the 6px live dot and a 32px QR. */
+.ep-header__device-media--camera { width: 94px; overflow: hidden; border-color: var(--syn-color-white-white); border-radius: var(--syn-radius-element); }
+.ep-header__device-media--camera > img:first-child { border-radius: 0; }
+.ep-header__shade { position: absolute; inset: 0; background: rgb(0 0 0 / 0.45); }
+.ep-header__live { position: absolute; top: 2px; left: 2px; width: 6px; height: 6px; border-radius: var(--syn-radius-full); background: var(--syn-status-success); }
+.ep-header__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--syn-size-control-md);
+  height: var(--syn-size-control-md);
+  padding: 0;
+  border: 1px solid var(--syn-color-white-white);
+  border-radius: var(--syn-radius-full);
+  background: var(--syn-surface-muted);
+  color: var(--syn-text-primary);
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+}
+.ep-header__play:hover { background: var(--syn-color-white-white); }
+.ep-header__play:focus-visible { outline: 1px solid var(--syn-color-white-white); outline-offset: 2px; }
+.ep-header__qr--camera { top: 94px; left: 55px; }
+.ep-header__update .syn-color-dot--plain { box-sizing: content-box; padding: 1px; border: 1px solid var(--syn-border-muted); background-clip: content-box; }
