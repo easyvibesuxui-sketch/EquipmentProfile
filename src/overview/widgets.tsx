@@ -62,7 +62,7 @@ export function DependenceWidget() {
     ['Primary asset', <span className="ep-dep__strong"><span className="syn-title-text">{dependence.primaryAsset}</span></span>],
     ['Linked asset', <span className="ep-dep__count"><span>Count</span>{dependence.linkedAssets}</span>],
     ['Inventory list', <span className="ep-dep__count"><span>Count</span>{dependence.inventoryList}</span>],
-    ['Crew', <span className="ep-dep__strong ep-dep__crew"><ColorDot color="brand" size={16} /><span className="syn-title-text">{dependence.crew}</span></span>],
+    ['Crew', <span className="ep-dep__strong ep-dep__crew"><ColorDot color="brand" /><span className="syn-title-text">{dependence.crew}</span></span>],
     ['Connected Person', <span className="ep-dep__strong"><span className="syn-title-text">{dependence.connectedPerson}</span></span>],
   ];
   return (

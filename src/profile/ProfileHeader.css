@@ -66,7 +66,7 @@
   height: 49px;
   padding: 5px var(--syn-space-16) var(--syn-space-4) 0;
 }
-.ep-header__fact dt { display: flex; align-items: center; gap: var(--syn-space-4); color: var(--syn-text-muted); font: var(--syn-type-text-caption-1); }
+.ep-header__fact dt { display: flex; align-items: center; gap: var(--syn-space-4); color: var(--syn-text-muted); font: var(--syn-type-text-caption-1); -webkit-font-smoothing: auto; -moz-osx-font-smoothing: auto; -webkit-text-stroke: var(--syn-text-crisp-stroke) currentColor; }
 .ep-header__fact dd { display: flex; align-items: center; gap: var(--syn-space-2); font: var(--syn-type-titles-title-6); }
 .ep-header__fact--inventory { justify-content: center; gap: var(--syn-space-10); border-right: 1px dashed var(--syn-border-default); }
 .ep-header__fact--inventory dt { font: var(--syn-type-titles-title-6); }
@@ -78,7 +78,7 @@
   justify-content: space-between;
   height: 49px;
   padding: 5px 0 var(--syn-space-4);
-  font: var(--syn-type-text-caption-1);
+  font: var(--syn-type-text-caption-1); -webkit-font-smoothing: auto; -moz-osx-font-smoothing: auto; -webkit-text-stroke: var(--syn-text-crisp-stroke) currentColor;
 }
 /* Figma draws this toggle in Mantis; Syn's switch uses the action-toggle role. */
 .ep-switch-success { --syn-action-toggle: var(--syn-status-success); }
@@ -111,7 +111,7 @@
   padding: var(--syn-space-8) var(--syn-space-24) var(--syn-space-24);
   border: 2px solid var(--syn-border-default);
   background: var(--syn-surface-default);
-  font: var(--syn-type-text-caption-1);
+  font: var(--syn-type-text-caption-1); -webkit-font-smoothing: auto; -moz-osx-font-smoothing: auto; -webkit-text-stroke: var(--syn-text-crisp-stroke) currentColor;
 }
 .ep-header__device-media--custom > span { align-self: stretch; text-align: center; }
 .ep-header__device-media--custom > img:nth-child(2) { flex: none; width: 100%; height: auto; }
@@ -123,7 +123,7 @@
   min-width: 0;
   flex-direction: column;
   justify-content: space-between;
-  font: var(--syn-type-text-caption-1);
+  font: var(--syn-type-text-caption-1); -webkit-font-smoothing: auto; -moz-osx-font-smoothing: auto; -webkit-text-stroke: var(--syn-text-crisp-stroke) currentColor;
 }
 .ep-header__device-info--tag { justify-content: flex-start; gap: var(--syn-space-20); }
 .ep-header__device-info > div { display: flex; flex-direction: column; gap: var(--syn-space-2); }

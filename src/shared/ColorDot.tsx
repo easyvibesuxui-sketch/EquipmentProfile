@@ -1,5 +1,4 @@
-import type { CSSProperties } from 'react';
-import './ColorDot.css';
+import { ColorDot as SynColorDot } from '@syn/design-system';
 
 export type ColorDotColor = 'success' | 'info' | 'violet' | 'rose' | 'orange' | 'brand';
 
@@ -12,11 +11,7 @@ const colors: Record<ColorDotColor, string> = {
   brand: 'var(--syn-action-brand)',
 };
 
-/**
- * Figma "Color Dot Default": a 16px white ring with a Silver Chalice border around a 12px colour dot.
- * With `size`, a plain dot of that size (the tag cards' 10px Dodger Blue dot).
- */
+/** Syn's shared ColorDot (Figma "Color Dot Default") with the app's named colours. `size` gives the plain dot. */
 export function ColorDot({ color, size }: { color: ColorDotColor; size?: number }) {
-  const style = { '--dot': colors[color], ...(size ? { width: size, height: size } : {}) } as CSSProperties;
-  return <span aria-hidden className={size ? 'ep-dot ep-dot--plain' : 'ep-dot'} style={style} />;
+  return <SynColorDot color={colors[color]} variant={size ? 'plain' : 'ring'} size={size} />;
 }
