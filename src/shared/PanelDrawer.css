@@ -1,0 +1,13 @@
+/* Side panels of the profile (Figma "Mail Notifications", "Recent actions from History", "Check ins and charging"):
+   640 wide, 24px top-left corner, a Medium 16 Silver Chalice title, footer padding 20/24/20/32. */
+.ep-panel-drawer .syn-drawer__panel { border-top-left-radius: var(--ep-radius-panel); }
+.ep-panel-drawer .syn-drawer__header { height: auto; padding: var(--syn-space-16) var(--syn-space-16) var(--syn-space-16) var(--syn-grid-margin); }
+.ep-panel-drawer__title {
+  position: relative;
+  top: var(--syn-title-offset);
+  margin: 0;
+  color: var(--syn-text-muted);
+  font: var(--syn-type-titles-title-3);
+}
+.ep-panel-drawer .syn-drawer__footer { height: auto; padding: var(--syn-space-20) var(--syn-space-24) var(--syn-space-20) var(--syn-grid-margin); }
+.ep-panel-drawer__submit.syn-button { width: 168px; }

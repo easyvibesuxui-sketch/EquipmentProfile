@@ -1,9 +1,12 @@
 import { useState, type ReactNode } from 'react';
-import { Card, Icon, IconButton, Property, Segmented } from '@syn/design-system';
+import { Card, Icon, IconButton, Property, Segmented, type IconName } from '@syn/design-system';
+import { CheckInsDrawer } from './CheckInsDrawer';
+import { HistoryDrawer } from './HistoryDrawer';
 import { ColorDot } from '../shared/ColorDot';
 import { useEmptyDemo } from '../shared/useEmptyDemo';
 import {
-  checkEvents, dependence, history, identifications, specifications, type HistoryEntry,
+  checkInLog, chargingLog, dependence, history, identifications, specifications,
+  type CheckEvent, type HistoryEntry, type MoveSession,
 } from '../data/equipment';
 
 /** Opens the matching profile tab; Figma draws a 16px chevron at the widget's top right. */
@@ -90,50 +93,98 @@ export function DependenceWidget({ rows = ['primary', 'linked', 'inventory', 'cr
   );
 }
 
-export function CheckInsWidget() {
-  const [view, setView] = useState('charging');
+export type MovesView = 'checkins' | 'charging';
+
+const moveIcon = (view: MovesView, kind: CheckEvent['kind']) => (view === 'charging'
+  ? { name: kind === 'in' ? 'charged' : 'notcharging', size: kind === 'in' ? 18 : 24, title: kind === 'in' ? 'Charging started' : 'Charging ended' }
+  : { name: kind === 'in' ? 'check-in' : 'check-out', size: 14, title: kind === 'in' ? 'Checked in' : 'Checked out' }) as { name: IconName; size: number; title: string };
+
+/**
+ * Check ins or charges, a pair of rows per stay: Charging draws the Amber-ringed plug and the empty ring;
+ * Check ins a white arrow in a Candy Apple (in) or Silver Chalice (out) circle, as the Figma drawer does.
+ */
+export function MovesTable({ sessions, view, className }: { sessions: MoveSession[]; view: MovesView; className?: string }) {
   return (
-    <Card
-      actions={(
-        <>
-          <Segmented label="Movements" value={view} onChange={setView} options={[{ value: 'checkins', label: 'Check ins' }, { value: 'charging', label: 'Charging' }]} />
-          <OpenLink label="Open movements" />
-        </>
-      )}
-      className="ep-widget ep-widget--split"
-    >
-      <table className="ep-moves">
-        <thead>
-          <tr><th scope="col">Action</th><th scope="col">Project / Warehouse</th><th scope="col">Date</th></tr>
-        </thead>
-        {checkEvents.map((pair, i) => (
-          <tbody key={i}>
-            {pair.map((e, j) => (
+    <table className={className ? `ep-moves ${className}` : 'ep-moves'}>
+      <thead>
+        <tr><th scope="col">Action</th><th scope="col">Project / Warehouse</th><th scope="col">Date</th></tr>
+      </thead>
+      {sessions.map((session, i) => (
+        <tbody key={i}>
+          {[session.in, session.out].filter((e): e is CheckEvent => Boolean(e)).map((e, j) => {
+            const icon = moveIcon(view, e.kind);
+            const tone = view === 'charging' ? (e.kind === 'in' ? ' is-in' : '') : e.kind === 'in' ? ' is-check-in' : ' is-check-out';
+            return (
               <tr key={j}>
-                <td>
-                  <span className={e.kind === 'in' ? 'ep-moves__action is-in' : 'ep-moves__action'}>
-                    <Icon
-                      name={view === 'charging' ? (e.kind === 'in' ? 'charged' : 'notcharging') : e.kind === 'in' ? 'check-in' : 'check-out'}
-                      size={e.kind === 'in' ? 18 : 24}
-                      title={view === 'charging' ? (e.kind === 'in' ? 'Charging started' : 'Charging ended') : e.kind === 'in' ? 'Checked in' : 'Checked out'}
-                    />
-                  </span>
-                </td>
+                <td><span className={`ep-moves__action${tone}`}><Icon name={icon.name} size={icon.size} title={icon.title} /></span></td>
                 <td><span className="ep-moves__place"><Icon name="bmti-warehouyse" size={14} /><span className="syn-title-text">{e.place}</span></span></td>
                 <td className="ep-moves__date">{e.date}</td>
               </tr>
-            ))}
-          </tbody>
-        ))}
-      </table>
-    </Card>
+            );
+          })}
+        </tbody>
+      ))}
+    </table>
   );
 }
 
-function HistoryItem({ entry }: { entry: HistoryEntry }) {
+/**
+ * A widget the whole of which opens its drawer, as the Figma prototype does. Clicks on the widget's own
+ * controls (the view switch) and inside the open drawer do not count; the chevron is the keyboard way in.
+ */
+function OpensDrawer({ onOpen, children }: { onOpen: () => void; children: ReactNode }) {
+  return (
+    <div
+      className="ep-widget-link"
+      onClick={(e) => {
+        const t = e.target as Element;
+        if (t.closest('dialog') || (t.closest('button, a, input, select, label, [role="tab"]') && !t.closest('.ep-widget__open'))) return;
+        onOpen();
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+export function CheckInsWidget() {
+  const [view, setView] = useState<MovesView>('charging');
+  const [open, setOpen] = useState(false);
+  const empty = useEmptyDemo();
+  const [logs, setLogs] = useState<Record<MovesView, MoveSession[]>>(() => (empty ? { checkins: [], charging: [] } : { checkins: checkInLog, charging: chargingLog }));
+  return (
+    <OpensDrawer onOpen={() => setOpen(true)}>
+      <Card
+        actions={(
+          <>
+            <Segmented label="Movements" value={view} onChange={(v) => setView(v as MovesView)} options={[{ value: 'checkins', label: 'Check ins' }, { value: 'charging', label: 'Charging' }]} />
+            <OpenLink label="Open check ins and charging" />
+          </>
+        )}
+        className="ep-widget ep-widget--split"
+      >
+        <MovesTable sessions={logs[view].slice(0, 4)} view={view} />
+      </Card>
+      <CheckInsDrawer
+        open={open}
+        onClose={() => setOpen(false)}
+        view={view}
+        onView={setView}
+        logs={logs}
+        onLogs={setLogs}
+      />
+    </OpensDrawer>
+  );
+}
+
+const historyIcons: Record<HistoryEntry['action'], IconName> = {
+  Created: 'status-created', Edited: 'status-edited', Assigned: 'status-created', Removed: 'status-rejected',
+};
+
+export function HistoryItem({ entry }: { entry: HistoryEntry }) {
   return (
     <li className="ep-history__item">
-      <Icon name={entry.action === 'Created' ? 'status-created' : 'status-edited'} size={24} />
+      <Icon name={historyIcons[entry.action]} size={24} />
       <div className="ep-history__body">
         <p className="ep-history__title">
           <span className="is-muted">{entry.action}</span>
@@ -167,11 +218,15 @@ function HistoryItem({ entry }: { entry: HistoryEntry }) {
 }
 
 export function HistoryWidget() {
+  const [open, setOpen] = useState(false);
   return (
-    <Card title="Recent actions from History" actions={<OpenLink label="Open history" />} className="ep-widget">
-      <ol className="ep-history">
-        {history.map((e, i) => <HistoryItem key={i} entry={e} />)}
-      </ol>
-    </Card>
+    <OpensDrawer onOpen={() => setOpen(true)}>
+      <Card title="Recent actions from History" actions={<OpenLink label="Open history" />} className="ep-widget">
+        <ol className="ep-history">
+          {history.map((e, i) => <HistoryItem key={i} entry={e} />)}
+        </ol>
+      </Card>
+      <HistoryDrawer open={open} onClose={() => setOpen(false)} />
+    </OpensDrawer>
   );
 }

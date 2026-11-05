@@ -27,6 +27,21 @@ A tracker with a camera (`tracker.camera`, the syniotec DASHCAM in the mock data
 frame, Play (opens the Dashcam Player on Telemetry, full screen) and the live dot. Open the page with `#no-camera` to see
 the plain tracker card.
 
+## Widget drawers
+
+Clicking the *Recent actions from History* or the *Check ins / Charging* widget (anywhere on the card, or its chevron)
+opens its drawer:
+
+- [Recent actions from History](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=16127-6470): the full history list.
+  Figma's footer has Discard and a disabled Submit; Submit stays disabled, as there is nothing to submit.
+- Check ins and charging ([check in](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=16625-22238),
+  [empty](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=16631-8886),
+  [charging](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=16625-23303),
+  [stopped](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=16631-9378)): Check in to a project
+  or warehouse (the button turns into Check out while checked in), Continue or Stop charging, and the full log.
+  The drawer opens on the view the widget shows, and the widget shows the first four entries of the same log.
+  Figma titles it "Dummy text Details"; the build uses "Check ins and charging". `#empty` shows "List is empty".
+
 ## Manage Widgets
 
 The gear at the end of the profile tabs (Overview only) opens *Manage Widgets*, laid out after the Figma
@@ -80,6 +95,8 @@ for are named constants in `src/styles/app.css` (`--ep-*`).
 | `src/overview/LocationWidget.tsx` | Current location map: Leaflet inside Syn `MapView`; Map Button opens the full map |
 | `src/overview/widgets.tsx` | Specifications, Location, Identifications, Dependence, Check ins / Charging, History |
 | `src/overview/moreWidgets.tsx` | Widgets added from Manage Widgets: Equipment Details, Calculation type, BGL, documents, checks, workshop, maintenance |
+| `src/overview/HistoryDrawer.tsx`, `CheckInsDrawer.tsx` | Drawers opened from the History and Check ins widgets |
+| `src/shared/PanelDrawer.tsx` | The 640px side panel (Syn Drawer) all profile drawers use |
 | `src/widgets/` | Manage Widgets: registry, layout state, drawer |
 | `src/overview/charts.tsx` | Operating Hours, Operation Hours by hour, Distance travelled |
 | `src/telemetry/` | Telemetry tab: speed gauge, last known location and map, status tiles, Tracker sensors, Digital and Analogue inputs, Dashcam |

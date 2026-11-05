@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
-import { Button, Drawer, Icon, IconButton, Switch } from '@syn/design-system';
+import { Button, Icon, IconButton, Switch } from '@syn/design-system';
+import { PanelDrawer } from '../shared/PanelDrawer';
 import { widgetById, widgetCategories, type WidgetCategory } from './registry';
 import { categoryIds, defaultLayout, moveWithinCategory, setVisible, type WidgetLayout } from './layout';
 import './ManageWidgets.css';
@@ -75,18 +76,16 @@ export function ManageWidgetsDrawer({ open, layout, onClose, onSubmit }: Props) 
   };
 
   return (
-    <Drawer
+    <PanelDrawer
       open={open}
       onClose={onClose}
-      label="Manage Widgets"
-      width={640}
+      title="Manage Widgets"
       className="ep-widgets-drawer"
-      headerStart={<h2 className="ep-widgets-drawer__title">Manage Widgets</h2>}
       headerActions={<IconButton icon="refresh-change" label="Reset to default" size="sm" onClick={() => setDraft(defaultLayout())} />}
       footer={(
         <>
           <Button variant="text" onClick={onClose}>Discard</Button>
-          <Button className="ep-widgets-drawer__submit" onClick={() => onSubmit(draft)}>Submit</Button>
+          <Button className="ep-panel-drawer__submit" onClick={() => onSubmit(draft)}>Submit</Button>
         </>
       )}
     >
@@ -156,6 +155,6 @@ export function ManageWidgetsDrawer({ open, layout, onClose, onSubmit }: Props) 
       })}
       <p id="ep-widgets-help" className="syn-visually-hidden">Drag, or use Arrow Up and Arrow Down, to change the order on the Overview.</p>
       <p className="syn-visually-hidden" aria-live="polite">{announce}</p>
-    </Drawer>
+    </PanelDrawer>
   );
 }

@@ -1,15 +1,4 @@
-/* "Manage Widgets", after the Figma "Mail Notifications" drawer (11612:41869): 640 wide, 24px top-left corner. */
-.ep-widgets-drawer .syn-drawer__panel { border-top-left-radius: var(--ep-radius-panel); }
-.ep-widgets-drawer .syn-drawer__header { height: auto; padding: var(--syn-space-16) var(--syn-space-16) var(--syn-space-16) var(--syn-grid-margin); }
-.ep-widgets-drawer__title {
-  position: relative;
-  top: var(--syn-title-offset);
-  margin: 0;
-  color: var(--syn-text-muted);
-  font: var(--syn-type-titles-title-3);
-}
-.ep-widgets-drawer .syn-drawer__footer { height: auto; padding: var(--syn-space-20) var(--syn-space-24) var(--syn-space-20) var(--syn-grid-margin); }
-.ep-widgets-drawer__submit.syn-button { width: 168px; }
+/* "Manage Widgets", after the Figma "Mail Notifications" drawer (11612:41869). The panel itself is PanelDrawer. */
 
 /* "All widgets": Medium 14, padding 16/16/12/32. */
 .ep-widgets-drawer__all {

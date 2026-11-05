@@ -1,0 +1,111 @@
+/* Drawers opened from the Overview widgets. The panel (640px, 24px corner, title) is PanelDrawer. */
+
+/* "Recent actions from History" (16127:6470) */
+.ep-history-drawer .syn-drawer__body { padding-bottom: 0; }
+.ep-history.ep-history-drawer__list { overflow: visible; padding: var(--syn-space-16) var(--syn-space-16) var(--syn-space-24) var(--syn-grid-margin); }
+.ep-history-drawer__list .ep-history__title, .ep-history-drawer__list .ep-history__line { white-space: normal; }
+
+/* "Check ins and charging" (16631:8886, 16625:22238, 16625:23303, 16631:9378) */
+.ep-moves-drawer .syn-drawer__body { display: flex; flex-direction: column; padding-bottom: 0; }
+.ep-moves-drawer__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--syn-space-24);
+  padding: var(--syn-space-8) var(--syn-space-16) var(--syn-space-12) var(--syn-grid-margin);
+}
+.ep-moves-drawer p { margin: 0; }
+.ep-moves-drawer__controls { display: flex; flex-direction: column; gap: var(--syn-space-8); }
+
+/* Two 220 x 40 tabs with 2px outer corners. */
+.ep-moves-drawer__tabs .syn-tabs__tab { justify-content: flex-start; width: 220px; height: 40px; border-radius: 0; }
+.ep-moves-drawer__tabs .syn-tabs__tab:first-child { border-radius: var(--syn-radius-xs) 0 0 var(--syn-radius-xs); }
+.ep-moves-drawer__tabs .syn-tabs__tab:last-child { border-radius: 0 var(--syn-radius-xs) var(--syn-radius-xs) 0; }
+/* Figma: the other tab is White with Eerie Black text, and only the selected one carries the separator. */
+.ep-moves-drawer__tabs .syn-tabs__tab[aria-selected='false'] { color: var(--syn-text-primary); }
+.ep-moves-drawer__tabs .syn-tabs__tab[aria-selected='false']::after { display: none; }
+
+/* Smoke panel, 2px Cultured border, 12px corners, padding 12/12/20. */
+.ep-moves-drawer__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--syn-space-12);
+  padding: var(--syn-space-12) var(--syn-space-12) var(--syn-space-20);
+  border: 2px solid var(--syn-border-default);
+  border-radius: var(--syn-radius-widget);
+  background: var(--syn-surface-subtle);
+}
+.ep-moves-drawer__kind .syn-segmented__option { min-width: 130px; border-radius: var(--syn-radius-element); font: var(--syn-type-text-body-xs); }
+.ep-moves-drawer__row { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--syn-space-12); }
+.ep-moves-drawer__field { display: flex; flex: 0 1 232px; min-width: 0; flex-direction: column; gap: var(--syn-space-8); }
+.ep-moves-drawer__label { position: relative; top: var(--syn-title-offset); font: var(--syn-type-titles-title-5); }
+.ep-moves-drawer__action.syn-button { flex: none; width: 168px; font: var(--syn-type-button-text-button-secondary-m); }
+
+.ep-moves-drawer__hint { color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+/* Continue / Stop: a Cultured tray, 4px padding, 2px gap; the current state Amber with Cultured text. */
+.ep-moves-drawer__charge {
+  display: inline-flex;
+  align-self: flex-start;
+  gap: var(--syn-space-2);
+  padding: var(--syn-space-4);
+  border-radius: var(--syn-radius-widget);
+  background: var(--syn-surface-muted);
+}
+.ep-moves-drawer__charge button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--syn-space-6);
+  height: var(--syn-size-control-sm);
+  padding: 0 var(--syn-space-32);
+  border: 0;
+  border-radius: var(--syn-radius-element);
+  background: var(--syn-surface-default);
+  color: var(--syn-text-muted);
+  font: var(--syn-type-button-text-button-secondary-m);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--syn-duration-fast), color var(--syn-duration-fast);
+}
+.ep-moves-drawer__charge button.is-current { background: var(--syn-action-accent); color: var(--syn-color-grey-cultured); }
+.ep-moves-drawer__charge button:not(.is-current):hover { color: var(--syn-text-primary); }
+.ep-moves-drawer__charge button:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+
+.ep-moves--drawer th { padding-top: 0; }
+
+/* Empty list (16631:8886): the Smoke area under the panel, the glyph and two muted Medium 14 lines. */
+.ep-moves-drawer__empty {
+  display: flex;
+  flex: 1;
+  min-height: 320px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--syn-space-16);
+  margin-right: calc(-1 * var(--syn-space-16));
+  background: var(--syn-surface-subtle);
+  color: var(--syn-text-muted);
+  font: var(--syn-type-titles-title-4);
+}
+.ep-moves-drawer__empty .syn-icon { margin-bottom: var(--syn-space-4); }
+
+/* A widget that opens its drawer on click. */
+.ep-widget-link { height: 100%; cursor: pointer; }
+.ep-widget-link > .syn-card { transition: box-shadow var(--syn-duration-fast); }
+.ep-widget-link:hover > .syn-card { box-shadow: var(--syn-shadow-hover); }
+
+/* Check ins: white arrows in a Candy Apple (in) or Silver Chalice (out) circle. */
+.ep-moves__action.is-check-in, .ep-moves__action.is-check-out { border-radius: var(--syn-radius-full); color: var(--syn-color-white-white); }
+.ep-moves__action.is-check-in { background: var(--syn-action-brand); }
+.ep-moves__action.is-check-out { background: var(--syn-text-muted); }
+
+@media (max-width: 640px) {
+  .ep-moves-drawer__body, .ep-history.ep-history-drawer__list { padding-left: var(--syn-space-16); }
+  .ep-moves-drawer__tabs .syn-tabs__list { flex: 1; }
+  .ep-moves-drawer__tabs .syn-tabs__tab { flex: 1; width: auto; }
+  .ep-moves-drawer__row { flex-direction: column; align-items: stretch; }
+  .ep-moves-drawer__field { flex-basis: auto; }
+  .ep-moves-drawer__action.syn-button { width: 100%; }
+  .ep-moves-drawer__charge { align-self: stretch; }
+  .ep-moves-drawer__charge button { flex: 1; padding: 0 var(--syn-space-12); }
+}

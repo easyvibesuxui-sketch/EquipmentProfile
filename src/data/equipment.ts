@@ -77,11 +77,6 @@ export interface CheckEvent {
   date: string;
 }
 
-export const checkEvents: CheckEvent[][] = Array.from({ length: 4 }, () => [
-  { kind: 'in', place: 'Bremen Warehouse', date: '14.07.2022 14:09' },
-  { kind: 'out', place: 'Bremen Warehouse', date: '14.07.2022 14:09' },
-]);
-
 export interface HistoryChange {
   label: string;
   from: string;
@@ -91,7 +86,7 @@ export interface HistoryChange {
 }
 
 export interface HistoryEntry {
-  action: 'Created' | 'Edited';
+  action: 'Created' | 'Edited' | 'Assigned' | 'Removed';
   subject: string;
   /** Dark Sienna subject, as Figma draws "Clearance request". */
   subjectTone?: 'sienna';
@@ -136,6 +131,59 @@ export const history: HistoryEntry[] = [
     date: '10.01.2027', time: '16:32',
   },
 ];
+
+/** The full list in the "Recent actions from History" drawer (Figma 16127:6470): the widget's entries and older ones. */
+export const historyLog: HistoryEntry[] = [
+  ...history,
+  {
+    action: 'Edited', subject: 'Request', by: 'Max Mustermann',
+    changes: [{ label: 'Weight min:', from: 'none', to: '1000 kg', highlight: true }],
+    date: '10.01.2027', time: '16:32',
+  },
+  {
+    action: 'Edited', subject: 'Request', by: 'Max Mustermann',
+    changes: [{ label: 'Tag', from: 'Kassel tag', to: 'Kassel tag, Bremen tag, Hamburg tag', highlight: true }],
+    date: '10.01.2027', time: '16:32',
+  },
+  {
+    action: 'Edited', subject: 'Request', by: 'Max Mustermann',
+    changes: [{ label: 'End date', from: '19.08.2025 10:00', to: '22.08.2025 12:00', highlight: true }],
+    date: '10.01.2027', time: '16:32',
+  },
+  {
+    action: 'Edited', subject: 'Request', by: 'Max Mustermann',
+    changes: [{ label: 'Additional info', from: 'We need a container also', to: 'We need a container also with an excavator', highlight: true }],
+    date: '10.01.2027', time: '16:32',
+  },
+  {
+    action: 'Assigned', subject: 'Recourse', by: 'Max Mustermann',
+    changes: [{ label: 'Equipment', from: 'None', to: 'Excavator CAT 320D', highlight: true }],
+    date: '10.01.2027', time: '16:32',
+  },
+  {
+    action: 'Removed', subject: 'Recourse', by: 'Max Mustermann',
+    changes: [{ label: 'Equipment', from: 'Excavator CAT 320D', to: 'None' }],
+    date: '10.01.2027', time: '16:32',
+  },
+];
+
+/** One stay on a project or warehouse, or one charge: the "in" event and, once it ended, the "out" event. */
+export interface MoveSession { in: CheckEvent; out?: CheckEvent }
+
+const pair = (): MoveSession => ({
+  in: { kind: 'in', place: 'Bremen Warehouse', date: '14.07.2022 14:09' },
+  out: { kind: 'out', place: 'Bremen Warehouse', date: '14.07.2022 14:09' },
+});
+
+/** Drawer lists (Figma 16625:22238 and 16625:23303): 14 check-in stays and 12 charges. */
+export const checkInLog: MoveSession[] = Array.from({ length: 14 }, pair);
+export const chargingLog: MoveSession[] = Array.from({ length: 12 }, pair);
+
+/** Targets of the Check in panel. */
+export const checkInTargets = {
+  project: ['Pipe Damage 2', 'Project KST Saxony', 'Bremen Roadworks'],
+  warehouse: ['Bremen Warehouse', 'Bremen Lagerplatz', 'Hamburg Depot'],
+};
 
 /** Operating hours: 10 days, six readings a day, in hours (Figma bar heights at 10px per hour). */
 export const operatingHours = {
