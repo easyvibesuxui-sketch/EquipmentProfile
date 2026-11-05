@@ -109,3 +109,38 @@
   .ep-moves-drawer__charge { align-self: stretch; }
   .ep-moves-drawer__charge button { flex: 1; padding: 0 var(--syn-space-12); }
 }
+
+/* "Dependance": a group per connected entity, in the Cultured-bordered style of the Mail Notifications groups. */
+.ep-dep-drawer__body { display: flex; flex-direction: column; gap: var(--syn-space-12); padding: var(--syn-space-16) var(--syn-space-16) var(--syn-space-12) var(--syn-grid-margin); }
+.ep-dep-drawer__group { border: 1px solid var(--syn-border-default); border-radius: var(--syn-radius-element); background: var(--syn-surface-default); }
+.ep-dep-drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--syn-space-8);
+  margin: 0;
+  padding: var(--syn-space-8);
+  border-bottom: 1px solid var(--syn-border-default);
+  font: 600 12px/15px var(--syn-font-family-body);
+}
+.ep-dep-drawer__count { color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+.ep-dep-drawer__list { display: flex; flex-direction: column; gap: var(--syn-space-2); margin: 0; padding: var(--syn-space-8) var(--syn-space-4); list-style: none; }
+.ep-dep-drawer__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--syn-space-12);
+  min-height: 40px;
+  padding: var(--syn-space-8);
+  border-radius: var(--syn-radius-element);
+  background: var(--syn-surface-muted);
+}
+.ep-dep-drawer__name { min-width: 0; font: var(--syn-type-titles-title-5); }
+.ep-dep-drawer__meta { flex: none; color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+.ep-dep-drawer__none { margin: 0; padding: var(--syn-space-12) var(--syn-space-8); color: var(--syn-text-disabled); font: var(--syn-type-titles-title-5); }
+.ep-dep-drawer__divider { margin: var(--syn-space-12) 0 0; color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+
+@media (max-width: 640px) {
+  .ep-dep-drawer__body { padding-left: var(--syn-space-16); }
+  .ep-dep-drawer__row { flex-direction: column; align-items: flex-start; gap: var(--syn-space-2); }
+}

@@ -29,7 +29,7 @@ the plain tracker card.
 
 ## Widget drawers
 
-Clicking the *Recent actions from History* or the *Check ins / Charging* widget (anywhere on the card, or its chevron)
+Clicking the *Recent actions from History*, *Check ins / Charging* or *Dependance* widget (anywhere on the card, or its chevron)
 opens its drawer:
 
 - [Recent actions from History](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=16127-6470): the full history list.
@@ -41,6 +41,9 @@ opens its drawer:
   or warehouse (the button turns into Check out while checked in), Continue or Stop charging, and the full log.
   The drawer opens on the view the widget shows, and the widget shows the first four entries of the same log.
   Figma titles it "Dummy text Details"; the build uses "Check ins and charging". `#empty` shows "List is empty".
+
+- Dependance (no Figma frame yet): every connected entity, the ones on the card first and then the rest under
+  "Not shown on the card", each with its linked items; `#empty` shows "Not linked yet". Content is a placeholder.
 
 ## Manage Widgets
 
@@ -95,7 +98,7 @@ for are named constants in `src/styles/app.css` (`--ep-*`).
 | `src/overview/LocationWidget.tsx` | Current location map: Leaflet inside Syn `MapView`; Map Button opens the full map |
 | `src/overview/widgets.tsx` | Specifications, Location, Identifications, Dependence, Check ins / Charging, History |
 | `src/overview/moreWidgets.tsx` | Widgets added from Manage Widgets: Equipment Details, Calculation type, BGL, documents, checks, workshop, maintenance |
-| `src/overview/HistoryDrawer.tsx`, `CheckInsDrawer.tsx` | Drawers opened from the History and Check ins widgets |
+| `src/overview/HistoryDrawer.tsx`, `CheckInsDrawer.tsx`, `DependenceDrawer.tsx` | Drawers opened from the History, Check ins and Dependance widgets |
 | `src/shared/PanelDrawer.tsx` | The 640px side panel (Syn Drawer) all profile drawers use |
 | `src/widgets/` | Manage Widgets: registry, layout state, drawer |
 | `src/overview/charts.tsx` | Operating Hours, Operation Hours by hour, Distance travelled |

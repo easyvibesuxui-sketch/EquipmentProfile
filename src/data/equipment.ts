@@ -314,3 +314,36 @@ export const maintenance = {
     { name: 'Annual service', date: 'Due 15.01.2027', status: 'Planned', tone: 'neutral' },
   ] as ScheduledItem[],
 };
+
+/** What the Dependance drawer lists for each connected entity. No Figma design yet: placeholder content. */
+export interface LinkedItem { name: string; meta?: string }
+
+export const dependenceDetails = {
+  primary: [{ name: '2020 Volvo EC950F', meta: 'Inventory 45DB48484112' }],
+  linked: [
+    { name: 'Hydraulic hammer HB 2200', meta: 'Inventory 45DB48484201' },
+    { name: 'Bucket 1.6 m³', meta: 'Inventory 45DB48484202' },
+    { name: 'Quick coupler CW40', meta: 'Inventory 45DB48484203' },
+    { name: 'Ripper tooth', meta: 'Inventory 45DB48484204' },
+    { name: 'Grading bucket 2.0 m', meta: 'Inventory 45DB48484205' },
+    { name: 'Tiltrotator R6', meta: 'Inventory 45DB48484206' },
+    { name: 'Sorting grab', meta: 'Inventory 45DB48484207' },
+    { name: 'Low loader trailer', meta: 'Inventory 45DB48484208' },
+  ],
+  warehouse: [{ name: 'Bremen Lagerplatz', meta: 'Am Wall 146, 28195 Bremen' }],
+  crew: [{ name: 'Road construction', meta: '6 members' }],
+  person: [{ name: 'Max Mustermann', meta: 'Site manager' }],
+  operator: [{ name: 'Max Musterman', meta: 'Since 02.01.2026' }],
+  assigning: [{ name: 'Bremen Roadworks', meta: '01.11.2026 – 30.11.2026' }],
+  tag: [{ name: 'Tag-L', meta: 'Tag ID 849844214' }],
+  inventory: [
+    { name: 'Fire extinguisher 6 kg', meta: '1 pc' },
+    { name: 'First aid kit', meta: '1 pc' },
+    { name: 'Warning triangle', meta: '2 pcs' },
+    { name: 'Grease gun', meta: '1 pc' },
+    { name: 'Spare teeth set', meta: '5 pcs' },
+    { name: 'Hydraulic oil 20 l', meta: '2 pcs' },
+    { name: 'Tow rope', meta: '1 pc' },
+    { name: 'Wheel chocks', meta: '2 pcs' },
+  ],
+} satisfies Record<string, LinkedItem[]>;

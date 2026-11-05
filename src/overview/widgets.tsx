@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { Card, Icon, IconButton, Property, Segmented, type IconName } from '@syn/design-system';
 import { CheckInsDrawer } from './CheckInsDrawer';
+import { DependenceDrawer } from './DependenceDrawer';
 import { HistoryDrawer } from './HistoryDrawer';
 import { ColorDot } from '../shared/ColorDot';
 import { useEmptyDemo } from '../shared/useEmptyDemo';
@@ -76,20 +77,24 @@ export const connectedEntities: Record<ConnectedId, { label: string; empty: stri
 
 export function DependenceWidget({ rows = ['primary', 'linked', 'inventory', 'crew', 'person'] }: { rows?: ConnectedId[] }) {
   const empty = useEmptyDemo();
+  const [open, setOpen] = useState(false);
   return (
-    // Empty: Figma hides the chevron, as there is nothing to open.
-    <Card title="Dependance" actions={empty ? undefined : <OpenLink label="Open dependence" />} className="ep-widget">
-      <div className={empty ? 'ep-dep is-empty' : 'ep-dep'}>
-        {rows.map((id) => {
-          const e = connectedEntities[id];
-          return (
-            <Property key={id} label={e.label} variant="tile" className="ep-dep__row">
-              {empty ? <span className="ep-dep__none syn-title-text">{e.empty}</span> : <span className="ep-dep__value">{e.value()}</span>}
-            </Property>
-          );
-        })}
-      </div>
-    </Card>
+    <OpensDrawer onOpen={() => setOpen(true)}>
+      {/* Empty: Figma hides the chevron; the card still opens the drawer, where links will be added. */}
+      <Card title="Dependance" actions={empty ? undefined : <OpenLink label="Open dependence" />} className="ep-widget">
+        <div className={empty ? 'ep-dep is-empty' : 'ep-dep'}>
+          {rows.map((id) => {
+            const e = connectedEntities[id];
+            return (
+              <Property key={id} label={e.label} variant="tile" className="ep-dep__row">
+                {empty ? <span className="ep-dep__none syn-title-text">{e.empty}</span> : <span className="ep-dep__value">{e.value()}</span>}
+              </Property>
+            );
+          })}
+        </div>
+      </Card>
+      <DependenceDrawer open={open} onClose={() => setOpen(false)} rows={rows} empty={empty} />
+    </OpensDrawer>
   );
 }
 
