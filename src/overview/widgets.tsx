@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { Card, Icon, IconButton, Property, Segmented, type IconName } from '@syn/design-system';
 import { CheckInsDrawer } from './CheckInsDrawer';
 import { DependenceDrawer } from './DependenceDrawer';
+import { SpecificationsDrawer } from './SpecificationsDrawer';
 import { HistoryDrawer } from './HistoryDrawer';
 import { ColorDot } from '../shared/ColorDot';
 import { useEmptyDemo } from '../shared/useEmptyDemo';
@@ -12,7 +13,7 @@ import {
 
 /** Opens the matching profile tab; Figma draws a 16px chevron at the widget's top right. */
 function OpenLink({ label }: { label: string }) {
-  return <IconButton icon="next" label={label} className="ep-widget__open" />;
+  return <IconButton icon="next" label={label} className="ep-widget__open syn-card__open" />;
 }
 
 export function InfoList({ rows }: { rows: Array<[string, string | null]> }) {
@@ -29,13 +30,20 @@ export function InfoList({ rows }: { rows: Array<[string, string | null]> }) {
 }
 
 export function SpecificationsWidget() {
+  const [open, setOpen] = useState(false);
   return (
-    <Card title="Technical specifications" className="ep-widget">
-      <div className="ep-info__body">
-        <InfoList rows={specifications.rows} />
-        <p className="ep-info__footer">+{specifications.more} Specifications listed</p>
-      </div>
-    </Card>
+    <OpensDrawer onOpen={() => setOpen(true)}>
+      <Card title="Technical specifications" className="ep-widget">
+        <div className="ep-info__body">
+          <InfoList rows={specifications.rows} />
+          {/* Figma has no chevron on this card; the footer line is the keyboard way into the drawer. */}
+          <button type="button" className="ep-info__footer ep-info__more" onClick={() => setOpen(true)}>
+            +{specifications.more} Specifications listed
+          </button>
+        </div>
+      </Card>
+      <SpecificationsDrawer open={open} onClose={() => setOpen(false)} />
+    </OpensDrawer>
   );
 }
 

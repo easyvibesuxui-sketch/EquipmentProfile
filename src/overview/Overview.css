@@ -29,6 +29,9 @@
 .ep-info__row dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
 .ep-info__row dd.is-empty { color: var(--syn-text-muted); }
 .ep-info__footer { margin: 0; padding-top: var(--syn-space-32); font: var(--syn-type-text-body-s); }
+.ep-info__more { align-self: flex-start; padding-right: 0; padding-bottom: 0; padding-left: 0; border: 0; background: none; color: var(--syn-text-primary); text-align: left; cursor: pointer; }
+.ep-info__more:hover { text-decoration: underline; text-underline-offset: 4px; }
+.ep-info__more:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
 .ep-info__body:has(.ep-info__stack) .ep-info { border-bottom: 0; padding-bottom: 0; }
 .ep-info__stack {
   display: flex;

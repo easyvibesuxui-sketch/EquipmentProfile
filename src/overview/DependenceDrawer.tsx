@@ -8,22 +8,22 @@ function Group({ id, empty }: { id: ConnectedId; empty: boolean }) {
   const items = empty ? [] : dependenceDetails[id];
   const labelId = `ep-dep-drawer-${id}`;
   return (
-    <section className="ep-dep-drawer__group" aria-labelledby={labelId}>
-      <h3 id={labelId} className="ep-dep-drawer__head">
+    <section className="ep-drawer-group" aria-labelledby={labelId}>
+      <h3 id={labelId} className="ep-drawer-group__head">
         <span>{entity.label}</span>
-        {items.length > 1 && <span className="ep-dep-drawer__count">{items.length}</span>}
+        {items.length > 1 && <span className="ep-drawer-group__count">{items.length}</span>}
       </h3>
       {items.length ? (
-        <ul className="ep-dep-drawer__list">
+        <ul className="ep-drawer-group__list">
           {items.map((item) => (
-            <li key={item.name} className="ep-dep-drawer__row">
-              <span className="ep-dep-drawer__name syn-title-text">{item.name}</span>
-              {item.meta && <span className="ep-dep-drawer__meta">{item.meta}</span>}
+            <li key={item.name} className="ep-drawer-group__row">
+              <span className="ep-drawer-group__name syn-title-text">{item.name}</span>
+              {item.meta && <span className="ep-drawer-group__meta">{item.meta}</span>}
             </li>
           ))}
         </ul>
       ) : (
-        <p className="ep-dep-drawer__none syn-title-text">{entity.empty}</p>
+        <p className="ep-drawer-group__none syn-title-text">{entity.empty}</p>
       )}
     </section>
   );

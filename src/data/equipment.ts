@@ -48,6 +48,12 @@ export const specifications = {
     ['Power', '7300 hp'],
   ] as Array<[string, string]>,
   more: 3,
+  /** Every specification, grouped, for the Specifications drawer; the card shows the first six rows above. */
+  groups: [
+    { title: 'Engine', rows: [['Displacement', '4'], ['Power', '7300 hp'], ['Fuel tank', '620 l']] },
+    { title: 'Performance', rows: [['Lifting Capacity', '3000'], ['Max Lifting Height', '3000'], ['Max Travel Speed', '32 Km/h'], ['Bucket capacity', '1.6 m³']] },
+    { title: 'Dimensions and weight', rows: [['Dimensions', '2.41m x 2.44m x 5.3m'], ['Operating weight', '34 500 kg']] },
+  ] as Array<{ title: string; rows: Array<[string, string]> }>,
 };
 
 /** `null` renders as "--" in the muted colour, as in Figma. */

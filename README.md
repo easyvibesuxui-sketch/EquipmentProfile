@@ -42,8 +42,13 @@ opens its drawer:
   The drawer opens on the view the widget shows, and the widget shows the first four entries of the same log.
   Figma titles it "Dummy text Details"; the build uses "Check ins and charging". `#empty` shows "List is empty".
 
+- Technical specifications (no Figma frame yet): every specification, grouped (Engine, Performance, Dimensions
+  and weight). The card has no chevron in Figma, so its "+3 Specifications listed" line is the keyboard way in.
 - Dependance (no Figma frame yet): every connected entity, the ones on the card first and then the rest under
   "Not shown on the card", each with its linked items; `#empty` shows "Not linked yet". Content is a placeholder.
+
+Rule (in Syn): a widget's open chevron (`syn-card__open`) shows only while the card is hovered or has focus;
+touch screens always show it.
 
 ## Manage Widgets
 
@@ -98,7 +103,7 @@ for are named constants in `src/styles/app.css` (`--ep-*`).
 | `src/overview/LocationWidget.tsx` | Current location map: Leaflet inside Syn `MapView`; Map Button opens the full map |
 | `src/overview/widgets.tsx` | Specifications, Location, Identifications, Dependence, Check ins / Charging, History |
 | `src/overview/moreWidgets.tsx` | Widgets added from Manage Widgets: Equipment Details, Calculation type, BGL, documents, checks, workshop, maintenance |
-| `src/overview/HistoryDrawer.tsx`, `CheckInsDrawer.tsx`, `DependenceDrawer.tsx` | Drawers opened from the History, Check ins and Dependance widgets |
+| `src/overview/HistoryDrawer.tsx`, `CheckInsDrawer.tsx`, `DependenceDrawer.tsx`, `SpecificationsDrawer.tsx` | Drawers opened from the History, Check ins, Dependance and Technical specifications widgets |
 | `src/shared/PanelDrawer.tsx` | The 640px side panel (Syn Drawer) all profile drawers use |
 | `src/widgets/` | Manage Widgets: registry, layout state, drawer |
 | `src/overview/charts.tsx` | Operating Hours, Operation Hours by hour, Distance travelled |

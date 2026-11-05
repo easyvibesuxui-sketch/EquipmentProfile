@@ -6,7 +6,7 @@ import {
 
 /* Widgets that "Manage Widgets" can add to the Overview. They follow the existing 450px Overview cards. */
 
-const OpenLink = ({ label }: { label: string }) => <IconButton icon="next" label={label} className="ep-widget__open" />;
+const OpenLink = ({ label }: { label: string }) => <IconButton icon="next" label={label} className="ep-widget__open syn-card__open" />;
 
 function InfoCard({ title, rows, open }: { title: string; rows: Array<[string, string | null]>; open: string }) {
   return (
