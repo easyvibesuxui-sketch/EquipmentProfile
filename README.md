@@ -29,7 +29,7 @@ the plain tracker card.
 
 ## Widget drawers
 
-Clicking the *Recent actions from History*, *Check ins / Charging* or *Dependance* widget (anywhere on the card, or its chevron)
+Clicking the *Recent actions from History*, *Check ins / Charging*, *Dependance*, *Technical specifications* or *Specific machine information* widget (anywhere on the card, or its chevron)
 opens its drawer:
 
 - [Recent actions from History](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=16127-6470): the full history list.
@@ -44,6 +44,8 @@ opens its drawer:
 
 - Technical specifications (no Figma frame yet): every specification, grouped (Engine, Performance, Dimensions
   and weight). The card has no chevron in Figma, so its "+3 Specifications listed" line is the keyboard way in.
+- Specific machine information (no Figma frame yet): Identification, Codes and Specific info. The card has no
+  control of its own, so the card itself takes focus and opens on Enter or Space.
 - Dependance (no Figma frame yet): every connected entity, the ones on the card first and then the rest under
   "Not shown on the card", each with its linked items; `#empty` shows "Not linked yet". Content is a placeholder.
 
@@ -103,7 +105,7 @@ for are named constants in `src/styles/app.css` (`--ep-*`).
 | `src/overview/LocationWidget.tsx` | Current location map: Leaflet inside Syn `MapView`; Map Button opens the full map |
 | `src/overview/widgets.tsx` | Specifications, Location, Identifications, Dependence, Check ins / Charging, History |
 | `src/overview/moreWidgets.tsx` | Widgets added from Manage Widgets: Equipment Details, Calculation type, BGL, documents, checks, workshop, maintenance |
-| `src/overview/HistoryDrawer.tsx`, `CheckInsDrawer.tsx`, `DependenceDrawer.tsx`, `SpecificationsDrawer.tsx` | Drawers opened from the History, Check ins, Dependance and Technical specifications widgets |
+| `src/overview/HistoryDrawer.tsx`, `CheckInsDrawer.tsx`, `DependenceDrawer.tsx`, `InfoDrawer.tsx` | Drawers opened from the History, Check ins, Dependance and the two info widgets |
 | `src/shared/PanelDrawer.tsx` | The 640px side panel (Syn Drawer) all profile drawers use |
 | `src/widgets/` | Manage Widgets: registry, layout state, drawer |
 | `src/overview/charts.tsx` | Operating Hours, Operation Hours by hour, Distance travelled |

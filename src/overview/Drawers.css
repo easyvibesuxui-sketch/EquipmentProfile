@@ -151,3 +151,5 @@
 .ep-drawer-group__row--spec .ep-drawer-group__name { text-align: right; }
 .ep-spec-drawer__body { display: flex; flex-direction: column; gap: var(--syn-space-12); padding: var(--syn-space-16) var(--syn-space-16) var(--syn-space-12) var(--syn-grid-margin); }
 @media (max-width: 640px) { .ep-spec-drawer__body { padding-left: var(--syn-space-16); } }
+.ep-drawer-group__name.is-empty { color: var(--syn-text-muted); }
+.ep-widget-link[role='button']:focus-visible { border-radius: var(--syn-radius-widget); outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }

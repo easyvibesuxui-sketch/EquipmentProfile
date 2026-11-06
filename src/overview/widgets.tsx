@@ -1,13 +1,13 @@
-import { useState, type ReactNode } from 'react';
+import { useState, type KeyboardEvent, type ReactNode } from 'react';
 import { Card, Icon, IconButton, Property, Segmented, type IconName } from '@syn/design-system';
 import { CheckInsDrawer } from './CheckInsDrawer';
 import { DependenceDrawer } from './DependenceDrawer';
-import { SpecificationsDrawer } from './SpecificationsDrawer';
+import { InfoDrawer } from './InfoDrawer';
 import { HistoryDrawer } from './HistoryDrawer';
 import { ColorDot } from '../shared/ColorDot';
 import { useEmptyDemo } from '../shared/useEmptyDemo';
 import {
-  checkInLog, chargingLog, dependence, history, identifications, specifications,
+  checkInLog, chargingLog, dependence, history, identificationGroups, identifications, specifications,
   type CheckEvent, type HistoryEntry, type MoveSession,
 } from '../data/equipment';
 
@@ -42,22 +42,27 @@ export function SpecificationsWidget() {
           </button>
         </div>
       </Card>
-      <SpecificationsDrawer open={open} onClose={() => setOpen(false)} />
+      <InfoDrawer open={open} onClose={() => setOpen(false)} title="Technical specifications" groups={specifications.groups} />
     </OpensDrawer>
   );
 }
 
 export function IdentificationsWidget() {
+  const [open, setOpen] = useState(false);
   return (
-    <Card title="Specific machine information" className="ep-widget">
-      <div className="ep-info__body">
-        <InfoList rows={identifications} />
-        <div className="ep-info__stack">
-          <span>Specific info</span>
-          <span>Not indicated</span>
+    // Figma has no chevron or link on this card, so the card itself is the keyboard way in.
+    <OpensDrawer onOpen={() => setOpen(true)} label="Open specific machine information">
+      <Card title="Specific machine information" className="ep-widget">
+        <div className="ep-info__body">
+          <InfoList rows={identifications} />
+          <div className="ep-info__stack">
+            <span>Specific info</span>
+            <span>Not indicated</span>
+          </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+      <InfoDrawer open={open} onClose={() => setOpen(false)} title="Specific machine information" groups={identificationGroups} />
+    </OpensDrawer>
   );
 }
 
@@ -145,10 +150,22 @@ export function MovesTable({ sessions, view, className }: { sessions: MoveSessio
  * A widget the whole of which opens its drawer, as the Figma prototype does. Clicks on the widget's own
  * controls (the view switch) and inside the open drawer do not count; the chevron is the keyboard way in.
  */
-function OpensDrawer({ onOpen, children }: { onOpen: () => void; children: ReactNode }) {
+function OpensDrawer({ onOpen, label, children }: { onOpen: () => void; label?: string; children: ReactNode }) {
+  // With `label` (a card with no control of its own), the card is focusable and opens on Enter or Space.
+  const keyboard = label
+    ? {
+      role: 'button', tabIndex: 0, 'aria-label': label,
+      onKeyDown: (e: KeyboardEvent<HTMLDivElement>) => {
+        if (e.target !== e.currentTarget || (e.key !== 'Enter' && e.key !== ' ')) return;
+        e.preventDefault();
+        onOpen();
+      },
+    }
+    : {};
   return (
     <div
       className="ep-widget-link"
+      {...keyboard}
       onClick={(e) => {
         const t = e.target as Element;
         if (t.closest('dialog') || (t.closest('button, a, input, select, label, [role="tab"]') && !t.closest('.ep-widget__open'))) return;

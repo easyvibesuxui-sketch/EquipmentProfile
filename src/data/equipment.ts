@@ -3,6 +3,9 @@
  * Replace with API data once the backend contract exists.
  */
 
+/** A titled group of label / value rows; `null` shows as "--". */
+export interface InfoGroup { title: string; rows: Array<[string, string | null]> }
+
 export type DotColor = 'success' | 'violet' | 'rose' | 'orange' | 'brand';
 
 export interface HeaderFact {
@@ -53,7 +56,7 @@ export const specifications = {
     { title: 'Engine', rows: [['Displacement', '4'], ['Power', '7300 hp'], ['Fuel tank', '620 l']] },
     { title: 'Performance', rows: [['Lifting Capacity', '3000'], ['Max Lifting Height', '3000'], ['Max Travel Speed', '32 Km/h'], ['Bucket capacity', '1.6 m³']] },
     { title: 'Dimensions and weight', rows: [['Dimensions', '2.41m x 2.44m x 5.3m'], ['Operating weight', '34 500 kg']] },
-  ] as Array<{ title: string; rows: Array<[string, string]> }>,
+  ] as InfoGroup[],
 };
 
 /** `null` renders as "--" in the muted colour, as in Figma. */
@@ -63,6 +66,13 @@ export const identifications: Array<[string, string | null]> = [
   ['Serial number', null],
   ['Numberplate', null],
   ['VIN', 'JH4DB1542MS007683'],
+];
+
+/** Every identification, grouped, for the Specific machine information drawer. Rows beyond the card's are placeholders. */
+export const identificationGroups: InfoGroup[] = [
+  { title: 'Identification', rows: [...identifications, ['Engine serial number', null], ['Year of manufacture', '2013']] },
+  { title: 'Codes', rows: [['Barcode', '45DB48484884'], ['QR code', 'Linked'], ['Tag', 'Tag-L (849844214)']] },
+  { title: 'Specific info', rows: [['Specific info', null]] },
 ];
 
 export const dependence = {
