@@ -1,10 +1,11 @@
-import { useState, type KeyboardEvent, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Card, Icon, IconButton, Property, Segmented, type IconName } from '@syn/design-system';
 import { CheckInsDrawer } from './CheckInsDrawer';
 import { DependenceDrawer } from './DependenceDrawer';
 import { InfoDrawer } from './InfoDrawer';
 import { HistoryDrawer } from './HistoryDrawer';
 import { ColorDot } from '../shared/ColorDot';
+import { OpensDrawer } from '../shared/OpensDrawer';
 import { useEmptyDemo } from '../shared/useEmptyDemo';
 import {
   checkInLog, chargingLog, dependence, history, identificationGroups, identifications, specifications,
@@ -143,37 +144,6 @@ export function MovesTable({ sessions, view, className }: { sessions: MoveSessio
         </tbody>
       ))}
     </table>
-  );
-}
-
-/**
- * A widget the whole of which opens its drawer, as the Figma prototype does. Clicks on the widget's own
- * controls (the view switch) and inside the open drawer do not count; the chevron is the keyboard way in.
- */
-function OpensDrawer({ onOpen, label, children }: { onOpen: () => void; label?: string; children: ReactNode }) {
-  // With `label` (a card with no control of its own), the card is focusable and opens on Enter or Space.
-  const keyboard = label
-    ? {
-      role: 'button', tabIndex: 0, 'aria-label': label,
-      onKeyDown: (e: KeyboardEvent<HTMLDivElement>) => {
-        if (e.target !== e.currentTarget || (e.key !== 'Enter' && e.key !== ' ')) return;
-        e.preventDefault();
-        onOpen();
-      },
-    }
-    : {};
-  return (
-    <div
-      className="ep-widget-link"
-      {...keyboard}
-      onClick={(e) => {
-        const t = e.target as Element;
-        if (t.closest('dialog') || (t.closest('button, a, input, select, label, [role="tab"]') && !t.closest('.ep-widget__open'))) return;
-        onOpen();
-      }}
-    >
-      {children}
-    </div>
   );
 }
 

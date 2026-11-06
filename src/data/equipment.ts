@@ -254,6 +254,17 @@ export const location = {
   lat: 53.5458,
   lng: 9.9813,
   zoom: 14,
+  /** For the Current Location drawer; placeholders until the tracker API exists. */
+  lastUpdate: '14/05/2025 07:02:59',
+  source: 'GPS, 9 satellites',
+  recent: [
+    { name: 'Steinhöft 11, 20459 Hamburg', meta: '14/05/2025 07:02' },
+    { name: 'Baumwall 7, 20459 Hamburg', meta: '14/05/2025 06:41' },
+    { name: 'Kehrwieder 2, 20457 Hamburg', meta: '13/05/2025 17:18' },
+    { name: 'Am Sandtorkai 50, 20457 Hamburg', meta: '13/05/2025 12:05' },
+    { name: 'Großer Grasbrook 9, 20457 Hamburg', meta: '13/05/2025 07:30' },
+    { name: 'Am Wall 146, 28195 Bremen', meta: '12/05/2025 16:52' },
+  ],
 };
 
 /* Widgets that can be added from "Manage Widgets". Not in the Overview Figma yet: placeholder content. */

@@ -153,3 +153,6 @@
 @media (max-width: 640px) { .ep-spec-drawer__body { padding-left: var(--syn-space-16); } }
 .ep-drawer-group__name.is-empty { color: var(--syn-text-muted); }
 .ep-widget-link[role='button']:focus-visible { border-radius: var(--syn-radius-widget); outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.ep-widget-link.is-disabled { cursor: default; }
+.ep-widget-link.is-disabled:hover > .syn-card { box-shadow: none; }
+.ep-widget-link:not(.is-disabled):hover > .ep-location > .syn-card { box-shadow: var(--syn-shadow-hover); }

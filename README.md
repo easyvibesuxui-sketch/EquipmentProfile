@@ -29,7 +29,7 @@ the plain tracker card.
 
 ## Widget drawers
 
-Clicking the *Recent actions from History*, *Check ins / Charging*, *Dependance*, *Technical specifications* or *Specific machine information* widget (anywhere on the card, or its chevron)
+Clicking the *Recent actions from History*, *Check ins / Charging*, *Dependance*, *Technical specifications*, *Specific machine information* or *Current Location* widget (anywhere on the card, or its chevron)
 opens its drawer:
 
 - [Recent actions from History](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=16127-6470): the full history list.
@@ -46,6 +46,9 @@ opens its drawer:
   and weight). The card has no chevron in Figma, so its "+3 Specifications listed" line is the keyboard way in.
 - Specific machine information (no Figma frame yet): Identification, Codes and Specific info. The card has no
   control of its own, so the card itself takes focus and opens on Enter or Space.
+- Current Location (no Figma frame yet): the position (address, coordinates, last update, tracker, source),
+  recent positions, Open in Google Maps and Open full map. Panning the map or using its buttons does not open it,
+  and neither does a click on the full map; double-click zoom works on the full map only.
 - Dependance (no Figma frame yet): every connected entity, the ones on the card first and then the rest under
   "Not shown on the card", each with its linked items; `#empty` shows "Not linked yet". Content is a placeholder.
 
@@ -105,7 +108,8 @@ for are named constants in `src/styles/app.css` (`--ep-*`).
 | `src/overview/LocationWidget.tsx` | Current location map: Leaflet inside Syn `MapView`; Map Button opens the full map |
 | `src/overview/widgets.tsx` | Specifications, Location, Identifications, Dependence, Check ins / Charging, History |
 | `src/overview/moreWidgets.tsx` | Widgets added from Manage Widgets: Equipment Details, Calculation type, BGL, documents, checks, workshop, maintenance |
-| `src/overview/HistoryDrawer.tsx`, `CheckInsDrawer.tsx`, `DependenceDrawer.tsx`, `InfoDrawer.tsx` | Drawers opened from the History, Check ins, Dependance and the two info widgets |
+| `src/overview/HistoryDrawer.tsx`, `CheckInsDrawer.tsx`, `DependenceDrawer.tsx`, `InfoDrawer.tsx`, `LocationDrawer.tsx` | Drawers opened from the Overview widgets |
+| `src/shared/OpensDrawer.tsx` | Makes a whole widget open its drawer (ignores its controls and drags) |
 | `src/shared/PanelDrawer.tsx` | The 640px side panel (Syn Drawer) all profile drawers use |
 | `src/widgets/` | Manage Widgets: registry, layout state, drawer |
 | `src/overview/charts.tsx` | Operating Hours, Operation Hours by hour, Distance travelled |

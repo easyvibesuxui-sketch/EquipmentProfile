@@ -6,6 +6,8 @@ import {
 } from '@syn/design-system';
 import { location } from '../data/equipment';
 import { useEmptyDemo } from '../shared/useEmptyDemo';
+import { OpensDrawer } from '../shared/OpensDrawer';
+import { LocationDrawer } from './LocationDrawer';
 import './LocationWidget.css';
 
 const LIVE_SITE = 'https://easyvibesuxui-sketch.github.io/EquipmentProfile/';
@@ -36,12 +38,16 @@ export function LocationWidget() {
 
 /** Figma "No tracker" map card: "Current Location" over Syn's MapEmptyState. */
 function NoTrackerLocation() {
+  const [open, setOpen] = useState(false);
   return (
-    <div className="ep-location">
-      <Card title="Current Location" className="ep-widget ep-map ep-map--empty">
-        <MapEmptyState />
-      </Card>
-    </div>
+    <OpensDrawer onOpen={() => setOpen(true)} label="Open current location">
+      <div className="ep-location">
+        <Card title="Current Location" className="ep-widget ep-map ep-map--empty">
+          <MapEmptyState />
+        </Card>
+      </div>
+      <LocationDrawer open={open} onClose={() => setOpen(false)} empty />
+    </OpensDrawer>
   );
 }
 
@@ -53,6 +59,7 @@ function LiveLocation() {
   const [zoom, setZoom] = useState(location.zoom);
   const [expanded, setExpanded] = useState(false);
   const [tilesFailed, setTilesFailed] = useState(false);
+  const [details, setDetails] = useState(false);
   const center: L.LatLngExpression = [location.lat, location.lng];
 
   useEffect(() => {
@@ -88,6 +95,8 @@ function LiveLocation() {
 
   // The map container changes size when the full map opens or closes.
   useEffect(() => {
+    // On the card a click opens the details drawer, so double-click zoom is for the full map only.
+    if (expanded) map.current?.doubleClickZoom.enable(); else map.current?.doubleClickZoom.disable();
     const t = window.setTimeout(() => map.current?.invalidateSize(), 50);
     if (!expanded) return () => window.clearTimeout(t);
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setExpanded(false); };
@@ -104,6 +113,7 @@ function LiveLocation() {
   const streetView = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${location.lat},${location.lng}`;
 
   return (
+    <OpensDrawer onOpen={() => setDetails(true)} disabled={expanded}>
     <div className={expanded ? 'ep-location is-expanded' : 'ep-location'}>
       <Card
         title={expanded ? undefined : <>Current Location: <span className="ep-location__address">{location.address}</span></>}
@@ -139,5 +149,7 @@ function LiveLocation() {
         )}
       </Card>
     </div>
+    <LocationDrawer open={details} onClose={() => setDetails(false)} onFullMap={() => setExpanded(true)} empty={false} />
+    </OpensDrawer>
   );
 }
