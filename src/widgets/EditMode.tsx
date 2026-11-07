@@ -15,7 +15,7 @@ const SIZES = [
 const sizeOf = (span: number) => (span <= 4 ? 4 : span <= 8 ? 8 : MAX_SPAN);
 
 /** Figma "Edit Mode" banner (17118:62279): in place of the tabs while editing. */
-export function EditBanner({ onSection }: { onSection: () => void }) {
+export function EditBanner({ onSection, onReset }: { onSection: () => void; onReset: () => void }) {
   return (
     <section className="ep-edit-banner" aria-labelledby="ep-edit-title">
       <div className="ep-edit-banner__text">
@@ -29,6 +29,10 @@ export function EditBanner({ onSection }: { onSection: () => void }) {
         <path d="M44 59.5h-3.5V56l11-11a2.5 2.5 0 0 1 3.5 0v0a2.5 2.5 0 0 1 0 3.5l-11 11Z" />
         <path d="m49.5 47.5 3.5 3.5" />
       </svg>
+      {/* Not in Figma: puts the draft back to the default Overview; Save keeps it, Discard drops it. */}
+      <button type="button" className="ep-edit-banner__section" onClick={onReset}>
+        <Icon name="refresh-change" size={14} />Reset to default
+      </button>
       <button type="button" className="ep-edit-banner__section" onClick={onSection}>
         <Icon name="plus-in-circle" size={14} />Section
       </button>

@@ -30,6 +30,7 @@
   cursor: pointer;
 }
 .ep-edit-banner__section:hover { box-shadow: var(--syn-shadow-hover); }
+.ep-edit-banner__section + .ep-edit-banner__section { margin-left: calc(var(--syn-space-12) - var(--syn-space-24)); }
 .ep-edit-banner__section:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
 
 /* The grid: the Overview's 12 columns, dense flow; the Smoke column slots sit behind the cards while resizing. */

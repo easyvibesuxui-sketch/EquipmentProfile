@@ -65,6 +65,8 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
 
 - The tabs give way to the dashed "Edit Mode" banner; a floating bar at the bottom holds **Discard** and **Save**.
   Everything is a draft until Save; Discard drops it.
+- **Reset to default** in the banner (not in Figma) puts the draft back to the Figma Overview: widgets, order and
+  widths. Save keeps it, Discard drops it.
 - Every card has the round **remove** button at its corner.
 - **Click** a card to select it: a bar on top shows **1/3 · 2/3 · Full width** (4, 8 or 12 columns) and remove,
   and dots mark its edges. **Drag a side dot** to resize on the 12 columns (Smoke column slots show while

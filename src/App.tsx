@@ -6,7 +6,7 @@ import { ProfileTabs } from './profile/ProfileTabs';
 import { OverviewTab } from './overview/OverviewTab';
 import { TelemetryTab } from './telemetry/TelemetryTab';
 import { profileTabs } from './data/equipment';
-import { useWidgetLayout, type WidgetLayout } from './widgets/layout';
+import { defaultLayout, useWidgetLayout, type WidgetLayout } from './widgets/layout';
 import { ManageWidgetsDrawer } from './widgets/ManageWidgetsDrawer';
 import { EditBanner, EditBar } from './widgets/EditMode';
 // Last, so the breakpoints win over the component stylesheets.
@@ -35,7 +35,7 @@ export function App() {
       <div className={editing ? 'ep-profile is-editing' : 'ep-profile'}>
         <ProfileHeader />
         {editing ? (
-          <EditBanner onSection={() => setManaging(true)} />
+          <EditBanner onSection={() => setManaging(true)} onReset={() => setDraft(defaultLayout())} />
         ) : (
           <ProfileTabs tabs={profileTabs} value={tab} onChange={setTab} onManage={tab === 'Overview' ? edit : undefined} />
         )}
