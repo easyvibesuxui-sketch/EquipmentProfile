@@ -65,12 +65,14 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
 
 - The tabs give way to the dashed "Edit Mode" banner; a floating bar at the bottom holds **Discard** and **Save**.
   Everything is a draft until Save; Discard drops it.
+- The banner's **Section** is the main action (Eerie Black button); **Reset to default** next to it is a text
+  button.
 - **Reset to default** in the banner (not in Figma) puts the draft back to the Figma Overview: widgets, order and
   widths. Save keeps it, Discard drops it.
 - Every card is in its edit outline at once, no click needed: a dashed border, a bar with the move grip,
   **1/3 · 2/3 · Full width** (4, 8 or 12 columns) and the round **remove** button, and the resize handles.
 - **Resize:** the bars on the left and right edges change the width on the 12 columns (Smoke column slots show while
-  resizing); the bar on the bottom edge changes the height in rows of the 450px card: 1, 2 or 3 rows (450, 924,
+  resizing); the labelled handle on the bottom edge (↕ Auto, 1 row, 2 rows, 3 rows) changes the height in rows of the 450px card: 1, 2 or 3 rows (450, 924,
   1398px); the corner grip at the bottom right does both. Double-click the bottom bar or the grip to restore the
   designed height.
 - **Move:** drag a card anywhere (or by its grip): it follows the pointer and the other cards make room.

@@ -1,7 +1,7 @@
 import { useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
 import { Button, Icon } from '@syn/design-system';
 import {
-  MAX_SPAN, ROW_GAP, ROW_HEIGHT, fitOf, heightOf, moveCard, removeCard, setHeight, setSpan, spanOf, stepCard, visibleCards, type WidgetLayout,
+  MAX_SPAN, ROW_GAP, ROW_HEIGHT, fitOf, heightToRows, heightOf, moveCard, removeCard, setHeight, setSpan, spanOf, stepCard, visibleCards, type WidgetLayout,
 } from './layout';
 import './EditMode.css';
 
@@ -30,12 +30,9 @@ export function EditBanner({ onSection, onReset }: { onSection: () => void; onRe
         <path d="m49.5 47.5 3.5 3.5" />
       </svg>
       {/* Not in Figma: puts the draft back to the default Overview; Save keeps it, Discard drops it. */}
-      <button type="button" className="ep-edit-banner__section" onClick={onReset}>
-        <Icon name="refresh-change" size={14} />Reset to default
-      </button>
-      <button type="button" className="ep-edit-banner__section" onClick={onSection}>
-        <Icon name="plus-in-circle" size={14} />Section
-      </button>
+      {/* Hierarchy: Section (add widgets) is the main action, Eerie Black; Reset is a quiet text action. */}
+      <Button variant="text" size="sm" iconStart="refresh-change" className="ep-edit-banner__reset" onClick={onReset}>Reset to default</Button>
+      <Button size="sm" iconStart="plus-in-circle" className="ep-edit-banner__section" onClick={onSection}>Section</Button>
     </section>
   );
 }
@@ -75,6 +72,11 @@ const HANDLE_LABELS: Record<Handle, string> = {
   w: 'Drag to change the width', e: 'Drag to change the width',
   s: 'Drag to change the height (1, 2 or 3 rows); double-click to restore it',
   se: 'Drag to change the width and height; double-click to restore the height',
+};
+const rowsLabel = (height?: number) => {
+  if (!height) return 'Auto';
+  const rows = heightToRows(height);
+  return rows === 1 ? '1 row' : `${rows} rows`;
 };
 /** Shift+Arrow Up/Down changes the height by one 450px row. */
 const ROW_STEP = ROW_HEIGHT + ROW_GAP;
@@ -245,7 +247,15 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
                     onPointerMove={moveResize}
                     onPointerUp={endResize}
                     onPointerCancel={endResize}
-                  />
+                  >
+                    {/* The bottom handle says how high the card is: Auto (as designed) or 1, 2 or 3 rows. */}
+                    {handle === 's' && (
+                      <>
+                        <svg width="8" height="12" viewBox="0 0 8 12" fill="none" aria-hidden><path d="M4 1v10M1 3.5 4 1l3 2.5M1 8.5 4 11l3-2.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        {rowsLabel(heightOf(layout, card))}
+                      </>
+                    )}
+                  </span>
                 ))}
               </>
             )}

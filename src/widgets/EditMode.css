@@ -16,22 +16,9 @@
 .ep-edit-banner__title { position: relative; top: var(--syn-title-offset); margin: 0; color: var(--syn-text-primary); font: var(--syn-type-titles-title-4); }
 .ep-edit-banner__hint { margin: 0; color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
 .ep-edit-banner__art { flex: none; margin: -24px 0; stroke: var(--syn-color-secondary-dodger-blue); stroke-opacity: 0.45; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.ep-edit-banner__section {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  gap: var(--syn-space-8);
-  padding: var(--syn-space-8) var(--syn-space-32);
-  border: 0;
-  border-radius: var(--syn-radius-element);
-  background: var(--syn-surface-default);
-  color: var(--syn-text-primary);
-  font: var(--syn-type-button-text-button-secondary-s);
-  cursor: pointer;
-}
-.ep-edit-banner__section:hover { box-shadow: var(--syn-shadow-hover); }
-.ep-edit-banner__section + .ep-edit-banner__section { margin-left: calc(var(--syn-space-12) - var(--syn-space-24)); }
-.ep-edit-banner__section:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.ep-edit-banner__section.syn-button { flex: none; padding-inline: var(--syn-space-32); }
+.ep-edit-banner__reset.syn-button { flex: none; margin-right: calc(var(--syn-space-16) - var(--syn-space-24)); color: var(--syn-text-secondary); }
+.ep-edit-banner__reset.syn-button:hover:not(:disabled) { color: var(--syn-text-primary); }
 
 /* The grid: the Overview's 12 columns, dense flow; the Smoke column slots sit behind the cards while resizing. */
 .ep-edit-grid { position: relative; grid-auto-flow: row dense; }
@@ -131,8 +118,28 @@
 .ep-edit-handle--e { right: -5px; }
 .ep-edit-handle--w { left: -5px; }
 .ep-edit-handle--e::after, .ep-edit-handle--w::after { top: 12px; left: 3px; width: 2px; height: 22px; }
-.ep-edit-handle--s { bottom: -5px; left: calc(50% - 24px); width: 48px; height: 10px; cursor: ns-resize; }
-.ep-edit-handle--s::after { top: 3px; left: 12px; width: 22px; height: 2px; }
+/* The bottom handle is a labelled pill: the arrows and the height (Auto, 1, 2 or 3 rows). */
+.ep-edit-handle--s {
+  bottom: -11px;
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--syn-space-4);
+  height: 22px;
+  padding: 0 var(--syn-space-10) 0 var(--syn-space-8);
+  color: var(--syn-text-secondary);
+  font: var(--syn-type-text-caption-1);
+  /* Syn rule for Caption 1: default smoothing and a hairline stroke. */
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
+  -webkit-text-stroke: var(--syn-text-crisp-stroke) currentColor;
+  white-space: nowrap;
+  cursor: ns-resize;
+  transform: translateX(-50%);
+  user-select: none;
+}
+.ep-edit-handle--s::after { display: none; }
+.ep-edit-handle--s:hover, .ep-edit-item.is-resizing .ep-edit-handle--s { color: var(--syn-text-primary); }
 /* Corner grip: three diagonal lines in the bottom-right corner, as on a resizable text box. */
 .ep-edit-handle--se {
   right: 2px;
