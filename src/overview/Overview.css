@@ -238,3 +238,8 @@
   background: var(--syn-surface-subtle);
 }
 .ep-maint__name { font: var(--syn-type-titles-title-4); }
+
+/* A card height set in Edit Mode: the wrappers pass it down and the card fills it. */
+.ep-sized { height: var(--ep-h); }
+.ep-sized > *, .ep-sized .ep-widget-link, .ep-sized .ep-location { height: 100%; }
+.ep-sized .ep-widget.syn-card, .ep-sized .ep-tele-hero { height: 100%; min-height: 0; overflow: hidden; }

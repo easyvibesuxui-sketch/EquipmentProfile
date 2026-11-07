@@ -50,6 +50,8 @@
 .ep-edit-item {
   position: relative;
   z-index: 1;
+  /* Each card keeps its own height instead of stretching to the row, so height changes show at once. */
+  align-self: start;
   border-radius: var(--syn-radius-widget);
   cursor: grab;
   touch-action: none;
@@ -70,7 +72,7 @@
   background: var(--syn-surface-muted);
   filter: drop-shadow(1px 3px 3px rgb(21 21 21 / 0.08));
 }
-.ep-edit-item .ep-edit-item__content { flex: 1; min-height: 0; overflow: hidden; border-radius: var(--ep-radius-panel) var(--ep-radius-panel) var(--syn-radius-widget) var(--syn-radius-widget); }
+.ep-edit-item .ep-edit-item__content { flex: none; overflow: hidden; border-radius: var(--ep-radius-panel) var(--ep-radius-panel) var(--syn-radius-widget) var(--syn-radius-widget); }
 .ep-edit-item__bar { display: flex; flex: none; align-items: center; justify-content: space-between; gap: var(--syn-space-8); padding: var(--syn-space-12); }
 
 .ep-edit-sizes { display: flex; gap: var(--syn-space-4); padding: var(--syn-space-2); border-radius: var(--syn-radius-widget); background: var(--syn-surface-default); }
@@ -111,20 +113,54 @@
 .ep-edit-close:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
 .ep-edit-close--bar { border-color: var(--syn-border-default); }
 
-/* Resize dots: 4px Eerie Black dots on the corners and edge middles; the side ones are the handles. */
-.ep-edit-dot { position: absolute; z-index: 3; width: 4px; height: 4px; border-radius: var(--syn-radius-full); background: var(--syn-text-primary); }
-.ep-edit-dot--nw { top: -2px; left: -2px; }
-.ep-edit-dot--n { top: -2px; left: calc(50% - 2px); }
-.ep-edit-dot--ne { top: -2px; right: -2px; }
-.ep-edit-dot--sw { bottom: -2px; left: -2px; }
-.ep-edit-dot--s { bottom: -2px; left: calc(50% - 2px); }
-.ep-edit-dot--se { bottom: -2px; right: -2px; }
-.ep-edit-dot--w, .ep-edit-dot--e { top: calc(50% - 2px); }
-.ep-edit-dot--w { left: -2px; }
-.ep-edit-dot--e { right: -2px; }
-/* The side handles take a 16 x 48 hit area around the dot. */
-.ep-edit-dot.is-handle { cursor: ew-resize; touch-action: none; }
-.ep-edit-dot.is-handle::before { content: ''; position: absolute; top: -22px; left: -6px; width: 16px; height: 48px; }
+/* Resize handles, always visible: White pills with a Silver Chalice border on the side and bottom edges, a
+   corner grip at the bottom right; Eerie Black on hover and while resizing. */
+.ep-edit-handle {
+  position: absolute;
+  z-index: 3;
+  box-sizing: border-box;
+  border: 1px solid var(--syn-text-secondary);
+  border-radius: var(--syn-radius-full);
+  background: var(--syn-surface-default);
+  box-shadow: var(--syn-shadow-default);
+  touch-action: none;
+  transition: background-color var(--syn-duration-fast), border-color var(--syn-duration-fast);
+}
+.ep-edit-handle::after { content: ''; position: absolute; border-radius: var(--syn-radius-full); background: var(--syn-text-secondary); }
+.ep-edit-handle--e, .ep-edit-handle--w { top: calc(50% - 24px); width: 10px; height: 48px; cursor: ew-resize; }
+.ep-edit-handle--e { right: -5px; }
+.ep-edit-handle--w { left: -5px; }
+.ep-edit-handle--e::after, .ep-edit-handle--w::after { top: 12px; left: 3px; width: 2px; height: 22px; }
+.ep-edit-handle--s { bottom: -5px; left: calc(50% - 24px); width: 48px; height: 10px; cursor: ns-resize; }
+.ep-edit-handle--s::after { top: 3px; left: 12px; width: 22px; height: 2px; }
+/* Corner grip: three diagonal lines in the bottom-right corner, as on a resizable text box. */
+.ep-edit-handle--se {
+  right: 2px;
+  bottom: 2px;
+  width: 16px;
+  height: 16px;
+  border: 0;
+  border-radius: 0 0 var(--syn-radius-widget) 0;
+  box-shadow: none;
+  background:
+    linear-gradient(135deg, transparent 0 45%, var(--syn-text-secondary) 45% 52%, transparent 52% 62%, var(--syn-text-secondary) 62% 69%, transparent 69% 79%, var(--syn-text-secondary) 79% 86%, transparent 86%);
+  cursor: nwse-resize;
+}
+.ep-edit-handle--se::after { display: none; }
+.ep-edit-handle:hover, .ep-edit-item.is-resizing .ep-edit-handle { border-color: var(--syn-border-strong); }
+.ep-edit-handle:hover::after, .ep-edit-item.is-resizing .ep-edit-handle::after { background: var(--syn-text-primary); }
+.ep-edit-handle--se:hover {
+  background:
+    linear-gradient(135deg, transparent 0 45%, var(--syn-text-primary) 45% 52%, transparent 52% 62%, var(--syn-text-primary) 62% 69%, transparent 69% 79%, var(--syn-text-primary) 79% 86%, transparent 86%);
+}
+/* Bigger hit areas than the drawn handles. */
+.ep-edit-handle::before { content: ''; position: absolute; inset: -8px; }
+
+/* Move grip at the left of the bar; the whole card can be dragged. */
+.ep-edit-grip { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 24px; height: 28px; color: var(--syn-text-muted); cursor: grab; }
+.ep-edit-item:hover .ep-edit-grip { color: var(--syn-text-primary); }
+.ep-edit-sizes { margin-right: auto; }
+.ep-edit-item.is-dragging { transition: none; box-shadow: var(--syn-shadow-float); }
 
 /* "Add Widget" (Figma New Widget 17107:61128): 450px, Silver Chalice dashed, 2% Candy Apple tint, 6% on hover. */
 .ep-edit-add {

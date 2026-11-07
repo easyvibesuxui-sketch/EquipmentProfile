@@ -1,7 +1,8 @@
+import type { CSSProperties } from 'react';
 import { Button, EmptyState, Grid, GridItem, type GridItemProps } from '@syn/design-system';
 import { DependenceWidget } from './widgets';
 import { connectedIdOf, widgetById } from '../widgets/registry';
-import { CONNECTED, fitOf, spanOf, visibleCards, visibleConnected, type WidgetLayout } from '../widgets/layout';
+import { CONNECTED, fitOf, heightOf, spanOf, visibleCards, visibleConnected, type WidgetLayout } from '../widgets/layout';
 import { EditGrid } from '../widgets/EditMode';
 import './Overview.css';
 
@@ -21,9 +22,14 @@ interface Props {
  */
 export function OverviewTab({ layout, editing, onChange, onEdit, onAddWidget }: Props) {
   const cards = visibleCards(layout);
-  const render = (card: string) => (card === CONNECTED
-    ? <DependenceWidget rows={visibleConnected(layout).map(connectedIdOf)} />
-    : widgetById.get(card)?.render?.());
+  const render = (card: string) => {
+    const node = card === CONNECTED
+      ? <DependenceWidget rows={visibleConnected(layout).map(connectedIdOf)} />
+      : widgetById.get(card)?.render?.();
+    // A height set in Edit Mode: the card fills it (lists scroll, maps and slots stretch).
+    const h = heightOf(layout, card);
+    return h ? <div className="ep-sized" style={{ '--ep-h': `${h}px` } as CSSProperties}>{node}</div> : node;
+  };
   const labelOf = (card: string) => (card === CONNECTED ? 'Dependance' : widgetById.get(card)?.label ?? card);
 
   if (editing && onChange) {

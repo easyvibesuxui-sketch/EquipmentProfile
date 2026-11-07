@@ -31,6 +31,10 @@
 
   .ep-widget.syn-card { height: auto; min-height: 360px; }
   .ep-map.syn-card { height: 360px; }
+  /* Phones keep the designed heights; Edit Mode heights are for the wide layout. */
+  .ep-sized { height: auto; }
+  .ep-sized .ep-widget.syn-card { height: auto; }
+  .ep-sized .ep-map.syn-card { height: 360px; }
   .ep-chart .syn-card__header { flex-wrap: wrap; }
   .ep-chart .syn-card__actions { flex-wrap: wrap; gap: var(--syn-space-12); }
   .ep-plot { overflow-x: auto; }

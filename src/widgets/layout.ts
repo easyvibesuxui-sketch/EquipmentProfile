@@ -9,12 +9,22 @@ export interface WidgetLayout {
   order: string[];
   hidden: string[];
   spans: Record<string, number>;
+  /** Card heights in px set in Edit Mode; a card without one keeps its designed height. */
+  heights: Record<string, number>;
 }
 
 /** The connected entities share one card (Dependance); on the page they move and resize as this one card. */
 export const CONNECTED = 'connected';
 export const MIN_SPAN = 3;
 export const MAX_SPAN = 12;
+/** Heights snap to rows of the 450px Overview card, with the 24px gutter between rows: 450, 924, 1398. */
+export const ROW_HEIGHT = 450;
+export const ROW_GAP = 24;
+export const MAX_ROWS = 3;
+export const rowsToHeight = (rows: number) => rows * ROW_HEIGHT + (rows - 1) * ROW_GAP;
+export const heightToRows = (height: number) => Math.max(1, Math.min(MAX_ROWS, Math.round((height + ROW_GAP) / (ROW_HEIGHT + ROW_GAP))));
+const MIN_HEIGHT = rowsToHeight(1);
+const MAX_HEIGHT = rowsToHeight(MAX_ROWS);
 
 const STORAGE_KEY = 'ep-overview-widgets-v1';
 
@@ -22,6 +32,7 @@ export const defaultLayout = (): WidgetLayout => ({
   order: widgets.map((w) => w.id),
   hidden: widgets.filter((w) => !w.defaultOn).map((w) => w.id),
   spans: {},
+  heights: {},
 });
 
 /** Drops ids that no longer exist and appends new widgets (with their default visibility). */
@@ -34,7 +45,12 @@ function normalise(saved: Partial<WidgetLayout> | null): WidgetLayout {
   Object.entries(saved.spans ?? {}).forEach(([k, v]) => {
     if (typeof v === 'number' && v >= MIN_SPAN && v <= MAX_SPAN) spans[k] = Math.round(v);
   });
+  const heights: Record<string, number> = {};
+  Object.entries(saved.heights ?? {}).forEach(([k, v]) => {
+    if (typeof v === 'number' && v >= MIN_HEIGHT && v <= MAX_HEIGHT) heights[k] = rowsToHeight(heightToRows(v));
+  });
   return {
+    heights,
     order: [...new Set([...known, ...added])],
     hidden: [...saved.hidden.filter((id) => widgetById.has(id)), ...added.filter((id) => base.hidden.includes(id))],
     spans,
@@ -117,6 +133,17 @@ export const setSpan = (layout: WidgetLayout, card: string, span: number): Widge
   ...layout,
   spans: { ...layout.spans, [card]: Math.max(MIN_SPAN, Math.min(MAX_SPAN, Math.round(span))) },
 });
+
+/** The card's height in px, or undefined for its designed height. */
+export const heightOf = (layout: WidgetLayout, card: string): number | undefined => layout.heights[card];
+
+/** Sets the card's height to the nearest of 1, 2 or 3 rows; `null` restores the designed height. */
+export function setHeight(layout: WidgetLayout, card: string, height: number | null): WidgetLayout {
+  const heights = { ...layout.heights };
+  if (height === null) delete heights[card];
+  else heights[card] = rowsToHeight(heightToRows(height));
+  return { ...layout, heights };
+}
 
 /** How the card regroups below 1600px (responsive.css): up to 4 columns takes half the row, more the full row. */
 export const fitOf = (span: number) => (span >= MAX_SPAN ? 'full' : span >= 5 ? 'wide' : 'half');

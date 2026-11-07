@@ -1,7 +1,7 @@
 import { useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
 import { Button, Icon } from '@syn/design-system';
 import {
-  MAX_SPAN, fitOf, moveCard, removeCard, setSpan, spanOf, stepCard, visibleCards, type WidgetLayout,
+  MAX_SPAN, ROW_GAP, ROW_HEIGHT, fitOf, heightOf, moveCard, removeCard, setHeight, setSpan, spanOf, stepCard, visibleCards, type WidgetLayout,
 } from './layout';
 import './EditMode.css';
 
@@ -66,13 +66,29 @@ interface GridProps {
   onAdd: () => void;
 }
 
-type Resize = { card: string; side: 'e' | 'w'; x: number; width: number; col: number };
+/** Resize handles: the side bars change the width, the bottom bar the height, the corner grip both. */
+type Handle = 'e' | 'w' | 's' | 'se';
+const HANDLES: Handle[] = ['w', 'e', 's', 'se'];
+const changesWidth = (h: Handle) => h !== 's';
+const changesHeight = (h: Handle) => h === 's' || h === 'se';
+const HANDLE_LABELS: Record<Handle, string> = {
+  w: 'Drag to change the width', e: 'Drag to change the width',
+  s: 'Drag to change the height (1, 2 or 3 rows); double-click to restore it',
+  se: 'Drag to change the width and height; double-click to restore the height',
+};
+/** Shift+Arrow Up/Down changes the height by one 450px row. */
+const ROW_STEP = ROW_HEIGHT + ROW_GAP;
+
+type Resize = { card: string; handle: Handle; x: number; y: number; width: number; height: number; col: number };
 
 /**
  * The Overview in Edit Mode (Figma 17068:71648, 17107:58944, 17107:61363). Every card is in its edit outline
- * at once, no click needed: the dashed border, a bar with 1/3, 2/3, Full width and remove, and the resize
- * dots. Drag a side dot to resize on the 12 columns, shown as Smoke slots while resizing; drag the card to
- * move it. Keyboard: Arrow Left/Right moves the focused card, Shift+Arrow changes its width, Delete removes it.
+ * at once, no click needed: the dashed border, a bar with the move grip, 1/3, 2/3, Full width and remove, and
+ * the resize handles. Drag a side bar to resize on the 12 columns, shown as Smoke slots while resizing; the
+ * bottom bar changes the height in 450px rows (double-click restores it) and the corner grip both. Drag the card
+ * anywhere to move it: it follows the pointer and the other cards make room.
+ * Keyboard: Arrow Left/Right moves the focused card, Shift+Left/Right its width, Shift+Up/Down its height,
+ * Delete removes it.
  * The widgets themselves are inert while editing, so maps and drawers do not take the pointer.
  */
 export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps) {
@@ -80,13 +96,15 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
   const [dragging, setDragging] = useState<string | null>(null);
   const [resize, setResize] = useState<Resize | null>(null);
   const [guide, setGuide] = useState<{ top: number; height: number } | null>(null);
-  const press = useRef<{ card: string; x: number; y: number; moved: boolean } | null>(null);
+  // The pressed card: where the pointer went down, where it holds the card, and how far the card is shifted.
+  const press = useRef<{ card: string; x: number; y: number; grabX: number; grabY: number; tx: number; ty: number; moved: boolean } | null>(null);
   const [announce, setAnnounce] = useState('');
   const cards = visibleCards(layout);
 
   const onPointerDown = (e: PointerEvent<HTMLDivElement>, card: string) => {
     if (e.button !== 0 || (e.target as Element).closest('button')) return;
-    press.current = { card, x: e.clientX, y: e.clientY, moved: false };
+    const r = e.currentTarget.getBoundingClientRect();
+    press.current = { card, x: e.clientX, y: e.clientY, grabX: e.clientX - r.left, grabY: e.clientY - r.top, tx: 0, ty: 0, moved: false };
     e.currentTarget.setPointerCapture(e.pointerId);
   };
   const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
@@ -94,6 +112,12 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
     if (!p) return;
     if (!p.moved && Math.hypot(e.clientX - p.x, e.clientY - p.y) < 6) return;
     if (!p.moved) { p.moved = true; setDragging(p.card); }
+    // The card follows the pointer; its place in the grid (where it drops) moves as the other cards make room.
+    const el = e.currentTarget;
+    const r0 = el.getBoundingClientRect();
+    p.tx = e.clientX - p.grabX - (r0.left - p.tx);
+    p.ty = e.clientY - p.grabY - (r0.top - p.ty);
+    el.style.transform = `translate(${p.tx}px, ${p.ty}px)`;
     const over = document.elementsFromPoint(e.clientX, e.clientY)
       .map((el) => el.closest<HTMLElement>('[data-card]'))
       .find((el) => el && el.dataset.card !== p.card);
@@ -102,26 +126,38 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
     const next = moveCard(layout, p.card, over.dataset.card!, e.clientX > r.left + r.width / 2);
     if (next.order.join() !== layout.order.join()) onChange(next);
   };
-  const onPointerUp = () => {
+  const onPointerUp = (e: PointerEvent<HTMLDivElement>) => {
     press.current = null;
+    e.currentTarget.style.transform = '';
     setDragging(null);
   };
 
-  const startResize = (e: PointerEvent<HTMLSpanElement>, card: string, side: 'e' | 'w') => {
+  const startResize = (e: PointerEvent<HTMLSpanElement>, card: string, handle: Handle) => {
     e.stopPropagation();
     e.preventDefault();
     const item = e.currentTarget.closest<HTMLElement>('[data-card]')!;
+    const content = item.querySelector<HTMLElement>('.ep-edit-item__content')!;
     const width = grid.current!.clientWidth;
     e.currentTarget.setPointerCapture(e.pointerId);
-    setResize({ card, side, x: e.clientX, width: item.getBoundingClientRect().width, col: (width - GAP * 11) / 12 });
-    setGuide({ top: item.offsetTop, height: item.offsetHeight });
+    setResize({
+      card, handle, x: e.clientX, y: e.clientY,
+      width: item.getBoundingClientRect().width, height: content.getBoundingClientRect().height, col: (width - GAP * 11) / 12,
+    });
+    if (changesWidth(handle)) setGuide({ top: item.offsetTop, height: item.offsetHeight });
   };
   const moveResize = (e: PointerEvent<HTMLSpanElement>) => {
     if (!resize) return;
-    const dx = (e.clientX - resize.x) * (resize.side === 'e' ? 1 : -1);
-    const span = Math.round((resize.width + dx + GAP) / (resize.col + GAP));
-    const next = setSpan(layout, resize.card, span);
-    if (spanOf(next, resize.card) !== spanOf(layout, resize.card)) onChange(next);
+    let next = layout;
+    if (changesWidth(resize.handle)) {
+      const dx = (e.clientX - resize.x) * (resize.handle === 'w' ? -1 : 1);
+      next = setSpan(next, resize.card, Math.round((resize.width + dx + GAP) / (resize.col + GAP)));
+    }
+    if (changesHeight(resize.handle)) next = setHeight(next, resize.card, resize.height + e.clientY - resize.y);
+    if (spanOf(next, resize.card) !== spanOf(layout, resize.card) || heightOf(next, resize.card) !== heightOf(layout, resize.card)) {
+      onChange(next);
+      const item = grid.current?.querySelector<HTMLElement>(`[data-card="${resize.card}"]`);
+      if (item && changesWidth(resize.handle)) setGuide({ top: item.offsetTop, height: item.offsetHeight });
+    }
   };
   const endResize = () => { setResize(null); setGuide(null); };
 
@@ -129,6 +165,15 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
     if (e.target !== e.currentTarget) return;
     const span = spanOf(layout, card);
     if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); onChange(removeCard(layout, card)); setAnnounce(`${labelOf(card)} removed`); return; }
+    if (e.shiftKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+      e.preventDefault();
+      const content = e.currentTarget.querySelector<HTMLElement>('.ep-edit-item__content');
+      const current = heightOf(layout, card) ?? content?.getBoundingClientRect().height ?? 450;
+      const next = setHeight(layout, card, current + (e.key === 'ArrowUp' ? -ROW_STEP : ROW_STEP));
+      onChange(next);
+      setAnnounce(`${labelOf(card)}, ${heightOf(next, card)} pixels high`);
+      return;
+    }
     if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
     e.preventDefault();
     const step = e.key === 'ArrowLeft' ? -1 : 1;
@@ -174,10 +219,11 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
             onPointerDown={(e) => onPointerDown(e, card)}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
-            onPointerCancel={() => { press.current = null; setDragging(null); }}
+            onPointerCancel={(e) => { press.current = null; e.currentTarget.style.transform = ''; setDragging(null); }}
             onKeyDown={(e) => onKeyDown(e, card)}
           >
             <div className="ep-edit-item__bar">
+              <span className="ep-edit-grip" title="Drag to move" aria-hidden><Icon name="dragable" size={16} /></span>
               <div className="ep-edit-sizes" role="group" aria-label={`Width of ${label}`}>
                 {SIZES.map((sz) => (
                   <button key={sz.label} type="button" aria-pressed={sizeOf(span) === sz.span} onClick={() => onChange(setSpan(layout, card, sz.span))}>{sz.label}</button>
@@ -188,13 +234,14 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
             <div className="ep-edit-item__content" {...{ inert: '' }}>{render(card)}</div>
             {(
               <>
-                {(['nw', 'n', 'ne', 'sw', 's', 'se'] as const).map((p) => <span key={p} className={`ep-edit-dot ep-edit-dot--${p}`} aria-hidden />)}
-                {(['w', 'e'] as const).map((side) => (
+                {HANDLES.map((handle) => (
                   <span
-                    key={side}
-                    className={`ep-edit-dot ep-edit-dot--${side} is-handle`}
+                    key={handle}
+                    className={`ep-edit-handle ep-edit-handle--${handle}`}
                     aria-hidden
-                    onPointerDown={(e) => startResize(e, card, side)}
+                    title={HANDLE_LABELS[handle]}
+                    onDoubleClick={changesHeight(handle) ? () => onChange(setHeight(layout, card, null)) : undefined}
+                    onPointerDown={(e) => startResize(e, card, handle)}
                     onPointerMove={moveResize}
                     onPointerUp={endResize}
                     onPointerCancel={endResize}
@@ -210,7 +257,7 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
         <span className="syn-title-text">Add Widget</span>
       </button>
       <p id="ep-edit-help" className="syn-visually-hidden">
-        Drag, or press Arrow Left and Right, to move. Drag a side dot, or press Shift and an arrow, to resize. Delete removes it.
+        Drag, or press Arrow Left and Right, to move. Drag a side bar, or press Shift with Arrow Left or Right, to change the width; drag the bottom bar, or press Shift with Arrow Up or Down, to change the height by a row. Delete removes it.
       </p>
       <p className="syn-visually-hidden" aria-live="polite">{announce}</p>
     </div>
