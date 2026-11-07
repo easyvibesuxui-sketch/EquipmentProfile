@@ -1,0 +1,233 @@
+import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
+import { Button, Icon } from '@syn/design-system';
+import {
+  MAX_SPAN, fitOf, moveCard, removeCard, setSpan, spanOf, stepCard, visibleCards, type WidgetLayout,
+} from './layout';
+import './EditMode.css';
+
+const GAP = 24;
+const SIZES = [
+  { label: '1/3', span: 4 },
+  { label: '2/3', span: 8 },
+  { label: 'Full width', span: MAX_SPAN },
+];
+/** The size button that shows as current: the nearest of 1/3, 2/3 and Full width. */
+const sizeOf = (span: number) => (span <= 4 ? 4 : span <= 8 ? 8 : MAX_SPAN);
+
+/** Figma "Edit Mode" banner (17118:62279): in place of the tabs while editing. */
+export function EditBanner({ onSection }: { onSection: () => void }) {
+  return (
+    <section className="ep-edit-banner" aria-labelledby="ep-edit-title">
+      <div className="ep-edit-banner__text">
+        <h2 id="ep-edit-title" className="ep-edit-banner__title">Edit Mode</h2>
+        <p className="ep-edit-banner__hint">make overview page more comfortable for you. Replace or remove Widgets, change Widget size, change position.</p>
+      </div>
+      {/* Figma "Manage widgets — Customize": a 80px Dodger Blue line drawing of a widget and a pencil. */}
+      <svg className="ep-edit-banner__art" width="80" height="80" viewBox="0 0 80 80" fill="none" aria-hidden>
+        <rect x="20.5" y="20.5" width="39" height="11" rx="3" />
+        <rect x="20.5" y="38.5" width="15" height="21" rx="3" />
+        <path d="M44 59.5h-3.5V56l11-11a2.5 2.5 0 0 1 3.5 0v0a2.5 2.5 0 0 1 0 3.5l-11 11Z" />
+        <path d="m49.5 47.5 3.5 3.5" />
+      </svg>
+      <button type="button" className="ep-edit-banner__section" onClick={onSection}>
+        <Icon name="plus-in-circle" size={14} />Section
+      </button>
+    </section>
+  );
+}
+
+/** Figma "Bottom Line" (17107:60003): Discard and Save, kept in view at the bottom while editing. */
+export function EditBar({ onDiscard, onSave }: { onDiscard: () => void; onSave: () => void }) {
+  return (
+    <div className="ep-edit-bar" role="region" aria-label="Edit Mode actions">
+      <Button variant="secondary" size="md" className="ep-edit-bar__button" onClick={onDiscard}>Discard</Button>
+      <Button size="md" className="ep-edit-bar__button" onClick={onSave}>Save</Button>
+    </div>
+  );
+}
+
+function CloseButton({ label, onClick, className }: { label: string; onClick: () => void; className: string }) {
+  return (
+    <button type="button" className={`ep-edit-close ${className}`} aria-label={label} title={label} onClick={(e) => { e.stopPropagation(); onClick(); }}>
+      <Icon name="close" size={14} />
+    </button>
+  );
+}
+
+interface GridProps {
+  layout: WidgetLayout;
+  onChange: (layout: WidgetLayout) => void;
+  render: (card: string) => ReactNode;
+  labelOf: (card: string) => string;
+  onAdd: () => void;
+}
+
+type Resize = { card: string; side: 'e' | 'w'; x: number; width: number; col: number };
+
+/**
+ * The Overview in Edit Mode (Figma 17068:71648, 17107:58944, 17107:61363). Every card has the round remove
+ * button at its corner. Click a card to select it: it shows 1/3, 2/3 and Full width and its resize dots; drag
+ * a side dot to resize on the 12 columns, shown as Smoke slots while resizing. Drag a card to move it.
+ * Keyboard: Arrow Left/Right moves the focused card, Shift+Arrow changes its width, Delete removes it.
+ * The widgets themselves are inert while editing, so maps and drawers do not take the pointer.
+ */
+export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps) {
+  const grid = useRef<HTMLDivElement>(null);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [height, setHeight] = useState<number | null>(null);
+  const [dragging, setDragging] = useState<string | null>(null);
+  const [resize, setResize] = useState<Resize | null>(null);
+  const [guide, setGuide] = useState<{ top: number; height: number } | null>(null);
+  const press = useRef<{ card: string; x: number; y: number; moved: boolean } | null>(null);
+  const [announce, setAnnounce] = useState('');
+  const cards = visibleCards(layout);
+
+  useEffect(() => { if (selected && !cards.includes(selected)) setSelected(null); }, [cards, selected]);
+
+  const select = (card: string | null, el?: HTMLElement) => {
+    setHeight(card && el ? el.getBoundingClientRect().height : null);
+    setSelected(card);
+  };
+
+  const onPointerDown = (e: PointerEvent<HTMLDivElement>, card: string) => {
+    if (e.button !== 0 || (e.target as Element).closest('button')) return;
+    press.current = { card, x: e.clientX, y: e.clientY, moved: false };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+  const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
+    const p = press.current;
+    if (!p) return;
+    if (!p.moved && Math.hypot(e.clientX - p.x, e.clientY - p.y) < 6) return;
+    if (!p.moved) { p.moved = true; setDragging(p.card); setSelected(null); setHeight(null); }
+    const over = document.elementsFromPoint(e.clientX, e.clientY)
+      .map((el) => el.closest<HTMLElement>('[data-card]'))
+      .find((el) => el && el.dataset.card !== p.card);
+    if (!over) return;
+    const r = over.getBoundingClientRect();
+    const next = moveCard(layout, p.card, over.dataset.card!, e.clientX > r.left + r.width / 2);
+    if (next.order.join() !== layout.order.join()) onChange(next);
+  };
+  const onPointerUp = (e: PointerEvent<HTMLDivElement>) => {
+    const p = press.current;
+    press.current = null;
+    setDragging(null);
+    if (p && !p.moved) select(p.card === selected ? null : p.card, e.currentTarget);
+  };
+
+  const startResize = (e: PointerEvent<HTMLSpanElement>, card: string, side: 'e' | 'w') => {
+    e.stopPropagation();
+    e.preventDefault();
+    const item = e.currentTarget.closest<HTMLElement>('[data-card]')!;
+    const width = grid.current!.clientWidth;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setResize({ card, side, x: e.clientX, width: item.getBoundingClientRect().width, col: (width - GAP * 11) / 12 });
+    setGuide({ top: item.offsetTop, height: item.offsetHeight });
+  };
+  const moveResize = (e: PointerEvent<HTMLSpanElement>) => {
+    if (!resize) return;
+    const dx = (e.clientX - resize.x) * (resize.side === 'e' ? 1 : -1);
+    const span = Math.round((resize.width + dx + GAP) / (resize.col + GAP));
+    const next = setSpan(layout, resize.card, span);
+    if (spanOf(next, resize.card) !== spanOf(layout, resize.card)) onChange(next);
+  };
+  const endResize = () => { setResize(null); setGuide(null); };
+
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>, card: string) => {
+    if (e.target !== e.currentTarget) return;
+    const span = spanOf(layout, card);
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(card === selected ? null : card, e.currentTarget); return; }
+    if (e.key === 'Escape') { select(null); return; }
+    if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); onChange(removeCard(layout, card)); setAnnounce(`${labelOf(card)} removed`); return; }
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault();
+    const step = e.key === 'ArrowLeft' ? -1 : 1;
+    if (e.shiftKey) {
+      const next = setSpan(layout, card, span + step);
+      onChange(next);
+      setAnnounce(`${labelOf(card)}, ${spanOf(next, card)} of 12 columns`);
+    } else {
+      const next = stepCard(layout, card, step);
+      onChange(next);
+      const order = visibleCards(next);
+      setAnnounce(`${labelOf(card)}, position ${order.indexOf(card) + 1} of ${order.length}`);
+      requestAnimationFrame(() => grid.current?.querySelector<HTMLElement>(`[data-card="${card}"]`)?.focus());
+    }
+  };
+
+  return (
+    <div
+      className="ep-edit-grid syn-grid"
+      ref={grid}
+      style={{ '--grid-gap': `${GAP}px` } as CSSProperties}
+      onPointerDown={(e) => { if (e.target === e.currentTarget) select(null); }}
+    >
+      {guide && (
+        <div className="ep-edit-guide" style={{ top: guide.top, height: guide.height }} aria-hidden>
+          {Array.from({ length: 12 }, (_, i) => <span key={i} />)}
+        </div>
+      )}
+      {cards.map((card) => {
+        const span = spanOf(layout, card);
+        const isSelected = selected === card;
+        const label = labelOf(card);
+        const cls = ['ep-edit-item', 'syn-grid__item', 'ep-col', `ep-col--${fitOf(span)}`,
+          isSelected && 'is-selected', dragging === card && 'is-dragging', resize?.card === card && 'is-resizing'].filter(Boolean).join(' ');
+        return (
+          <div
+            key={card}
+            data-card={card}
+            className={cls}
+            style={{ '--span': span, ...(isSelected && height ? { height } : {}) } as CSSProperties}
+            tabIndex={0}
+            role="group"
+            aria-label={`${label}, ${span} of 12 columns`}
+            aria-describedby="ep-edit-help"
+            onPointerDown={(e) => onPointerDown(e, card)}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={() => { press.current = null; setDragging(null); }}
+            onKeyDown={(e) => onKeyDown(e, card)}
+          >
+            {isSelected ? (
+              <div className="ep-edit-item__bar">
+                <div className="ep-edit-sizes" role="group" aria-label={`Width of ${label}`}>
+                  {SIZES.map((s) => (
+                    <button key={s.label} type="button" aria-pressed={sizeOf(span) === s.span} onClick={() => onChange(setSpan(layout, card, s.span))}>{s.label}</button>
+                  ))}
+                </div>
+                <CloseButton label={`Remove ${label}`} className="ep-edit-close--bar" onClick={() => onChange(removeCard(layout, card))} />
+              </div>
+            ) : (
+              <CloseButton label={`Remove ${label}`} className="ep-edit-close--corner" onClick={() => onChange(removeCard(layout, card))} />
+            )}
+            <div className="ep-edit-item__content" {...{ inert: '' }}>{render(card)}</div>
+            {isSelected && (
+              <>
+                {(['nw', 'n', 'ne', 'sw', 's', 'se'] as const).map((p) => <span key={p} className={`ep-edit-dot ep-edit-dot--${p}`} aria-hidden />)}
+                {(['w', 'e'] as const).map((side) => (
+                  <span
+                    key={side}
+                    className={`ep-edit-dot ep-edit-dot--${side} is-handle`}
+                    aria-hidden
+                    onPointerDown={(e) => startResize(e, card, side)}
+                    onPointerMove={moveResize}
+                    onPointerUp={endResize}
+                    onPointerCancel={endResize}
+                  />
+                ))}
+              </>
+            )}
+          </div>
+        );
+      })}
+      <button type="button" className="ep-edit-add syn-grid__item ep-col ep-col--half" style={{ '--span': 3 } as CSSProperties} onClick={onAdd}>
+        <Icon name="plus-in-circle" size={34} />
+        <span className="syn-title-text">Add Widget</span>
+      </button>
+      <p id="ep-edit-help" className="syn-visually-hidden">
+        Click or press Enter to select. Drag, or press Arrow Left and Right, to move. Drag a side dot, or press Shift and an arrow, to resize. Delete removes it.
+      </p>
+      <p className="syn-visually-hidden" aria-live="polite">{announce}</p>
+    </div>
+  );
+}

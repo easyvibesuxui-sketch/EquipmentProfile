@@ -74,7 +74,10 @@ function LiveLocation() {
     }).addTo(m);
     m.on('zoomend', () => setZoom(m.getZoom()));
     map.current = m;
-    return () => { m.remove(); map.current = null; };
+    // The card's width changes in Edit Mode (resize) and at the breakpoints; Leaflet only tracks the window.
+    const ro = new ResizeObserver(() => m.invalidateSize());
+    ro.observe(el.current);
+    return () => { ro.disconnect(); m.remove(); map.current = null; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

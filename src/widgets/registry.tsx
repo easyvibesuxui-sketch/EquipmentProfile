@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import {
-  CheckInsWidget, HistoryWidget, IdentificationsWidget, SpecificationsWidget, connectedEntities, type ConnectedId,
+  CheckInsWidget, HistoryWidget, IdentificationsWidget, SpecificationsWidget, type ConnectedId,
 } from '../overview/widgets';
 import { LocationWidget } from '../overview/LocationWidget';
 import { DistanceWidget, OperatingHoursWidget, OperationByHourWidget } from '../overview/charts';
@@ -39,6 +39,12 @@ export interface WidgetDef {
 const half3: WidgetSize = { span: 3, fit: 'half' };
 const full: WidgetSize = { span: 12, fit: 'full' };
 
+/** Drawer labels from the Figma "Manage Widgets" list (17064:71031); the card keeps its own row labels. */
+const connectedLabels: Record<ConnectedId, string> = {
+  primary: 'Primary asset', linked: 'Linked assets', warehouse: 'Warehouse', crew: 'Crew', person: 'Connected person',
+  operator: 'Operator', assigning: 'Assigning', tag: 'Tag', inventory: 'Inventory',
+};
+
 const connectedOrder: ConnectedId[] = ['primary', 'linked', 'inventory', 'crew', 'person', 'warehouse', 'operator', 'assigning', 'tag'];
 const connectedOn = new Set<ConnectedId>(['primary', 'linked', 'inventory', 'crew', 'person']);
 
@@ -48,7 +54,7 @@ export const widgets: WidgetDef[] = [
   { id: 'current-location', category: 'overview', label: 'Current location', size: { span: 6, fit: 'wide' }, defaultOn: true, render: () => <LocationWidget /> },
   { id: 'specific-machine-information', category: 'specifications', label: 'Specific machine information', size: half3, defaultOn: true, render: () => <IdentificationsWidget /> },
   ...connectedOrder.map((id): WidgetDef => ({
-    id: `connected-${id}`, category: 'connected', label: connectedEntities[id].label, size: half3, defaultOn: connectedOn.has(id),
+    id: `connected-${id}`, category: 'connected', label: connectedLabels[id], size: half3, defaultOn: connectedOn.has(id),
   })),
   { id: 'checkins-charging', category: 'overview', label: 'Checkins and charging', size: { span: 5, fit: 'wide' }, defaultOn: true, render: () => <CheckInsWidget /> },
   { id: 'recent-actions', category: 'overview', label: 'Recent actions from History', size: { span: 4, fit: 'half' }, defaultOn: true, render: () => <HistoryWidget /> },

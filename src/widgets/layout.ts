@@ -1,17 +1,27 @@
 import { useCallback, useState } from 'react';
 import { widgetById, widgets, type WidgetCategory } from './registry';
 
-/** Which widgets the Overview shows, and in what order. `order` always lists every widget. */
+/**
+ * Which widgets the Overview shows, in what order and how wide. `order` always lists every widget; `spans`
+ * holds the widths changed in Edit Mode (12-column grid), keyed by card (see `CONNECTED`).
+ */
 export interface WidgetLayout {
   order: string[];
   hidden: string[];
+  spans: Record<string, number>;
 }
+
+/** The connected entities share one card (Dependance); on the page they move and resize as this one card. */
+export const CONNECTED = 'connected';
+export const MIN_SPAN = 3;
+export const MAX_SPAN = 12;
 
 const STORAGE_KEY = 'ep-overview-widgets-v1';
 
 export const defaultLayout = (): WidgetLayout => ({
   order: widgets.map((w) => w.id),
   hidden: widgets.filter((w) => !w.defaultOn).map((w) => w.id),
+  spans: {},
 });
 
 /** Drops ids that no longer exist and appends new widgets (with their default visibility). */
@@ -20,9 +30,14 @@ function normalise(saved: Partial<WidgetLayout> | null): WidgetLayout {
   if (!saved || !Array.isArray(saved.order) || !Array.isArray(saved.hidden)) return base;
   const known = saved.order.filter((id) => widgetById.has(id));
   const added = base.order.filter((id) => !known.includes(id));
+  const spans: Record<string, number> = {};
+  Object.entries(saved.spans ?? {}).forEach(([k, v]) => {
+    if (typeof v === 'number' && v >= MIN_SPAN && v <= MAX_SPAN) spans[k] = Math.round(v);
+  });
   return {
     order: [...new Set([...known, ...added])],
     hidden: [...saved.hidden.filter((id) => widgetById.has(id)), ...added.filter((id) => base.hidden.includes(id))],
+    spans,
   };
 }
 
@@ -47,28 +62,64 @@ function save(layout: WidgetLayout) {
 export const categoryIds = (layout: WidgetLayout, category: WidgetCategory) =>
   layout.order.filter((id) => widgetById.get(id)?.category === category);
 
-/**
- * Moves a widget within its category. The category keeps the same slots in the page order, so a
- * reorder never moves a widget past one from another category.
- */
-export function moveWithinCategory(layout: WidgetLayout, id: string, to: number): WidgetLayout {
-  const category = widgetById.get(id)?.category;
-  if (!category) return layout;
-  const ids = categoryIds(layout, category);
-  const from = ids.indexOf(id);
-  const target = Math.max(0, Math.min(ids.length - 1, to));
-  if (from < 0 || from === target) return layout;
-  ids.splice(from, 1);
-  ids.splice(target, 0, id);
-  let next = 0;
-  return { ...layout, order: layout.order.map((x) => (widgetById.get(x)?.category === category ? ids[next++] : x)) };
-}
-
 export function setVisible(layout: WidgetLayout, ids: string[], visible: boolean): WidgetLayout {
   const hidden = new Set(layout.hidden);
   ids.forEach((id) => (visible ? hidden.delete(id) : hidden.add(id)));
   return { ...layout, hidden: layout.order.filter((id) => hidden.has(id)) };
 }
+
+const isConnected = (id: string) => widgetById.get(id)?.category === 'connected';
+
+/** The cards on the page, in order: one per visible widget, the connected entities as one `CONNECTED` card. */
+export function visibleCards(layout: WidgetLayout): string[] {
+  const hidden = new Set(layout.hidden);
+  const cards: string[] = [];
+  layout.order.forEach((id) => {
+    if (hidden.has(id)) return;
+    const card = isConnected(id) ? CONNECTED : id;
+    if (!cards.includes(card)) cards.push(card);
+  });
+  return cards;
+}
+
+/** The visible connected entities, in order: the rows of the Dependance card. */
+export const visibleConnected = (layout: WidgetLayout) => layout.order.filter((id) => isConnected(id) && !layout.hidden.includes(id));
+
+/** Moves a card next to another one on the page. Hidden widgets keep their order after the visible ones. */
+export function moveCard(layout: WidgetLayout, card: string, target: string, after: boolean): WidgetLayout {
+  if (card === target) return layout;
+  const cards = visibleCards(layout).filter((c) => c !== card);
+  const at = cards.indexOf(target);
+  if (at < 0) return layout;
+  cards.splice(after ? at + 1 : at, 0, card);
+  const connected = visibleConnected(layout);
+  const shown = cards.flatMap((c) => (c === CONNECTED ? connected : [c]));
+  return { ...layout, order: [...shown, ...layout.order.filter((id) => !shown.includes(id))] };
+}
+
+/** Moves a card one place earlier or later (keyboard). */
+export function stepCard(layout: WidgetLayout, card: string, step: -1 | 1): WidgetLayout {
+  const cards = visibleCards(layout);
+  const i = cards.indexOf(card);
+  const target = cards[i + step];
+  return target ? moveCard(layout, card, target, step > 0) : layout;
+}
+
+/** Hides a card: a widget, or every connected entity for the Dependance card. */
+export const removeCard = (layout: WidgetLayout, card: string) =>
+  setVisible(layout, card === CONNECTED ? layout.order.filter(isConnected) : [card], false);
+
+/** The card's width in columns: the Edit Mode width, else the registry default (Dependance: 3). */
+export const spanOf = (layout: WidgetLayout, card: string) =>
+  layout.spans[card] ?? (card === CONNECTED ? 3 : widgetById.get(card)?.size.span ?? MAX_SPAN);
+
+export const setSpan = (layout: WidgetLayout, card: string, span: number): WidgetLayout => ({
+  ...layout,
+  spans: { ...layout.spans, [card]: Math.max(MIN_SPAN, Math.min(MAX_SPAN, Math.round(span))) },
+});
+
+/** How the card regroups below 1600px (responsive.css): up to 4 columns takes half the row, more the full row. */
+export const fitOf = (span: number) => (span >= MAX_SPAN ? 'full' : span >= 5 ? 'wide' : 'half');
 
 /** The saved layout, persisted in this browser. */
 export function useWidgetLayout() {

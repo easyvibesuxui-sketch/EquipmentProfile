@@ -1,24 +1,43 @@
-import { Button, EmptyState, Grid, GridItem } from '@syn/design-system';
+import { Button, EmptyState, Grid, GridItem, type GridItemProps } from '@syn/design-system';
 import { DependenceWidget } from './widgets';
 import { connectedIdOf, widgetById } from '../widgets/registry';
-import type { WidgetLayout } from '../widgets/layout';
+import { CONNECTED, fitOf, spanOf, visibleCards, visibleConnected, type WidgetLayout } from '../widgets/layout';
+import { EditGrid } from '../widgets/EditMode';
 import './Overview.css';
 
-/**
- * Overview tab of the equipment profile (Figma "Equipment Profile Home", 13767:3742). The widgets, their
- * order and visibility come from "Manage Widgets"; the defaults are the Figma page. One 12-column grid
- * with dense flow, so a row closes up when a widget is switched off.
- */
-export function OverviewTab({ layout, onManage }: { layout: WidgetLayout; onManage: () => void }) {
-  const hidden = new Set(layout.hidden);
-  const visible = layout.order.filter((id) => !hidden.has(id));
-  // Connected entities are rows of one Dependance card, placed where the first of them sits.
-  const connected = visible.filter((id) => widgetById.get(id)?.category === 'connected');
+interface Props {
+  layout: WidgetLayout;
+  /** Edit Mode: the layout is the draft and the grid can be edited. */
+  editing?: boolean;
+  onChange?: (layout: WidgetLayout) => void;
+  onEdit: () => void;
+  onAddWidget?: () => void;
+}
 
-  if (visible.length === 0) {
+/**
+ * Overview tab of the equipment profile (Figma "Equipment Profile Home", 13767:3742). The cards, their order,
+ * widths and visibility come from the widget layout (Edit Mode and Manage Widgets); the defaults are the Figma
+ * page. One 12-column grid with dense flow, so a row closes up when a widget is switched off.
+ */
+export function OverviewTab({ layout, editing, onChange, onEdit, onAddWidget }: Props) {
+  const cards = visibleCards(layout);
+  const render = (card: string) => (card === CONNECTED
+    ? <DependenceWidget rows={visibleConnected(layout).map(connectedIdOf)} />
+    : widgetById.get(card)?.render?.());
+  const labelOf = (card: string) => (card === CONNECTED ? 'Dependance' : widgetById.get(card)?.label ?? card);
+
+  if (editing && onChange) {
+    return (
+      <div className="ep-overview">
+        <EditGrid layout={layout} onChange={onChange} render={render} labelOf={labelOf} onAdd={() => onAddWidget?.()} />
+      </div>
+    );
+  }
+
+  if (cards.length === 0) {
     return (
       <div className="ep-overview ep-overview__empty">
-        <EmptyState action={<Button variant="secondary" size="sm" iconStart="settings" onClick={onManage}>Manage Widgets</Button>}>
+        <EmptyState action={<Button variant="secondary" size="sm" iconStart="settings" onClick={onEdit}>Edit widgets</Button>}>
           No widgets on the Overview
         </EmptyState>
       </div>
@@ -28,19 +47,11 @@ export function OverviewTab({ layout, onManage }: { layout: WidgetLayout; onMana
   return (
     <div className="ep-overview">
       <Grid gap={24} className="ep-overview__grid">
-        {visible.map((id) => {
-          const w = widgetById.get(id)!;
-          if (w.category === 'connected') {
-            if (id !== connected[0]) return null;
-            return (
-              <GridItem key="dependance" span={w.size.span} className="ep-col ep-col--half">
-                <DependenceWidget rows={connected.map(connectedIdOf)} />
-              </GridItem>
-            );
-          }
+        {cards.map((card) => {
+          const span = spanOf(layout, card);
           return (
-            <GridItem key={id} span={w.size.span} className={`ep-col ep-col--${w.size.fit}`}>
-              {w.render?.()}
+            <GridItem key={card} span={span as GridItemProps['span']} className={`ep-col ep-col--${fitOf(span)}`}>
+              {render(card)}
             </GridItem>
           );
         })}

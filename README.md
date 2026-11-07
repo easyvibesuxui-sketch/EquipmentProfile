@@ -55,21 +55,31 @@ opens its drawer:
 Rule (in Syn): a widget's open chevron (`syn-card__open`) shows only while the card is hovered or has focus;
 touch screens always show it.
 
-## Manage Widgets
+## Edit Mode (widgets)
 
-The gear at the end of the profile tabs (Overview only) opens *Manage Widgets*, laid out after the Figma
-[Mail Notifications](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=11612-41869) drawer:
-one group per category (Overview, Specifications, Documents, Connected entities, Telemetry), a switch per widget,
-"Show all" per group and "All widgets" at the top. Drag a row by its handle (or focus the handle and press
-Arrow Up/Down) to change its place on the Overview; a widget moves only among the widgets of its own category.
-Changes apply on **Submit**; Discard and Close drop them, and the arrow icon resets to the Figma defaults.
-The layout is saved in the browser (`localStorage`, key `ep-overview-widgets-v1`), not per user yet.
+The gear at the end of the profile tabs (Overview only) opens Edit Mode, built from the Figma frames
+[Edit mode](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=17068-71648),
+[selected widget](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=17107-58944),
+[resizing](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=17107-61363) and
+[Manage Widgets](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=17064-71031):
 
-- `src/widgets/registry.tsx` lists every widget: category, label, width on the grid, default visibility.
-- `src/widgets/layout.ts` holds the order and hidden list, the reorder rule and the storage.
-- Connected entities are the rows of the Dependance card, which sits where the first of them is.
-- Equipment Details, Calculation type, BGL Information and the Documents widgets have no Figma design yet:
-  their content in `src/overview/moreWidgets.tsx` is a placeholder.
+- The tabs give way to the dashed "Edit Mode" banner; a floating bar at the bottom holds **Discard** and **Save**.
+  Everything is a draft until Save; Discard drops it.
+- Every card has the round **remove** button at its corner.
+- **Click** a card to select it: a bar on top shows **1/3 · 2/3 · Full width** (4, 8 or 12 columns) and remove,
+  and dots mark its edges. **Drag a side dot** to resize on the 12 columns (Smoke column slots show while
+  resizing); **drag the card** to move it.
+- **Add Widget** (the dashed tile after the last card) and the banner's **Section** button open *Manage Widgets*:
+  a collapsible group per category with a switch per widget. A widget switched on is added at the end of the page.
+- Keyboard: Tab to a card, Enter selects it, Arrow Left/Right moves it, Shift+Arrow changes its width, Delete removes it.
+- The widgets are inert while editing (no drawers, no map panning). The Dependance card moves and resizes as one
+  card; its rows are the connected entities switched on in Manage Widgets.
+- Widths are stored per card in the layout (`spans`); below 1600px a card of up to 4 columns takes half the row
+  and a wider one the full row. Only the width is adjustable; card heights stay as designed.
+- The layout is saved in the browser (`localStorage`, key `ep-overview-widgets-v1`), not per user yet.
+
+`src/widgets/registry.tsx` lists the widgets, `src/widgets/layout.ts` holds the order, visibility, widths and the
+move/resize rules, `src/widgets/EditMode.tsx` the banner, the edit grid and the bottom bar.
 
 ## Getting started
 
@@ -111,7 +121,7 @@ for are named constants in `src/styles/app.css` (`--ep-*`).
 | `src/overview/HistoryDrawer.tsx`, `CheckInsDrawer.tsx`, `DependenceDrawer.tsx`, `InfoDrawer.tsx`, `LocationDrawer.tsx` | Drawers opened from the Overview widgets |
 | `src/shared/OpensDrawer.tsx` | Makes a whole widget open its drawer (ignores its controls and drags) |
 | `src/shared/PanelDrawer.tsx` | The 640px side panel (Syn Drawer) all profile drawers use |
-| `src/widgets/` | Manage Widgets: registry, layout state, drawer |
+| `src/widgets/` | Edit Mode and Manage Widgets: registry, layout state, edit grid, drawer |
 | `src/overview/charts.tsx` | Operating Hours, Operation Hours by hour, Distance travelled |
 | `src/telemetry/` | Telemetry tab: speed gauge, last known location and map, status tiles, Tracker sensors, Digital and Analogue inputs, Dashcam |
 | `src/data/equipment.ts` | Mock data taken from the design, to be replaced by the API |

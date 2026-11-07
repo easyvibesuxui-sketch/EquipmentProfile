@@ -1,70 +1,53 @@
-/* "Manage Widgets", after the Figma "Mail Notifications" drawer (11612:41869). The panel itself is PanelDrawer. */
+/* "Manage Widgets" drawer (Figma 17064:71031). The panel itself is PanelDrawer. */
 
-/* "All widgets": Medium 14, padding 16/16/12/32. */
-.ep-widgets-drawer__all {
+/* A group: padding 12/16/12/32; a White head with a 1px Cultured border and 12px top corners, then a Smoke
+   body with a 2px Cultured border and 12px bottom corners holding the 40px rows 2px apart. */
+.ep-widgets-group { padding: var(--syn-space-12) var(--syn-space-16) var(--syn-space-12) var(--syn-grid-margin); }
+.ep-widgets-group__title { margin: 0; }
+.ep-widgets-group__head {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--syn-space-8);
-  padding: var(--syn-space-16) var(--syn-space-16) var(--syn-space-12) var(--syn-grid-margin);
-  font: var(--syn-type-titles-title-4);
+  width: 100%;
+  padding: var(--syn-space-8) var(--syn-space-12);
+  border: 1px solid var(--syn-border-default);
+  border-radius: var(--syn-radius-widget) var(--syn-radius-widget) 0 0;
+  background: var(--syn-surface-default);
+  color: var(--syn-text-primary);
+  font: var(--syn-type-titles-title-5);
+  text-align: left;
+  cursor: pointer;
 }
-.ep-widgets-drawer__all > span { flex: 1; position: relative; top: var(--syn-title-offset); }
-
-/* A group: Cultured 1px box, 8px corners; White head and foot rows, rows of 40px in between. */
-.ep-widgets-group { padding: var(--syn-space-8) var(--syn-space-16) var(--syn-space-8) var(--syn-grid-margin); }
-.ep-widgets-group__box { border: 1px solid var(--syn-border-default); border-radius: var(--syn-radius-element); }
-.ep-widgets-group__head, .ep-widgets-group__foot {
+.ep-widgets-group__head[aria-expanded='false'] { border-radius: var(--syn-radius-widget); }
+.ep-widgets-group__head:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.ep-widgets-group__list {
   display: flex;
-  align-items: center;
-  gap: var(--syn-space-8);
+  flex-direction: column;
+  gap: var(--syn-space-2);
   margin: 0;
   padding: var(--syn-space-8);
-  background: var(--syn-surface-default);
-  font: var(--syn-type-titles-title-6);
+  border: 2px solid var(--syn-border-default);
+  border-top: 0;
+  border-radius: 0 0 var(--syn-radius-widget) var(--syn-radius-widget);
+  background: var(--syn-surface-subtle);
+  list-style: none;
 }
-.ep-widgets-group__head { min-height: 31px; border-bottom: 1px solid var(--syn-border-default); border-radius: var(--syn-radius-element) var(--syn-radius-element) 0 0; }
-.ep-widgets-group__foot { border-top: 1px solid var(--syn-border-default); border-radius: 0 0 var(--syn-radius-element) var(--syn-radius-element); }
-.ep-widgets-group__head > span:first-child, .ep-widgets-group__foot > span { flex: 1; position: relative; top: var(--syn-title-offset); }
-.ep-widgets-group__count { color: var(--syn-text-muted); }
-
-.ep-widgets-group__list { display: flex; flex-direction: column; gap: var(--syn-space-2); margin: 0; padding: var(--syn-space-8) var(--syn-space-4); list-style: none; }
 .ep-widgets-row {
   display: flex;
   align-items: center;
   gap: var(--syn-space-8);
   min-height: 40px;
-  padding: var(--syn-space-4) var(--syn-space-8) var(--syn-space-4) var(--syn-space-4);
+  padding: var(--syn-space-8);
   border: 1px solid var(--syn-border-default);
   border-radius: var(--syn-radius-element);
   background: var(--syn-surface-default);
   font: var(--syn-type-titles-title-6);
-  transition: box-shadow var(--syn-duration-fast), border-color var(--syn-duration-fast);
 }
-.ep-widgets-row__label { flex: 1; min-width: 0; position: relative; top: var(--syn-title-offset); }
-.ep-widgets-row.is-off .ep-widgets-row__label { color: var(--syn-text-muted); }
-.ep-widgets-row.is-dragging { position: relative; z-index: 1; border-color: var(--syn-border-strong); box-shadow: var(--syn-shadow-hover); }
-
-.ep-widgets-row__handle {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 30px;
-  padding: 0;
-  border: 0;
-  border-radius: var(--syn-radius-xs);
-  background: transparent;
-  color: var(--syn-text-muted);
-  cursor: grab;
-  touch-action: none;
-}
-.ep-widgets-row__handle:hover { color: var(--syn-text-primary); }
-.ep-widgets-row.is-dragging .ep-widgets-row__handle { color: var(--syn-text-primary); cursor: grabbing; }
-.ep-widgets-row__handle:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 0; }
+.ep-widgets-row__label { flex: 1; min-width: 0; }
 
 @media (max-width: 640px) {
-  .ep-widgets-drawer__all, .ep-widgets-group { padding-left: var(--syn-space-16); }
+  .ep-widgets-group { padding-left: var(--syn-space-16); }
 }
 
 /* The gear at the end of the profile tabs. */

@@ -1,0 +1,171 @@
+/* Edit Mode of the Overview (Figma 17068:71648, 17107:58944, 17107:61363). */
+
+/* Banner: Dodger Blue dashed 1px, a 2% Dodger Blue tint, 12px corners, padding 24/12. */
+.ep-edit-banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--syn-space-24);
+  min-height: 89px;
+  padding: var(--syn-space-24) var(--syn-space-12);
+  border: 1px dashed var(--syn-color-secondary-dodger-blue);
+  border-radius: var(--syn-radius-widget);
+  background: rgb(69 154 247 / 0.02);
+}
+.ep-edit-banner__text { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: var(--syn-space-2); }
+.ep-edit-banner__title { position: relative; top: var(--syn-title-offset); margin: 0; color: var(--syn-text-primary); font: var(--syn-type-titles-title-4); }
+.ep-edit-banner__hint { margin: 0; color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+.ep-edit-banner__art { flex: none; margin: -24px 0; stroke: var(--syn-color-secondary-dodger-blue); stroke-opacity: 0.45; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.ep-edit-banner__section {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--syn-space-8);
+  padding: var(--syn-space-8) var(--syn-space-32);
+  border: 0;
+  border-radius: var(--syn-radius-element);
+  background: var(--syn-surface-default);
+  color: var(--syn-text-primary);
+  font: var(--syn-type-button-text-button-secondary-s);
+  cursor: pointer;
+}
+.ep-edit-banner__section:hover { box-shadow: var(--syn-shadow-hover); }
+.ep-edit-banner__section:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+
+/* The grid: the Overview's 12 columns, dense flow; the Smoke column slots sit behind the cards while resizing. */
+.ep-edit-grid { position: relative; grid-auto-flow: row dense; }
+.ep-edit-guide {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: inherit;
+  pointer-events: none;
+}
+.ep-edit-guide > span { border-radius: var(--syn-radius-element); background: var(--syn-color-light-smoke); }
+
+.ep-edit-item {
+  position: relative;
+  z-index: 1;
+  border-radius: var(--syn-radius-widget);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.ep-edit-item:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 4px; }
+.ep-edit-item__content { height: 100%; pointer-events: none; }
+.ep-edit-item.is-dragging { z-index: 2; opacity: 0.7; cursor: grabbing; }
+.ep-edit-item.is-dragging .ep-edit-item__content > *, .ep-edit-item.is-resizing .ep-edit-item__content > * { outline: 1px dashed var(--syn-text-muted); outline-offset: 0; border-radius: var(--syn-radius-widget); }
+
+/* Selected: a Cultured card with a Silver Chalice dashed border and a 52px bar on top (sizes and remove);
+   the widget below keeps the card's height and is clipped at the bottom, as Figma draws it. */
+.ep-edit-item.is-selected {
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  border: 1px dashed var(--syn-text-muted);
+  background: var(--syn-surface-muted);
+  filter: drop-shadow(1px 3px 3px rgb(21 21 21 / 0.08));
+}
+.ep-edit-item.is-selected .ep-edit-item__content { flex: 1; min-height: 0; overflow: hidden; border-radius: var(--ep-radius-panel) var(--ep-radius-panel) var(--syn-radius-widget) var(--syn-radius-widget); }
+.ep-edit-item__bar { display: flex; flex: none; align-items: center; justify-content: space-between; gap: var(--syn-space-8); padding: var(--syn-space-12); }
+
+.ep-edit-sizes { display: flex; gap: var(--syn-space-4); padding: var(--syn-space-2); border-radius: var(--syn-radius-widget); background: var(--syn-surface-default); }
+.ep-edit-sizes button {
+  width: 96px;
+  height: var(--syn-size-control-xs);
+  padding: 0 var(--syn-space-8);
+  border: 1px solid var(--syn-border-default);
+  border-radius: 18px;
+  background: var(--syn-surface-default);
+  color: var(--syn-text-muted);
+  font: var(--syn-type-text-caption-2);
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ep-edit-sizes button[aria-pressed='true'] { background: var(--syn-surface-inverse); color: var(--syn-color-white-white); }
+.ep-edit-sizes button:not([aria-pressed='true']):hover { color: var(--syn-text-primary); }
+.ep-edit-sizes button:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+
+/* Remove: a 28px White circle, Silver Chalice border (Cultured in the bar), the 24px close glyph. */
+.ep-edit-close {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--syn-text-muted);
+  border-radius: var(--syn-radius-full);
+  background: var(--syn-surface-default);
+  color: var(--syn-text-primary);
+  cursor: pointer;
+}
+.ep-edit-close:hover { border-color: var(--syn-border-strong); }
+.ep-edit-close:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.ep-edit-close--corner { position: absolute; top: -6px; right: -11px; z-index: 3; filter: drop-shadow(1px 3px 3px rgb(21 21 21 / 0.16)); }
+.ep-edit-close--bar { border-color: var(--syn-border-default); }
+
+/* Resize dots: 4px Eerie Black dots on the corners and edge middles; the side ones are the handles. */
+.ep-edit-dot { position: absolute; z-index: 3; width: 4px; height: 4px; border-radius: var(--syn-radius-full); background: var(--syn-text-primary); }
+.ep-edit-dot--nw { top: -2px; left: -2px; }
+.ep-edit-dot--n { top: -2px; left: calc(50% - 2px); }
+.ep-edit-dot--ne { top: -2px; right: -2px; }
+.ep-edit-dot--sw { bottom: -2px; left: -2px; }
+.ep-edit-dot--s { bottom: -2px; left: calc(50% - 2px); }
+.ep-edit-dot--se { bottom: -2px; right: -2px; }
+.ep-edit-dot--w, .ep-edit-dot--e { top: calc(50% - 2px); }
+.ep-edit-dot--w { left: -2px; }
+.ep-edit-dot--e { right: -2px; }
+/* The side handles take a 16 x 48 hit area around the dot. */
+.ep-edit-dot.is-handle { cursor: ew-resize; touch-action: none; }
+.ep-edit-dot.is-handle::before { content: ''; position: absolute; top: -22px; left: -6px; width: 16px; height: 48px; }
+
+/* "Add Widget" (Figma New Widget 17107:61128): 450px, Silver Chalice dashed, 2% Candy Apple tint, 6% on hover. */
+.ep-edit-add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--syn-space-16);
+  min-height: 450px;
+  padding: var(--syn-space-16);
+  border: 1px dashed var(--syn-text-muted);
+  border-radius: var(--syn-radius-element);
+  background: rgb(255 25 0 / 0.02);
+  color: var(--syn-text-muted);
+  font: var(--syn-type-titles-title-5);
+  cursor: pointer;
+}
+.ep-edit-add:hover { background: rgb(255 25 0 / 0.06); }
+.ep-edit-add:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+
+/* Bottom Line: White, 24px corners, drop shadow, padding 20/24/20/32; stays at the bottom of the window. */
+.ep-edit-bar {
+  position: sticky;
+  bottom: var(--syn-space-24);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--syn-space-16);
+  margin-top: var(--syn-space-24);
+  padding: var(--syn-space-20) var(--syn-space-24) var(--syn-space-20) var(--syn-space-32);
+  border-radius: var(--ep-radius-panel);
+  background: var(--syn-surface-default);
+  filter: drop-shadow(1px 3px 3px rgb(0 0 0 / 0.24));
+}
+.ep-edit-bar__button.syn-button { width: 168px; }
+
+@media (max-width: 639px) {
+  .ep-edit-banner { flex-wrap: wrap; }
+  .ep-edit-banner__art { display: none; }
+  .ep-edit-sizes button { width: auto; min-width: 48px; }
+  .ep-edit-bar { padding: var(--syn-space-12) var(--syn-space-16); }
+  .ep-edit-bar__button.syn-button { width: auto; flex: 1; }
+}
