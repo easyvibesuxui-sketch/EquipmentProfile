@@ -67,13 +67,12 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
   Everything is a draft until Save; Discard drops it.
 - **Reset to default** in the banner (not in Figma) puts the draft back to the Figma Overview: widgets, order and
   widths. Save keeps it, Discard drops it.
-- Every card has the round **remove** button at its corner.
-- **Click** a card to select it: a bar on top shows **1/3 · 2/3 · Full width** (4, 8 or 12 columns) and remove,
-  and dots mark its edges. **Drag a side dot** to resize on the 12 columns (Smoke column slots show while
-  resizing); **drag the card** to move it.
+- Every card is in its edit outline at once, no click needed: a dashed border, a bar with **1/3 · 2/3 · Full width**
+  (4, 8 or 12 columns) and the round **remove** button, and dots on its edges. **Drag a side dot** to resize on
+  the 12 columns (Smoke column slots show while resizing); **drag the card** to move it.
 - **Add Widget** (the dashed tile after the last card) and the banner's **Section** button open *Manage Widgets*:
   a collapsible group per category with a switch per widget. A widget switched on is added at the end of the page.
-- Keyboard: Tab to a card, Enter selects it, Arrow Left/Right moves it, Shift+Arrow changes its width, Delete removes it.
+- Keyboard: Tab to a card, Arrow Left/Right moves it, Shift+Arrow changes its width, Delete removes it.
 - The widgets are inert while editing (no drawers, no map panning). The Dependance card moves and resizes as one
   card; its rows are the connected entities switched on in Manage Widgets.
 - Widths are stored per card in the layout (`spans`); below 1600px a card of up to 4 columns takes half the row
