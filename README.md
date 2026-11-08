@@ -89,7 +89,7 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
   by a row, Delete removes it.
 - The widgets are inert while editing (no drawers, no map panning). The Dependance card moves and resizes as one
   card; its rows are the connected entities switched on in Manage Widgets.
-- Widths and heights are stored per card in the layout (`spans`, `heights`); below 1600px a card of up to 4 columns
+- Widths and heights are stored per card in the layout (`spans`, `heights`); below 1200px a card of up to 4 columns
   takes half the row and a wider one the full row. Phones keep the designed heights.
 - The layout is saved in the browser (`localStorage`, key `ep-overview-widgets-v1`), not per user yet. While editing,
   the draft is kept too (`ep-overview-widgets-draft-v1`): after a refresh Edit Mode reopens with "Unsaved changes

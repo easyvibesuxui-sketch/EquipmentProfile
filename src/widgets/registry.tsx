@@ -20,7 +20,7 @@ export const widgetCategories: Array<{ id: WidgetCategory; label: string }> = [
 ];
 
 /**
- * Width on the 12-column grid. Below 1600px "half" takes 6 columns and "wide" and "full" take 12;
+ * Width on the 12-column grid. Below 1200px "half" takes 6 columns and "wide" and "full" take 12;
  * below 640px every widget is full width (see responsive.css).
  */
 export type WidgetSize = { span: 3 | 4 | 5 | 6 | 8 | 12; fit: 'half' | 'wide' | 'full' };

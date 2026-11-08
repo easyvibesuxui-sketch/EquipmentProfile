@@ -3,6 +3,11 @@
 @media (max-width: 1599px) {
   .ep-header__col-main { --span: 12 !important; }
   .ep-header__col-device { --span: 6 !important; }
+}
+
+/* Widgets keep their Figma spans (1/3 = 3 of 12 columns, four per row) down to 1200px, where a 3-column card
+   is still ~270px wide. Below that they regroup: up to 4 columns takes half the row, more the full row. */
+@media (max-width: 1199px) {
   .ep-col--half { --span: 6 !important; }
   .ep-col--wide, .ep-col--full { --span: 12 !important; order: 1; }
   /* The Overview is one dense grid: the half widgets close up around the wide ones without reordering. */

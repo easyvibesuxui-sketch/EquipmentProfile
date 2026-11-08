@@ -16,8 +16,8 @@ const shortcut = (keys: string) => (isMac ? keys.replace('Ctrl+', '⌘').replace
 const SIZES = [
   { label: '1/3', span: 3 },
   { label: '2/3', span: 6 },
-  { label: 'Full width', span: MAX_SPAN },
-];
+  { label: 'Full width', short: 'Full', span: MAX_SPAN },
+] as Array<{ label: string; short?: string; span: number }>;
 /** The size button that shows as current: the preset nearest the card's width (ties go to the smaller). */
 const sizeOf = (span: number) => SIZES.reduce((best, s) => (Math.abs(s.span - span) < Math.abs(best - span) ? s.span : best), SIZES[0].span);
 
@@ -338,7 +338,9 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
               <span className="ep-edit-grip" aria-hidden><Icon name="dragable" size={16} /></span>
               <div className="ep-edit-sizes" role="group" aria-label={`Width of ${label}`}>
                 {SIZES.map((sz) => (
-                  <button key={sz.label} type="button" aria-pressed={sizeOf(span) === sz.span} onClick={() => onChange(setSpan(layout, card, sz.span))}>{sz.label}</button>
+                  <button key={sz.label} type="button" aria-pressed={sizeOf(span) === sz.span} onClick={() => onChange(setSpan(layout, card, sz.span))}>
+                    {sz.short ? <><span className="ep-edit-sizes__long">{sz.label}</span><span className="ep-edit-sizes__short">{sz.short}</span></> : sz.label}
+                  </button>
                 ))}
               </div>
               <CloseButton label={`Remove ${label}`} className="ep-edit-close--bar" onClick={() => onChange(removeCard(layout, card))} />

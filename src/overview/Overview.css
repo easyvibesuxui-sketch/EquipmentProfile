@@ -26,7 +26,7 @@
 }
 .ep-info__row { display: flex; align-items: center; justify-content: space-between; gap: var(--syn-space-16); }
 .ep-info__row dt { color: var(--syn-text-muted); }
-.ep-info__row dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
+.ep-info__row dd { margin: 0; text-align: right; overflow-wrap: break-word; /* the label wraps first; a code like a VIN breaks only if it cannot fit a line */ }
 .ep-info__row dd.is-empty { color: var(--syn-text-muted); }
 .ep-info__footer { margin: 0; padding-top: var(--syn-space-32); font: var(--syn-type-text-body-s); }
 .ep-info__more { align-self: flex-start; padding-right: 0; padding-bottom: 0; padding-left: 0; border: 0; background: none; color: var(--syn-text-primary); text-align: left; cursor: pointer; }
