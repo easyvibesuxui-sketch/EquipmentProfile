@@ -79,7 +79,9 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
   with its columns marked and a label ("6 / 12 columns · 2 rows"; dashed with "moves to the next row" when it no
   longer fits its row), and the size applies on release. Double-click the bottom handle or the grip to restore the
   designed height.
-- **Move:** drag a card anywhere (or by its grip): it follows the pointer and the other cards make room.
+- **Move:** drag a card anywhere (or by its grip): it follows the pointer, and, as with resizing, nothing reflows
+  while dragging: a Dodger Blue outline ("Move here") shows exactly where it will land, and the move applies on
+  release. The landing spot is found by laying the new order out in a hidden copy of the grid.
 - **Add Widget** (the dashed tile after the last card) and the banner's **Section** button open *Manage Widgets*:
   a collapsible group per category with a switch per widget. A widget switched on is added at the end of the page.
 - Keyboard: Tab to a card, Arrow Left/Right moves it, Shift+Left/Right changes its width, Shift+Up/Down its height

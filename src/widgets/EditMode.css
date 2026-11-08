@@ -38,6 +38,11 @@
   transition: width var(--syn-duration-fast), height var(--syn-duration-fast);
 }
 .ep-edit-preview.is-wrapping { border-style: dashed; }
+/* Moving: the outline where the card lands, without the column marks. */
+.ep-edit-preview--move { align-items: center; background-image: none; transition: left var(--syn-duration-fast), top var(--syn-duration-fast), width var(--syn-duration-fast), height var(--syn-duration-fast); }
+.ep-edit-preview--move > span { margin-top: 0; }
+.ep-edit-ghost { position: absolute; top: 0; right: 0; left: 0; z-index: -1; grid-auto-flow: row dense; visibility: hidden; pointer-events: none; }
+.ep-edit-ghost > * { align-self: start; }
 .ep-edit-preview > span {
   margin-top: var(--syn-space-12);
   padding: var(--syn-space-4) var(--syn-space-12);
@@ -60,7 +65,7 @@
 }
 .ep-edit-item:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 4px; }
 .ep-edit-item__content { pointer-events: none; }
-.ep-edit-item.is-dragging { z-index: 2; opacity: 0.7; cursor: grabbing; }
+.ep-edit-item.is-dragging { z-index: 6; opacity: 0.55; cursor: grabbing; }
 .ep-edit-item.is-dragging .ep-edit-item__content > *, .ep-edit-item.is-resizing .ep-edit-item__content > * { outline: 1px dashed var(--syn-text-muted); outline-offset: 0; border-radius: var(--syn-radius-widget); }
 
 /* Every card in Edit Mode: Cultured, a Silver Chalice dashed border and a 52px bar on top (sizes and remove),

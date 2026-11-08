@@ -1,4 +1,4 @@
-import { useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
+import { useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
 import { Button, Icon, IconButton, Tooltip } from '@syn/design-system';
 import {
   MAX_SPAN, MIN_SPAN, ROW_GAP, ROW_HEIGHT, fitOf, heightToRows, rowsToHeight, heightOf, moveCard, removeCard, setHeight, setSpan, spanOf, stepCard, visibleCards, type WidgetLayout,
@@ -120,7 +120,8 @@ type Resize = {
  * the resize handles. Drag the right bar to change the width on the 12 columns and the bottom bar to change the
  * height in 450px rows (double-click restores it); the corner grip does both. While dragging nothing reflows: a
  * Dodger Blue outline shows the snapped size over the 12 column slots, and the size applies on release. Drag the card
- * anywhere to move it: it follows the pointer and the other cards make room.
+ * anywhere to move it: it follows the pointer, a Dodger Blue outline shows where it will land, and the move
+ * applies on release.
  * Keyboard: Arrow Left/Right moves the focused card, Shift+Left/Right its width, Shift+Up/Down its height,
  * Delete removes it.
  * The widgets themselves are inert while editing, so maps and drawers do not take the pointer.
@@ -133,6 +134,17 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
   const press = useRef<{ card: string; x: number; y: number; grabX: number; grabY: number; tx: number; ty: number; moved: boolean } | null>(null);
   const [announce, setAnnounce] = useState('');
   const cards = visibleCards(layout);
+  // A move in progress. Nothing reflows while dragging: `drop.layout` is the order the card would land in, laid
+  // out in a hidden copy of the grid (with each card's measured height) to find where the outline goes.
+  const [drop, setDrop] = useState<{ card: string; layout: WidgetLayout; heights: Record<string, number> } | null>(null);
+  const [dropRect, setDropRect] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
+  const ghost = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    if (!drop) { setDropRect(null); return; }
+    const el = ghost.current?.querySelector<HTMLElement>(`[data-ghost="${drop.card}"]`);
+    if (el) setDropRect({ left: el.offsetLeft, top: el.offsetTop, width: el.offsetWidth, height: el.offsetHeight });
+  }, [drop]);
 
   const onPointerDown = (e: PointerEvent<HTMLDivElement>, card: string) => {
     if (e.button !== 0 || (e.target as Element).closest('button')) return;
@@ -144,8 +156,14 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
     const p = press.current;
     if (!p) return;
     if (!p.moved && Math.hypot(e.clientX - p.x, e.clientY - p.y) < 6) return;
-    if (!p.moved) { p.moved = true; setDragging(p.card); }
-    // The card follows the pointer; its place in the grid (where it drops) moves as the other cards make room.
+    if (!p.moved) {
+      p.moved = true;
+      setDragging(p.card);
+      const heights: Record<string, number> = {};
+      grid.current?.querySelectorAll<HTMLElement>('[data-card]').forEach((el) => { heights[el.dataset.card!] = el.offsetHeight; });
+      setDrop({ card: p.card, layout, heights });
+    }
+    // The card follows the pointer; the outline shows where it will land.
     const el = e.currentTarget;
     const r0 = el.getBoundingClientRect();
     p.tx = e.clientX - p.grabX - (r0.left - p.tx);
@@ -157,13 +175,16 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
     if (!over) return;
     const r = over.getBoundingClientRect();
     const next = moveCard(layout, p.card, over.dataset.card!, e.clientX > r.left + r.width / 2);
-    if (next.order.join() !== layout.order.join()) onChange(next);
+    setDrop((d) => (d && next.order.join() !== d.layout.order.join() ? { ...d, layout: next } : d));
   };
-  const onPointerUp = (e: PointerEvent<HTMLDivElement>) => {
+  const endDrag = (el: HTMLElement, apply: boolean) => {
     press.current = null;
-    e.currentTarget.style.transform = '';
+    el.style.transform = '';
     setDragging(null);
+    if (apply && drop && drop.layout.order.join() !== layout.order.join()) onChange(drop.layout);
+    setDrop(null);
   };
+  const onPointerUp = (e: PointerEvent<HTMLDivElement>) => endDrag(e.currentTarget, true);
 
   const startResize = (e: PointerEvent<HTMLSpanElement>, card: string, handle: Handle) => {
     e.stopPropagation();
@@ -254,6 +275,22 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
           <span>{preview.label}</span>
         </div>
       )}
+      {drop && (
+        <>
+          {/* The landing order laid out invisibly, same grid and heights, to measure where the card would go. */}
+          <div className="ep-edit-ghost syn-grid" ref={ghost} aria-hidden>
+            {visibleCards(drop.layout).map((c) => {
+              const sp = spanOf(drop.layout, c);
+              return <div key={c} data-ghost={c} className={`syn-grid__item ep-col ep-col--${fitOf(sp)}`} style={{ '--span': sp, height: drop.heights[c] } as CSSProperties} />;
+            })}
+          </div>
+          {dropRect && (
+            <div className="ep-edit-preview ep-edit-preview--move" style={{ left: dropRect.left, top: dropRect.top, width: dropRect.width, height: dropRect.height }} aria-hidden>
+              <span>{drop.layout.order.join() === layout.order.join() ? 'Current place' : 'Move here'}</span>
+            </div>
+          )}
+        </>
+      )}
       {cards.map((card) => {
         const span = spanOf(layout, card);
         const label = labelOf(card);
@@ -272,7 +309,7 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
             onPointerDown={(e) => onPointerDown(e, card)}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
-            onPointerCancel={(e) => { press.current = null; e.currentTarget.style.transform = ''; setDragging(null); }}
+            onPointerCancel={(e) => endDrag(e.currentTarget, false)}
             onKeyDown={(e) => onKeyDown(e, card)}
           >
             <div className="ep-edit-item__bar">
