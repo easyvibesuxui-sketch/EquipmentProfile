@@ -17,8 +17,7 @@
 .ep-edit-banner__hint { margin: 0; color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
 .ep-edit-banner__art { flex: none; margin: -24px 0; stroke: var(--syn-color-secondary-dodger-blue); stroke-opacity: 0.45; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .ep-edit-banner__section.syn-button { flex: none; padding-inline: var(--syn-space-32); }
-.ep-edit-banner__reset.syn-button { flex: none; margin-right: calc(var(--syn-space-16) - var(--syn-space-24)); color: var(--syn-text-secondary); }
-.ep-edit-banner__reset.syn-button:hover:not(:disabled) { color: var(--syn-text-primary); }
+.ep-edit-banner__reset.syn-button { flex: none; margin-right: calc(var(--syn-space-12) - var(--syn-space-24)); padding-inline: var(--syn-space-24); }
 
 /* The grid: the Overview's 12 columns, dense flow; the Smoke column slots sit behind the cards while resizing. */
 .ep-edit-grid { position: relative; grid-auto-flow: row dense; }
@@ -212,3 +211,5 @@
   .ep-edit-bar { padding: var(--syn-space-12) var(--syn-space-16); }
   .ep-edit-bar__button.syn-button { width: auto; flex: 1; }
 }
+.ep-edit-bar__undo.syn-button { flex: none; }
+.ep-edit-bar__undo.syn-button:disabled { cursor: default; }

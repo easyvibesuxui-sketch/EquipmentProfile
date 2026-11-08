@@ -63,10 +63,11 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
 [resizing](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=17107-61363) and
 [Manage Widgets](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=17064-71031):
 
-- The tabs give way to the dashed "Edit Mode" banner; a floating bar at the bottom holds **Discard** and **Save**.
+- The tabs give way to the dashed "Edit Mode" banner; a floating bar at the bottom holds **Discard**, **Undo** (in the middle; also Ctrl/Cmd+Z) and **Save**.
+  Undo steps back one edit at a time; a whole drag or resize is one step.
   Everything is a draft until Save; Discard drops it.
-- The banner's **Section** is the main action (Eerie Black button); **Reset to default** next to it is a text
-  button.
+- The banner's **Section** is the main action (filled Eerie Black); **Reset to default** next to it is Syn's outlined
+  secondary button.
 - **Reset to default** in the banner (not in Figma) puts the draft back to the Figma Overview: widgets, order and
   widths. Save keeps it, Discard drops it.
 - Every card is in its edit outline at once, no click needed: a dashed border, a bar with the move grip,

@@ -30,18 +30,20 @@ export function EditBanner({ onSection, onReset }: { onSection: () => void; onRe
         <path d="m49.5 47.5 3.5 3.5" />
       </svg>
       {/* Not in Figma: puts the draft back to the default Overview; Save keeps it, Discard drops it. */}
-      {/* Hierarchy: Section (add widgets) is the main action, Eerie Black; Reset is a quiet text action. */}
-      <Button variant="text" size="sm" iconStart="refresh-change" className="ep-edit-banner__reset" onClick={onReset}>Reset to default</Button>
+      {/* Hierarchy: Section (add widgets) is the main action, filled Eerie Black; Reset is Syn's outlined secondary. */}
+      <Button variant="secondary" size="sm" iconStart="refresh-change" className="ep-edit-banner__reset" onClick={onReset}>Reset to default</Button>
       <Button size="sm" iconStart="plus-in-circle" className="ep-edit-banner__section" onClick={onSection}>Section</Button>
     </section>
   );
 }
 
 /** Figma "Bottom Line" (17107:60003): Discard and Save, kept in view at the bottom while editing. */
-export function EditBar({ onDiscard, onSave }: { onDiscard: () => void; onSave: () => void }) {
+export function EditBar({ onDiscard, onSave, onUndo, canUndo }: { onDiscard: () => void; onSave: () => void; onUndo: () => void; canUndo: boolean }) {
   return (
     <div className="ep-edit-bar" role="region" aria-label="Edit Mode actions">
       <Button variant="secondary" size="md" className="ep-edit-bar__button" onClick={onDiscard}>Discard</Button>
+      {/* Not in Figma: steps back through the edits of this session (also Ctrl/Cmd+Z). */}
+      <Button variant="text" size="md" iconStart="undo" className="ep-edit-bar__undo" disabled={!canUndo} onClick={onUndo}>Undo</Button>
       <Button size="md" className="ep-edit-bar__button" onClick={onSave}>Save</Button>
     </div>
   );
