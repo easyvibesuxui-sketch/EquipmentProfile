@@ -6,13 +6,17 @@ import {
 import './EditMode.css';
 
 const GAP = 24;
+/**
+ * Width presets as the Figma Edit Mode names them on the 12-column grid: "1/3" is the 3-column card (436px at
+ * 1920, four to a row), "2/3" two of them (6 columns, 896px, like the map), Full width all 12.
+ */
 const SIZES = [
-  { label: '1/3', span: 4 },
-  { label: '2/3', span: 8 },
+  { label: '1/3', span: 3 },
+  { label: '2/3', span: 6 },
   { label: 'Full width', span: MAX_SPAN },
 ];
-/** The size button that shows as current: the nearest of 1/3, 2/3 and Full width. */
-const sizeOf = (span: number) => (span <= 4 ? 4 : span <= 8 ? 8 : MAX_SPAN);
+/** The size button that shows as current: the preset nearest the card's width (ties go to the smaller). */
+const sizeOf = (span: number) => SIZES.reduce((best, s) => (Math.abs(s.span - span) < Math.abs(best - span) ? s.span : best), SIZES[0].span);
 
 /** Figma "Edit Mode" banner (17118:62279): in place of the tabs while editing. */
 export function EditBanner({ onSection, onReset }: { onSection: () => void; onReset: () => void }) {

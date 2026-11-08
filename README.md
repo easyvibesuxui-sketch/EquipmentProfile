@@ -72,7 +72,7 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
 - **Reset to default** in the banner (not in Figma) puts the draft back to the Figma Overview: widgets, order and
   widths. Save keeps it, Discard drops it.
 - Every card is in its edit outline at once, no click needed: a dashed border, a bar with the move grip,
-  **1/3 · 2/3 · Full width** (4, 8 or 12 columns) and the round **remove** button, and the resize handles.
+  **1/3 · 2/3 · Full width** (3, 6 or 12 columns, as the Figma names them: four 1/3 cards fit in a row) and the round **remove** button, and the resize handles.
 - **Resize:** the bar on the right edge changes the width on the 12 columns, the labelled handle on the bottom edge
   (↕ Auto, 1 row, 2 rows, 3 rows) the height in rows of the 450px card (450, 924, 1398px), and the corner grip at
   the bottom right both. Nothing reflows while dragging: a Dodger Blue outline shows the size the card will snap to,
