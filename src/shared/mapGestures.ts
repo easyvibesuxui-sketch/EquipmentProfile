@@ -25,8 +25,21 @@ const TOUCH_SLEEP_MS = 1500;
 export function cooperativeGestures(m: L.Map) {
   const el = m.getContainer();
   const coarse = window.matchMedia('(pointer: coarse)').matches;
-  const veil = L.DomUtil.create('div', 'ep-map-sleep', el);
+  // The veil lives in its own pane between the tiles (200) and the pin (600), so the pin stays red; it is kept
+  // over the container as the map pane moves.
+  const pane = m.getPane('epSleep') ?? m.createPane('epSleep');
+  pane.style.zIndex = '550';
+  pane.style.pointerEvents = 'none';
+  const veil = L.DomUtil.create('div', 'ep-map-sleep', pane);
   veil.setAttribute('aria-hidden', 'true');
+  const fit = () => {
+    const size = m.getSize();
+    veil.style.width = `${size.x}px`;
+    veil.style.height = `${size.y}px`;
+    L.DomUtil.setPosition(veil, m.containerPointToLayerPoint([0, 0]));
+  };
+  fit();
+  m.on('move zoomend viewreset resize', fit);
 
   let free = false;
   let awake = false;
@@ -141,6 +154,8 @@ export function cooperativeGestures(m: L.Map) {
   return {
     setFree,
     destroy: () => {
+      m.off('move zoomend viewreset resize', fit);
+      veil.remove();
       window.clearTimeout(wakeTimer);
       window.clearTimeout(sleepTimer);
       el.removeEventListener('mouseenter', onEnter);

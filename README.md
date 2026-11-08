@@ -90,7 +90,7 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
 - The widgets are inert while editing (no drawers, no map panning). The Dependance card moves and resizes as one
   card; its rows are the connected entities switched on in Manage Widgets.
 - Maps on the page (Current Location card, Telemetry) sleep while the page scrolls (the hover-to-wake pattern of
-  Leaflet.Sleep): asleep they sit under a grey veil and leave the wheel to the page. Resting the pointer on a map for
+  Leaflet.Sleep): asleep they sit under a light grey veil (the pin stays red) and leave the wheel to the page. Resting the pointer on a map for
   0.7s wakes it, and the veil clears in a circle growing from the pointer; then the wheel zooms and the map drags,
   and 0.6s after the pointer leaves it sleeps again. Focus wakes it too, Ctrl/⌘ + wheel zooms even asleep, and on
   touch screens one finger scrolls the page while two wake and move the map. The full map never sleeps

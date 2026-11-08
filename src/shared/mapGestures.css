@@ -1,5 +1,5 @@
 /*
- * A sleeping map: a grey veil (the map turns grey under a Silver Chalice tint) above the tiles and the pin. Waking,
+ * A sleeping map: a light grey veil (the map in greyscale under a 40% white tint) above the tiles; the pin stays red. Waking,
  * a clear circle grows from the pointer until the veil is gone; asleep again, the veil fades back in.
  */
 @property --ep-reveal {
@@ -10,9 +10,9 @@
 .ep-map-sleep {
   --ep-reveal: 0px;
   position: absolute;
-  inset: 0;
-  z-index: 650; /* over the tiles, overlays and pin; under Leaflet's controls (800) */
-  background: rgb(167 176 179 / 0.35); /* Silver Chalice */
+  top: 0;
+  left: 0; /* sized and kept over the container by mapGestures.ts, in a pane under the pin (600) */
+  background: rgb(255 255 255 / 0.4); /* a light grey: the greyscale map lifted toward white */
   backdrop-filter: grayscale(1);
   -webkit-backdrop-filter: grayscale(1);
   pointer-events: none;
