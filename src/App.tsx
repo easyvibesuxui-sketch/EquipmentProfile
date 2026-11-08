@@ -19,42 +19,57 @@ export function App() {
   const [draft, setDraft] = useState<WidgetLayout | null>(null);
   const [managing, setManaging] = useState(false);
   const editing = draft !== null;
-  // Undo: the drafts before each edit. A drag or resize sends many changes; changes less than 400ms apart
-  // count as one edit, so one Undo takes back the whole gesture.
+  // Undo / Redo: the drafts before each edit, and the ones undone. A drag or resize sends many changes;
+  // changes less than 400ms apart count as one edit, so one Undo takes back the whole gesture.
   const [history, setHistory] = useState<WidgetLayout[]>([]);
+  const [future, setFuture] = useState<WidgetLayout[]>([]);
   const lastChange = useRef(0);
   const draftRef = useRef<WidgetLayout | null>(null);
   draftRef.current = draft;
+  const historyRef = useRef(history);
+  historyRef.current = history;
+  const futureRef = useRef(future);
+  futureRef.current = future;
+
   const change = useCallback((next: WidgetLayout) => {
     const now = Date.now();
     const current = draftRef.current;
     if (current && now - lastChange.current > 400) setHistory((h) => [...h, current]);
     lastChange.current = now;
     draftRef.current = next;
+    setFuture([]);
     setDraft(next);
   }, []);
-  const historyRef = useRef(history);
-  historyRef.current = history;
   const undo = useCallback(() => {
     const h = historyRef.current;
-    if (!h.length) return;
+    const current = draftRef.current;
+    if (!h.length || !current) return;
     lastChange.current = 0;
-    setDraft(h[h.length - 1]);
+    setFuture((f) => [...f, current]);
     setHistory(h.slice(0, -1));
+    setDraft(h[h.length - 1]);
+  }, []);
+  const redo = useCallback(() => {
+    const f = futureRef.current;
+    const current = draftRef.current;
+    if (!f.length || !current) return;
+    lastChange.current = 0;
+    setHistory((h) => [...h, current]);
+    setFuture(f.slice(0, -1));
+    setDraft(f[f.length - 1]);
   }, []);
 
+  // Ctrl/Cmd+Z undoes; Ctrl/Cmd+Shift+Z and Ctrl+Y redo.
   useEffect(() => {
     if (!editing) return undefined;
     const onKey = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement;
-      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z' && !target.closest('input, textarea, dialog')) {
-        e.preventDefault();
-        undo();
-      }
+      if (!(e.ctrlKey || e.metaKey) || (e.target as HTMLElement).closest('input, textarea, dialog')) return;
+      const key = e.key.toLowerCase();
+      if (key === 'z' && !e.shiftKey) { e.preventDefault(); undo(); } else if ((key === 'z' && e.shiftKey) || key === 'y') { e.preventDefault(); redo(); }
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [editing, undo]);
+  }, [editing, undo, redo]);
 
   useEffect(() => {
     const open = () => setTab('Telemetry');
@@ -62,9 +77,9 @@ export function App() {
     return () => window.removeEventListener(DASHCAM_PLAY_EVENT, open);
   }, []);
 
-  const edit = () => { setTab('Overview'); setHistory([]); lastChange.current = 0; setDraft(layout); };
-  const save = () => { if (draft) setLayout(draft); setDraft(null); setHistory([]); setManaging(false); };
-  const discard = () => { setDraft(null); setHistory([]); setManaging(false); };
+  const edit = () => { setTab('Overview'); setHistory([]); setFuture([]); lastChange.current = 0; setDraft(layout); };
+  const save = () => { if (draft) setLayout(draft); setDraft(null); setHistory([]); setFuture([]); setManaging(false); };
+  const discard = () => { setDraft(null); setHistory([]); setFuture([]); setManaging(false); };
 
   return (
     <AppShell module="Fleet" current="planner">
@@ -80,7 +95,7 @@ export function App() {
             <OverviewTab layout={draft ?? layout} editing={editing} onChange={change} onEdit={edit} onAddWidget={() => setManaging(true)} />
           ) : tab === 'Telemetry' ? <TelemetryTab /> : <p className="ep-profile__placeholder">{tab} is not designed yet.</p>}
         </div>
-        {editing && <EditBar onDiscard={discard} onSave={save} onUndo={undo} canUndo={history.length > 0} />}
+        {editing && <EditBar onDiscard={discard} onSave={save} onUndo={undo} onRedo={redo} canUndo={history.length > 0} canRedo={future.length > 0} />}
       </div>
       {draft && <ManageWidgetsDrawer open={managing} layout={draft} onChange={(next) => { lastChange.current = 0; change(next); }} onClose={() => setManaging(false)} />}
     </AppShell>

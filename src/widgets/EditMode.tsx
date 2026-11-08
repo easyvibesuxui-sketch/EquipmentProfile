@@ -1,5 +1,5 @@
 import { useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
-import { Button, Icon } from '@syn/design-system';
+import { Button, Icon, IconButton, Tooltip } from '@syn/design-system';
 import {
   MAX_SPAN, ROW_GAP, ROW_HEIGHT, fitOf, heightToRows, heightOf, moveCard, removeCard, setHeight, setSpan, spanOf, stepCard, visibleCards, type WidgetLayout,
 } from './layout';
@@ -38,12 +38,29 @@ export function EditBanner({ onSection, onReset }: { onSection: () => void; onRe
 }
 
 /** Figma "Bottom Line" (17107:60003): Discard and Save, kept in view at the bottom while editing. */
-export function EditBar({ onDiscard, onSave, onUndo, canUndo }: { onDiscard: () => void; onSave: () => void; onUndo: () => void; canUndo: boolean }) {
+interface EditBarProps {
+  onDiscard: () => void;
+  onSave: () => void;
+  onUndo: () => void;
+  onRedo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
+}
+
+export function EditBar({ onDiscard, onSave, onUndo, onRedo, canUndo, canRedo }: EditBarProps) {
   return (
     <div className="ep-edit-bar" role="region" aria-label="Edit Mode actions">
       <Button variant="secondary" size="md" className="ep-edit-bar__button" onClick={onDiscard}>Discard</Button>
-      {/* Not in Figma: steps back through the edits of this session (also Ctrl/Cmd+Z). */}
-      <Button variant="text" size="md" iconStart="undo" className="ep-edit-bar__undo" disabled={!canUndo} onClick={onUndo}>Undo</Button>
+      {/* Not in Figma: icon-only Undo and Redo between Discard and Save, named by their tooltips. */}
+      <div className="ep-edit-bar__history" role="group" aria-label="History">
+        <Tooltip content="Undo (Ctrl+Z)">
+          <IconButton icon="undo" label="Undo" size="md" variant="outline" disabled={!canUndo} onClick={onUndo} />
+        </Tooltip>
+        <Tooltip content="Redo (Ctrl+Shift+Z)">
+          {/* Syn has no redo glyph: the undo glyph, mirrored. */}
+          <IconButton icon="undo" label="Redo" size="md" variant="outline" className="ep-edit-bar__redo" disabled={!canRedo} onClick={onRedo} />
+        </Tooltip>
+      </div>
       <Button size="md" className="ep-edit-bar__button" onClick={onSave}>Save</Button>
     </div>
   );

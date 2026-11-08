@@ -63,8 +63,9 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
 [resizing](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=17107-61363) and
 [Manage Widgets](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=17064-71031):
 
-- The tabs give way to the dashed "Edit Mode" banner; a floating bar at the bottom holds **Discard**, **Undo** (in the middle; also Ctrl/Cmd+Z) and **Save**.
-  Undo steps back one edit at a time; a whole drag or resize is one step.
+- The tabs give way to the dashed "Edit Mode" banner; a floating bar at the bottom holds **Discard**, icon-only **Undo** and **Redo** in the middle
+  (Ctrl/Cmd+Z, Ctrl/Cmd+Shift+Z or Ctrl+Y; the names show as tooltips) and **Save**. Undo steps back one edit at a
+  time, a whole drag or resize being one step; a new edit clears Redo.
   Everything is a draft until Save; Discard drops it.
 - The banner's **Section** is the main action (filled Eerie Black); **Reset to default** next to it is Syn's outlined
   secondary button.

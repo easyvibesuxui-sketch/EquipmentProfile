@@ -211,5 +211,5 @@
   .ep-edit-bar { padding: var(--syn-space-12) var(--syn-space-16); }
   .ep-edit-bar__button.syn-button { width: auto; flex: 1; }
 }
-.ep-edit-bar__undo.syn-button { flex: none; }
-.ep-edit-bar__undo.syn-button:disabled { cursor: default; }
+.ep-edit-bar__history { display: flex; gap: var(--syn-space-8); }
+.ep-edit-bar__redo .syn-icon { transform: scaleX(-1); }
