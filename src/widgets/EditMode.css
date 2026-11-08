@@ -21,17 +21,32 @@
 
 /* The grid: the Overview's 12 columns, dense flow; the Smoke column slots sit behind the cards while resizing. */
 .ep-edit-grid { position: relative; grid-auto-flow: row dense; }
-.ep-edit-guide {
+/* While resizing: a Dodger Blue outline of the size the card snaps to, with its columns marked by faint
+   gutters inside it. Nothing else on the page moves until release. */
+.ep-edit-preview {
   position: absolute;
-  left: 0;
-  right: 0;
-  z-index: 0;
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: inherit;
+  z-index: 5;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 2px solid var(--syn-color-secondary-dodger-blue);
+  border-radius: var(--syn-radius-widget);
+  background-color: rgb(69 154 247 / 0.06);
+  background-image: repeating-linear-gradient(90deg, transparent 0 var(--col), rgb(69 154 247 / 0.14) var(--col) calc(var(--col) + var(--gap)));
   pointer-events: none;
+  transition: width var(--syn-duration-fast), height var(--syn-duration-fast);
 }
-.ep-edit-guide > span { border-radius: var(--syn-radius-element); background: var(--syn-color-light-smoke); }
+.ep-edit-preview.is-wrapping { border-style: dashed; }
+.ep-edit-preview > span {
+  margin-top: var(--syn-space-12);
+  padding: var(--syn-space-4) var(--syn-space-12);
+  border-radius: var(--syn-radius-full);
+  background: var(--syn-color-secondary-dodger-blue);
+  color: var(--syn-color-white-white);
+  font: var(--syn-type-text-body-xs);
+  white-space: nowrap;
+}
 
 .ep-edit-item {
   position: relative;
@@ -113,10 +128,8 @@
   transition: background-color var(--syn-duration-fast), border-color var(--syn-duration-fast);
 }
 .ep-edit-handle::after { content: ''; position: absolute; border-radius: var(--syn-radius-full); background: var(--syn-text-secondary); }
-.ep-edit-handle--e, .ep-edit-handle--w { top: calc(50% - 24px); width: 10px; height: 48px; cursor: ew-resize; }
-.ep-edit-handle--e { right: -5px; }
-.ep-edit-handle--w { left: -5px; }
-.ep-edit-handle--e::after, .ep-edit-handle--w::after { top: 12px; left: 3px; width: 2px; height: 22px; }
+.ep-edit-handle--e { top: calc(50% - 24px); right: -5px; width: 10px; height: 48px; cursor: ew-resize; }
+.ep-edit-handle--e::after { top: 12px; left: 3px; width: 2px; height: 22px; }
 /* The bottom handle is a labelled pill: the arrows and the height (Auto, 1, 2 or 3 rows). */
 .ep-edit-handle--s {
   bottom: -11px;

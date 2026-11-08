@@ -73,9 +73,11 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
   widths. Save keeps it, Discard drops it.
 - Every card is in its edit outline at once, no click needed: a dashed border, a bar with the move grip,
   **1/3 · 2/3 · Full width** (4, 8 or 12 columns) and the round **remove** button, and the resize handles.
-- **Resize:** the bars on the left and right edges change the width on the 12 columns (Smoke column slots show while
-  resizing); the labelled handle on the bottom edge (↕ Auto, 1 row, 2 rows, 3 rows) changes the height in rows of the 450px card: 1, 2 or 3 rows (450, 924,
-  1398px); the corner grip at the bottom right does both. Double-click the bottom bar or the grip to restore the
+- **Resize:** the bar on the right edge changes the width on the 12 columns, the labelled handle on the bottom edge
+  (↕ Auto, 1 row, 2 rows, 3 rows) the height in rows of the 450px card (450, 924, 1398px), and the corner grip at
+  the bottom right both. Nothing reflows while dragging: a Dodger Blue outline shows the size the card will snap to,
+  with its columns marked and a label ("6 / 12 columns · 2 rows"; dashed with "moves to the next row" when it no
+  longer fits its row), and the size applies on release. Double-click the bottom handle or the grip to restore the
   designed height.
 - **Move:** drag a card anywhere (or by its grip): it follows the pointer and the other cards make room.
 - **Add Widget** (the dashed tile after the last card) and the banner's **Section** button open *Manage Widgets*:
