@@ -89,6 +89,10 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
   by a row, Delete removes it.
 - The widgets are inert while editing (no drawers, no map panning). The Dependance card moves and resizes as one
   card; its rows are the connected entities switched on in Manage Widgets.
+- Maps on the page (Current Location card, Telemetry) use cooperative gestures, as Google Maps and Mapbox do: the
+  mouse wheel scrolls the page and Ctrl/⌘ + wheel (or a trackpad pinch) zooms the map, with a short hint when a
+  plain wheel crosses it; on touch screens one finger scrolls the page and two move the map. The full map takes the
+  plain wheel and one-finger drag (`src/shared/mapGestures.ts`).
 - The header keeps Figma's one row (equipment card, Tracker, Tag) down to 1024px: the Tracker and Tag cards keep
   Figma's two columns but at least 256px, and from 1024 to 1439px show their details only (168px). Under ~1700px
   the equipment card goes compact (about 170px tall instead of growing): the facts and AS4U form a tight grid and

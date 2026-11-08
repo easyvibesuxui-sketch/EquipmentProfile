@@ -1,0 +1,19 @@
+/* The cooperative-gesture hint: a 45% Eerie Black veil with the line in the middle, above tiles and controls. */
+.ep-map-hint {
+  position: absolute;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--syn-space-16);
+  background: rgb(21 21 21 / 0.45);
+  color: var(--syn-color-white-white);
+  font: var(--syn-type-text-body-m-2);
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--syn-duration-base);
+}
+.ep-map-hint.is-on { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .ep-map-hint { transition: none; } }

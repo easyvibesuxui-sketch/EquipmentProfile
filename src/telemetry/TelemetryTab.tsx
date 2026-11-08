@@ -15,6 +15,7 @@ import switchArt from '../assets/telemetry/input-switch.png';
 import signalArt from '../assets/telemetry/input-signal.png';
 import device from '../assets/telemetry/dashcam-device.png';
 import cab from '../assets/telemetry/dashcam-cab.jpg';
+import { cooperativeGestures } from '../shared/mapGestures';
 import './Telemetry.css';
 
 const art = { key: keyArt, switch: switchArt, signal: signalArt };
@@ -29,7 +30,8 @@ function LocationMap() {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(m);
     L.control.attribution({ position: 'bottomright', prefix: false }).addAttribution('© OpenStreetMap').addTo(m);
     L.marker(c, { icon: L.divIcon({ className: 'ep-pin', html: '<span></span>', iconSize: [24, 24], iconAnchor: [12, 12] }), keyboard: false }).addTo(m);
-    return () => { m.remove(); };
+    const gestures = cooperativeGestures(m); // the wheel scrolls the page; Ctrl/⌘ + wheel zooms
+    return () => { gestures.destroy(); m.remove(); };
   }, []);
   return <div ref={el} className="ep-tele-map" role="region" aria-label={`Map of ${lastLocation.place}`} />;
 }

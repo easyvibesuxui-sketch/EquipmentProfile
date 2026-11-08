@@ -8,6 +8,7 @@ import { location } from '../data/equipment';
 import { useEmptyDemo } from '../shared/useEmptyDemo';
 import { OpensDrawer } from '../shared/OpensDrawer';
 import { LocationDrawer } from './LocationDrawer';
+import { cooperativeGestures } from '../shared/mapGestures';
 import './LocationWidget.css';
 
 const LIVE_SITE = 'https://easyvibesuxui-sketch.github.io/EquipmentProfile/';
@@ -54,6 +55,7 @@ function NoTrackerLocation() {
 function LiveLocation() {
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
+  const gestures = useRef<ReturnType<typeof cooperativeGestures> | null>(null);
   const layer = useRef<L.Layer | null>(null);
   const [view, setView] = useState<MapLayer>('map');
   const [zoom, setZoom] = useState(location.zoom);
@@ -74,10 +76,12 @@ function LiveLocation() {
     }).addTo(m);
     m.on('zoomend', () => setZoom(m.getZoom()));
     map.current = m;
+    // On the page the wheel scrolls the page; Ctrl/⌘ + wheel zooms (see cooperativeGestures).
+    gestures.current = cooperativeGestures(m);
     // The card's width changes in Edit Mode (resize) and at the breakpoints; Leaflet only tracks the window.
     const ro = new ResizeObserver(() => m.invalidateSize());
     ro.observe(el.current);
-    return () => { ro.disconnect(); m.remove(); map.current = null; };
+    return () => { ro.disconnect(); gestures.current?.destroy(); gestures.current = null; m.remove(); map.current = null; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -100,6 +104,8 @@ function LiveLocation() {
   useEffect(() => {
     // On the card a click opens the details drawer, so double-click zoom is for the full map only.
     if (expanded) map.current?.doubleClickZoom.enable(); else map.current?.doubleClickZoom.disable();
+    // The full map covers the page, so it takes the plain wheel and one-finger drag.
+    gestures.current?.setFree(expanded);
     const t = window.setTimeout(() => map.current?.invalidateSize(), 50);
     if (!expanded) return () => window.clearTimeout(t);
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setExpanded(false); };
