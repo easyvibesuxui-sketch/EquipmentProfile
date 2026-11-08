@@ -13,10 +13,10 @@
 @media (min-width: 1024px) and (max-width: 1759px) { .ep-header__photo { width: 96px; height: 96px; } }
 @media (min-width: 1024px) and (max-width: 1439px) {
   .ep-header.syn-grid { --ep-device-w: 168px; }
-  .ep-header__title { font: var(--syn-type-titles-title-1); }
   .ep-header__device-media { display: none; }
   .ep-header__device-info { justify-content: flex-start; gap: var(--syn-space-10); }
 }
+@media (min-width: 1024px) and (max-width: 1279px) { .ep-header.syn-grid { --ep-device-w: 144px; } }
 
 @media (max-width: 1023px) {
   .ep-header__col-main { --span: 12 !important; }

@@ -96,10 +96,9 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
   touch screens one finger scrolls the page while two wake and move the map. The full map never sleeps
   (`src/shared/mapGestures.ts`).
 - The header keeps Figma's one row (equipment card, Tracker, Tag) down to 1024px: the Tracker and Tag cards keep
-  Figma's two columns but at least 256px, and from 1024 to 1439px show their details only (168px). Under ~1760px
-  the photo is 96px and the equipment card stays 157px with its facts on one row, as in Figma: AS4U moves up beside
-  the title, the tags show the first one plus a count, and a value that does not fit ends in "…" (full value on
-  hover). From 1024 to 1279px the facts and AS4U take two rows (170px). The profile tabs stay on one row too and scroll sideways, with a fade, when they
+  Figma's two columns but at least 256px, and from 1024 to 1439px show their details only. Everything keeps its
+  Figma place and one line, and the cards stay 157px: under ~1760px the photo is 96px and the facts' gaps tighten;
+  text that does not fit ends in "…" (AS4U's long label first; a value's tooltip shows it in full). The profile tabs stay on one row too and scroll sideways, with a fade, when they
   do not fit.
 - Widths and heights are stored per card in the layout (`spans`, `heights`); below 1024px a card of up to 4 columns
   takes half the row and a wider one the full row. Phones keep the designed heights.

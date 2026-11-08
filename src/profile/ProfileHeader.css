@@ -193,55 +193,50 @@
 .ep-header__update .syn-color-dot--plain { box-sizing: content-box; padding: 1px; border: 1px solid var(--syn-border-muted); background-clip: content-box; }
 
 /*
- * Narrower than Figma's 1920 frame the cards keep their 157px as a minimum: the title, tags and facts wrap and the
- * row grows; the photo and the device media keep their 133px.
+ * Narrower than Figma's 1920 frame everything keeps its Figma place and one line: the title, the tags and every fact
+ * (AS4U last, at the right end) shrink, and text that does not fit ends in "…" (a value's tooltip has it in full).
+ * The cards keep 157px; the photo and the device media keep their size.
  */
 .ep-header__col-main { display: flex; }
 .ep-header__main { flex: 1; height: auto; min-height: 157px; }
 .ep-header__photo { align-self: flex-start; width: 133px; height: 133px; }
-.ep-header__content { gap: var(--syn-space-12); }
-.ep-header__title { white-space: normal; }
-.ep-header__tags { flex-wrap: wrap; }
-.ep-header__bottom { flex-wrap: wrap; }
-.ep-header__facts { row-gap: var(--syn-space-8); }
 .ep-header__col-device { display: flex; }
 .ep-header__device { flex: 1; height: auto; min-height: 157px; }
 .ep-header__device-media { align-self: flex-start; height: 133px; }
 .ep-header__update { flex-wrap: wrap; white-space: normal; }
-/* AS4U is the last item of the facts row and sits at its right end, as in Figma. */
-.ep-header__facts { flex: 1 1 auto; }
-.ep-header__as4u { margin-left: auto; }
-.ep-header__as4u dt { font: inherit; }
-.ep-header__tag-count--compact { display: none; }
 
-/*
- * A narrower equipment card than Figma's keeps the facts on one row, as in Figma, while it can (content 640–879px,
- * about 1280–1700px): AS4U moves up beside the title, the gaps tighten and the longest values end in "…" (the full
- * value is their tooltip). The tags keep the first one plus a count. Under 640px (1024–1279px) the facts and AS4U
- * form a two-row grid instead.
- */
-.ep-header__content { position: relative; container: ep-header / inline-size; }
+/* Title and the tags row: one line each. */
+.ep-header__labels { flex-wrap: nowrap; min-width: 0; }
+.ep-header__category { flex: none; }
+.ep-header__tags { min-width: 0; overflow: hidden; }
+.ep-header__tags > li { min-width: 72px; } /* a tag keeps its dot and a few letters; the row clips the rest */
+.ep-header__tags > li:last-child { flex: none; }
+.ep-header__tag.syn-tag { min-width: 0; max-width: 100%; }
+.ep-header__tag .syn-tag__text { min-width: 0; }
+.ep-header__tag-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ep-header__tag .syn-color-dot { flex: none; }
+
+/* The facts row: one line, AS4U at the right end; each fact shrinks and its label and value end in "…". */
+.ep-header__bottom { min-width: 0; }
+.ep-header__facts { flex: 1 1 auto; flex-wrap: nowrap; min-width: 0; }
+.ep-header__fact { flex: 0 1 auto; min-width: 0; }
+.ep-header__fact dt, .ep-header__fact dd { min-width: 0; }
+.ep-header__fact dt { overflow: hidden; white-space: nowrap; }
+.ep-header__fact dt .ep-mask-icon, .ep-header__fact dd .syn-color-dot { flex: none; }
+.ep-header__fact dd > span:last-child, .ep-header__fact dt { text-overflow: ellipsis; }
+.ep-header__fact dd > span:last-child { min-width: 0; overflow: hidden; white-space: nowrap; }
+/* Short ones keep their width (Inventory Number, Status); AS4U's long label gives way first, then the names. */
+.ep-header__fact--inventory, .ep-header__fact--status { flex: none; }
+.ep-header__as4u { flex: 0 100 auto; min-width: 44px; margin-left: auto; } /* gives way almost alone until its label is short */
+.ep-header__as4u dt { max-width: 100%; overflow: hidden; font: inherit; text-overflow: ellipsis; white-space: nowrap; }
+.ep-header__as4u dd { flex: none; }
+
+/* A narrower card tightens the gaps between the facts (Figma: 24px). */
+.ep-header__content { container: ep-header / inline-size; }
+/* While the facts fit beside a shortened AS4U, only AS4U gives way (no sub-pixel "…" on the names). */
+@container ep-header (min-width: 600px) { .ep-header__fact { flex-shrink: 0; } }
 @container ep-header (max-width: 879px) {
-  .ep-header__content { gap: var(--syn-space-8); }
-  .ep-header__heading { gap: var(--syn-space-8); }
-  .ep-header__labels { flex-wrap: nowrap; min-width: 0; }
-  .ep-header__tags { flex-wrap: nowrap; min-width: 0; padding-left: var(--syn-space-10); }
-  .ep-header__tag-extra, .ep-header__tag-count { display: none; }
-  .ep-header__tag-count--compact { display: list-item; list-style: none; }
-  .ep-header__fact { justify-content: flex-start; gap: var(--syn-space-2); height: auto; min-width: 0; padding: 0; }
-  .ep-header__fact dd { min-width: 0; }
-  .ep-header__fact dd > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .ep-header__fact--inventory { flex: none; gap: var(--syn-space-2); padding-right: var(--syn-space-12); }
-  .ep-header__fact--inventory dt { font: var(--syn-type-text-caption-1); }
-}
-@container ep-header (min-width: 640px) and (max-width: 879px) {
-  .ep-header__title { padding-right: 136px; } /* room for AS4U */
-  .ep-header__facts { flex-wrap: nowrap; gap: var(--syn-space-12); }
-  .ep-header__fact { flex: 0 1 auto; }
-  .ep-header__as4u { position: absolute; top: 0; right: 40px; align-items: flex-end; gap: var(--syn-space-6); height: auto; margin: 0; padding: 0; }
-}
-@container ep-header (max-width: 639px) {
-  .ep-header__facts { display: grid; flex: 1 1 100%; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: var(--syn-space-6) var(--syn-space-12); }
-  .ep-header__fact--inventory { border-right: 0; padding-right: 0; }
-  .ep-header__as4u { align-items: flex-start; justify-content: flex-start; gap: var(--syn-space-2); height: auto; margin-left: 0; padding: 0; }
+  .ep-header__facts { gap: var(--syn-space-10); }
+  .ep-header__fact { padding-right: 0; }
+  .ep-header__fact--inventory { padding-right: var(--syn-space-10); }
 }
