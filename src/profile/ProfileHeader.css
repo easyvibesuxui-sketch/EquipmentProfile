@@ -240,3 +240,12 @@
   .ep-header__fact { padding-right: 0; }
   .ep-header__fact--inventory { padding-right: var(--syn-space-10); }
 }
+
+/* Phones: the card is a column, so the tags and facts wrap instead (as before). */
+@media (max-width: 639px) {
+  .ep-header__labels, .ep-header__tags, .ep-header__facts { flex-wrap: wrap; }
+  .ep-header__tags { overflow: visible; }
+  .ep-header__tags > li { min-width: 0; }
+  .ep-header__fact, .ep-header__as4u { flex: none; }
+  .ep-header__as4u { margin-left: 0; }
+}
