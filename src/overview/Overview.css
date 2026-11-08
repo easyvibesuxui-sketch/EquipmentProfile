@@ -113,7 +113,6 @@
 .ep-chart .syn-card__actions { gap: var(--syn-space-24); }
 .ep-chart__range.syn-tag { gap: var(--syn-space-4); padding: 0 var(--syn-space-10); }
 .ep-chart__sep { width: 4px; height: 4px; border-radius: var(--syn-radius-full); background: var(--syn-border-muted); }
-.ep-chart__period { padding: var(--syn-space-2); border-radius: var(--syn-radius-widget); background: var(--syn-surface-muted); }
 .ep-chart__period .syn-segmented__option { min-width: 64px; }
 .ep-chart__nav { display: inline-flex; gap: var(--syn-space-4); }
 .ep-chart__nav .syn-icon-button { border: 1px solid var(--syn-border-default); background: var(--syn-surface-default); }

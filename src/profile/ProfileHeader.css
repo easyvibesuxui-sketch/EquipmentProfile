@@ -191,3 +191,29 @@
 .ep-header__play:focus-visible { outline: 1px solid var(--syn-color-white-white); outline-offset: 2px; }
 .ep-header__qr--camera { top: 94px; left: 55px; }
 .ep-header__update .syn-color-dot--plain { box-sizing: content-box; padding: 1px; border: 1px solid var(--syn-border-muted); background-clip: content-box; }
+
+/*
+ * Narrower than Figma's 1920 frame the cards keep their 157px as a minimum: the title, tags and facts wrap and the
+ * row grows; the photo and the device media keep their 133px.
+ */
+.ep-header__main { height: auto; min-height: 157px; }
+.ep-header__photo { align-self: flex-start; width: 133px; height: 133px; }
+.ep-header__content { gap: var(--syn-space-12); }
+.ep-header__title { white-space: normal; }
+.ep-header__tags { flex-wrap: wrap; }
+.ep-header__bottom { flex-wrap: wrap; }
+.ep-header__facts { row-gap: var(--syn-space-8); }
+.ep-header__col-device { display: flex; }
+.ep-header__device { flex: 1; height: auto; min-height: 157px; }
+.ep-header__device-media { align-self: flex-start; height: 133px; }
+.ep-header__update { flex-wrap: wrap; white-space: normal; }
+/* AS4U keeps its top-right place; the facts wrap in the room beside it instead of pushing it to a row of its own. */
+.ep-header__bottom { flex-wrap: nowrap; }
+.ep-header__facts { flex: 1 1 0; min-width: 0; }
+/* A narrow equipment card (content under 480px): the facts take the full width and AS4U follows as one line. */
+.ep-header__content { container: ep-header / inline-size; }
+@container ep-header (max-width: 479px) {
+  .ep-header__bottom { flex-wrap: wrap; row-gap: var(--syn-space-8); }
+  .ep-header__facts { flex-basis: 100%; }
+  .ep-header__as4u { flex-direction: row; align-items: center; gap: var(--syn-space-8); height: auto; margin-left: auto; padding: 0; }
+}

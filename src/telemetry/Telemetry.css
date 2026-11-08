@@ -95,6 +95,13 @@
 .ep-sensor__time { display: flex; gap: var(--syn-space-4); align-self: end; padding-bottom: var(--syn-space-8); color: var(--syn-text-muted); font: 300 10px/12px var(--syn-font-family-body); white-space: nowrap; }
 .ep-sensor.is-off .ep-sensor__time { color: var(--syn-text-primary); }
 .ep-tele-hero__tiles .ep-sensor { box-shadow: var(--syn-shadow-default); }
+/* A narrow row (a two-column Tracker card under ~1400px): the faint signal bars go and the time stacks, so the
+   name keeps its words instead of "Naturall…". */
+.ep-sensor { container-type: inline-size; }
+@container (max-width: 359px) {
+  .ep-sensor__signal { display: none; }
+  .ep-sensor__time { flex-direction: column; align-items: flex-end; gap: 0; }
+}
 
 /* Tracker */
 .ep-tele-tracker.syn-card { height: 450px; }
@@ -123,7 +130,7 @@
 .ep-tele-input__history.syn-icon-button { grid-column: 2; grid-row: 2 / 4; align-self: center; justify-self: end; background: transparent; }
 
 /* Analogue inputs */
-.ep-tele-analogue.syn-card { height: auto; align-self: start; }
+.ep-tele-analogue.ep-widget.syn-card { height: auto; align-self: start; } /* Figma: only as tall as its rows */
 .ep-tele-row3 { align-items: start; }
 .ep-tele-analogue__row {
   display: flex;
@@ -148,9 +155,9 @@
 .ep-tele-device__name dd { font: var(--syn-type-titles-title-4); }
 .ep-tele-device__info > div { display: flex; flex-direction: column; gap: var(--syn-space-2); }
 .ep-tele-device__row { display: grid !important; grid-template-columns: 1fr 1fr; }
-.ep-tele-device__row > div { display: flex; flex-direction: column; gap: var(--syn-space-2); }
+.ep-tele-device__row > div { display: flex; min-width: 0; flex-direction: column; gap: var(--syn-space-2); }
 .ep-tele-device__imei { display: flex; align-items: center; gap: var(--syn-space-4); font: var(--syn-type-text-body-s-2); }
-.ep-tele-device__update { display: flex; align-items: center; gap: var(--syn-space-2); font: var(--syn-type-text-body-xs); white-space: nowrap; }
+.ep-tele-device__update { display: flex; flex-wrap: wrap; align-items: center; gap: var(--syn-space-2); font: var(--syn-type-text-body-xs); white-space: nowrap; } /* "8 h ago" drops below on a narrow card */
 .ep-tele-device__update .syn-color-dot--plain { box-sizing: content-box; padding: 1px; border: 1px solid var(--syn-border-muted); background-clip: content-box; }
 .ep-tele-copy {
   display: inline-flex;

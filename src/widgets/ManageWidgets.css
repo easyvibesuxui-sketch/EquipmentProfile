@@ -51,7 +51,7 @@
 }
 
 /* The gear at the end of the profile tabs. */
-.ep-profile-tabs-row { display: flex; align-items: flex-start; gap: var(--syn-space-16); }
+.ep-profile-tabs-row { display: flex; align-items: center; gap: var(--syn-space-16); }
 .ep-profile-tabs-row > .ep-profile-tabs { flex: 1; min-width: 0; }
 .ep-profile-tabs-row__manage { position: relative; flex: none; }
 .ep-profile-tabs-row__manage::before { content: ''; position: absolute; inset: -10px; } /* 44px hit area around the 24px gear */

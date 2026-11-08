@@ -35,7 +35,8 @@
   border-radius: var(--syn-radius-widget);
   background: var(--syn-surface-subtle);
 }
-.ep-moves-drawer__kind .syn-segmented__option { min-width: 130px; border-radius: var(--syn-radius-element); font: var(--syn-type-text-body-xs); }
+.ep-moves-drawer__kind { align-self: flex-start; }
+.ep-moves-drawer__kind .syn-segmented__option { min-width: 130px; }
 .ep-moves-drawer__row { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--syn-space-12); }
 .ep-moves-drawer__field { display: flex; flex: 0 1 232px; min-width: 0; flex-direction: column; gap: var(--syn-space-8); }
 .ep-moves-drawer__label { position: relative; top: var(--syn-title-offset); font: var(--syn-type-titles-title-5); }

@@ -33,7 +33,7 @@ Clicking the *Recent actions from History*, *Check ins / Charging*, *Dependance*
 opens its drawer:
 
 - [Recent actions from History](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=16127-6470): the full history list.
-  Figma's footer has Discard and a disabled Submit; Submit stays disabled, as there is nothing to submit.
+  It is read-only, so it has no footer (Figma's Discard and Submit were dropped on review).
 - Check ins and charging ([check in](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=16625-22238),
   [empty](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=16631-8886),
   [charging](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=16625-23303),
@@ -89,6 +89,10 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
   by a row, Delete removes it.
 - The widgets are inert while editing (no drawers, no map panning). The Dependance card moves and resizes as one
   card; its rows are the connected entities switched on in Manage Widgets.
+- The header keeps Figma's one row (equipment card, Tracker, Tag) down to 1024px: the Tracker and Tag cards keep
+  Figma's two columns but at least 256px, and from 1024 to 1439px show their details only; the equipment card's
+  title, tags and facts wrap. The profile tabs stay on one row too and scroll sideways, with a fade, when they
+  do not fit.
 - Widths and heights are stored per card in the layout (`spans`, `heights`); below 1024px a card of up to 4 columns
   takes half the row and a wider one the full row. Phones keep the designed heights.
 - The layout is saved in the browser (`localStorage`, key `ep-overview-widgets-v1`), not per user yet. While editing,
