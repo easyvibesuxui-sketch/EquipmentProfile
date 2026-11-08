@@ -6,7 +6,7 @@ import { ProfileTabs } from './profile/ProfileTabs';
 import { OverviewTab } from './overview/OverviewTab';
 import { TelemetryTab } from './telemetry/TelemetryTab';
 import { profileTabs } from './data/equipment';
-import { defaultLayout, useWidgetLayout, type WidgetLayout } from './widgets/layout';
+import { defaultLayout, loadDraft, saveDraft, useWidgetLayout, type WidgetLayout } from './widgets/layout';
 import { ManageWidgetsDrawer } from './widgets/ManageWidgetsDrawer';
 import { EditBanner, EditBar } from './widgets/EditMode';
 // Last, so the breakpoints win over the component stylesheets.
@@ -16,7 +16,11 @@ export function App() {
   const [tab, setTab] = useState(profileTabs[0]);
   const [layout, setLayout] = useWidgetLayout();
   // Edit Mode works on a draft: Save stores it, Discard drops it.
-  const [draft, setDraft] = useState<WidgetLayout | null>(null);
+  // An unsaved Edit Mode draft from an earlier visit reopens Edit Mode with a notice.
+  const [restored] = useState(loadDraft);
+  const [restoredAt, setRestoredAt] = useState<number | null>(restored?.savedAt ?? null);
+  const [draft, setDraft] = useState<WidgetLayout | null>(restored?.layout ?? null);
+  useEffect(() => { saveDraft(draft); }, [draft]);
   const [managing, setManaging] = useState(false);
   const editing = draft !== null;
   // Undo / Redo: the drafts before each edit, and the ones undone. A drag or resize sends many changes;
@@ -77,22 +81,27 @@ export function App() {
     return () => window.removeEventListener(DASHCAM_PLAY_EVENT, open);
   }, []);
 
-  const edit = () => { setTab('Overview'); setHistory([]); setFuture([]); lastChange.current = 0; setDraft(layout); };
-  const save = () => { if (draft) setLayout(draft); setDraft(null); setHistory([]); setFuture([]); setManaging(false); };
-  const discard = () => { setDraft(null); setHistory([]); setFuture([]); setManaging(false); };
+  const edit = () => { setRestoredAt(null); setTab('Overview'); setHistory([]); setFuture([]); lastChange.current = 0; setDraft(layout); };
+  const save = () => { if (draft) setLayout(draft); setRestoredAt(null); setDraft(null); setHistory([]); setFuture([]); setManaging(false); };
+  const discard = () => { setRestoredAt(null); setDraft(null); setHistory([]); setFuture([]); setManaging(false); };
 
   return (
     <AppShell module="Fleet" current="planner">
       <div className={editing ? 'ep-profile is-editing' : 'ep-profile'}>
         <ProfileHeader />
         {editing ? (
-          <EditBanner onSection={() => setManaging(true)} onReset={() => { lastChange.current = 0; change(defaultLayout()); }} />
+          <EditBanner
+            onSection={() => setManaging(true)}
+            onReset={() => { lastChange.current = 0; change(defaultLayout()); }}
+            restoredAt={restoredAt}
+            onDiscardRestored={discard}
+          />
         ) : (
           <ProfileTabs tabs={profileTabs} value={tab} onChange={setTab} onManage={tab === 'Overview' ? edit : undefined} />
         )}
         <div role="tabpanel" id="ep-tabpanel" aria-label={tab} className="ep-profile__panel">
           {tab === 'Overview' ? (
-            <OverviewTab layout={draft ?? layout} editing={editing} onChange={change} onEdit={edit} onAddWidget={() => setManaging(true)} />
+            <OverviewTab layout={draft ?? layout} editing={editing} onChange={change} onEdit={() => { edit(); setManaging(true); }} onAddWidget={() => setManaging(true)} />
           ) : tab === 'Telemetry' ? <TelemetryTab /> : <p className="ep-profile__placeholder">{tab} is not designed yet.</p>}
         </div>
         {editing && <EditBar onDiscard={discard} onSave={save} onUndo={undo} onRedo={redo} canUndo={history.length > 0} canRedo={future.length > 0} />}

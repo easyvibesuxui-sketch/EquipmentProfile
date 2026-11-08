@@ -20,6 +20,18 @@ const stamp = () => {
   return `${p(d.getDate())}.${p(d.getMonth() + 1)}.${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
 };
 
+const TARGET_KEY = 'ep-checkin-target-v1';
+function lastTarget(): { kind: keyof typeof checkInTargets; target: string } | null {
+  try {
+    const v = JSON.parse(window.localStorage.getItem(TARGET_KEY) ?? 'null') as { kind?: string; target?: string } | null;
+    if (v && (v.kind === 'project' || v.kind === 'warehouse') && checkInTargets[v.kind].includes(v.target ?? '')) return { kind: v.kind, target: v.target! };
+  } catch { /* storage blocked */ }
+  return null;
+}
+function rememberTarget(kind: keyof typeof checkInTargets, target: string) {
+  try { window.localStorage.setItem(TARGET_KEY, JSON.stringify({ kind, target })); } catch { /* storage blocked */ }
+}
+
 /** An open stay or charge is the newest session without an "out" event. */
 const isOpen = (sessions: MoveSession[]) => Boolean(sessions[0] && !sessions[0].out);
 
@@ -31,12 +43,15 @@ function toggle(sessions: MoveSession[], place: string): MoveSession[] {
 }
 
 /** Figma "List is empty" (16631:8886): the Smoke list area with the empty-state glyph and two muted lines. */
-function EmptyList() {
+function EmptyList({ view }: { view: MovesView }) {
+  // The action is the panel right above (Check in, or Continue charging), so the copy points to it.
   return (
     <div className="ep-moves-drawer__empty">
       <Icon name="empty-state" size={32} />
-      <p>List is empty</p>
-      <p>Nothing yet</p>
+      <p className="ep-moves-drawer__empty-title">{view === 'checkins' ? 'No check-ins yet' : 'No charging sessions yet'}</p>
+      <p>{view === 'checkins'
+        ? 'Check this machine in to a project or warehouse above to keep a record of where it works.'
+        : 'Charging sessions appear here when the tracker reports them, or when you continue charging above.'}</p>
     </div>
   );
 }
@@ -48,8 +63,9 @@ function EmptyList() {
  * below is the full log; the Overview widget shows its first four stays.
  */
 export function CheckInsDrawer({ open, onClose, view, onView, logs, onLogs }: Props) {
-  const [kind, setKind] = useState<keyof typeof checkInTargets>('project');
-  const [target, setTarget] = useState(checkInTargets.project[0]);
+  // Defaults to the last project or warehouse used in this browser, else the first project.
+  const [kind, setKind] = useState<keyof typeof checkInTargets>(() => lastTarget()?.kind ?? 'project');
+  const [target, setTarget] = useState(() => lastTarget()?.target ?? checkInTargets.project[0]);
   const checkedIn = isOpen(logs.checkins);
   const charging = isOpen(logs.charging);
   const sessions = logs[view];
@@ -93,7 +109,7 @@ export function CheckInsDrawer({ open, onClose, view, onView, logs, onLogs }: Pr
                     disabled={checkedIn}
                   />
                 </div>
-                <Button variant="accent" size="sm" className="ep-moves-drawer__action" onClick={() => onLogs({ ...logs, checkins: toggle(logs.checkins, target) })}>
+                <Button variant="accent" size="sm" className="ep-moves-drawer__action" onClick={() => { if (!checkedIn) rememberTarget(kind, target); onLogs({ ...logs, checkins: toggle(logs.checkins, target) }); }}>
                   {checkedIn ? 'Check out' : 'Check in'}
                 </Button>
               </div>
@@ -112,7 +128,7 @@ export function CheckInsDrawer({ open, onClose, view, onView, logs, onLogs }: Pr
             </div>
           )}
         </div>
-        {sessions.length ? <MovesTable sessions={sessions} view={view} className="ep-moves--drawer" /> : <EmptyList />}
+        {sessions.length ? <MovesTable sessions={sessions} view={view} className="ep-moves--drawer" /> : <EmptyList view={view} />}
       </div>
     </PanelDrawer>
   );

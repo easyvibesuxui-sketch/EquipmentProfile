@@ -15,6 +15,9 @@
 .ep-edit-banner__text { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: var(--syn-space-2); }
 .ep-edit-banner__title { position: relative; top: var(--syn-title-offset); margin: 0; color: var(--syn-text-primary); font: var(--syn-type-titles-title-4); }
 .ep-edit-banner__hint { margin: 0; color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+.ep-edit-banner__restored { display: flex; flex-wrap: wrap; align-items: center; gap: var(--syn-space-8); margin: var(--syn-space-4) 0 0; color: var(--syn-text-secondary); font: var(--syn-type-text-body-xs); }
+.ep-edit-banner__restored button { padding: 0; border: 0; background: none; color: var(--syn-text-primary); font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.ep-edit-banner__restored button:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
 .ep-edit-banner__art { flex: none; margin: -24px 0; stroke: var(--syn-color-secondary-dodger-blue); stroke-opacity: 0.45; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .ep-edit-banner__section.syn-button { flex: none; padding-inline: var(--syn-space-32); }
 .ep-edit-banner__reset.syn-button { flex: none; margin-right: calc(var(--syn-space-12) - var(--syn-space-24)); padding-inline: var(--syn-space-24); }
@@ -98,6 +101,9 @@
 }
 .ep-edit-sizes button[aria-pressed='true'] { background: var(--syn-surface-inverse); color: var(--syn-color-white-white); }
 .ep-edit-sizes button:not([aria-pressed='true']):hover { color: var(--syn-text-primary); }
+.ep-edit-sizes button { position: relative; }
+/* 44px-tall hit area around the 24px Figma pills. */
+.ep-edit-sizes button::before { content: ''; position: absolute; inset: -11px 0; }
 .ep-edit-sizes button:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
 
 /* Remove: a 28px White circle, Silver Chalice border (Cultured in the bar), the 24px close glyph. */
@@ -115,6 +121,8 @@
   color: var(--syn-text-primary);
   cursor: pointer;
 }
+.ep-edit-close { position: relative; }
+.ep-edit-close::before { content: ''; position: absolute; inset: -9px; } /* 44px hit area around the 28px circle */
 .ep-edit-close:hover { border-color: var(--syn-border-strong); }
 .ep-edit-close:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
 .ep-edit-close--bar { border-color: var(--syn-border-default); }
@@ -133,17 +141,17 @@
   transition: background-color var(--syn-duration-fast), border-color var(--syn-duration-fast);
 }
 .ep-edit-handle::after { content: ''; position: absolute; border-radius: var(--syn-radius-full); background: var(--syn-text-secondary); }
-.ep-edit-handle--e { top: calc(50% - 24px); right: -5px; width: 10px; height: 48px; cursor: ew-resize; }
-.ep-edit-handle--e::after { top: 12px; left: 3px; width: 2px; height: 22px; }
+.ep-edit-handle--e { top: calc(50% - 24px); right: -6px; width: 12px; height: 48px; cursor: ew-resize; }
+.ep-edit-handle--e::after { top: 12px; left: calc(50% - 1px); width: 2px; height: 24px; }
 /* The bottom handle is a labelled pill: the arrows and the height (Auto, 1, 2 or 3 rows). */
 .ep-edit-handle--s {
-  bottom: -11px;
+  bottom: -12px;
   left: 50%;
   display: inline-flex;
   align-items: center;
   gap: var(--syn-space-4);
-  height: 22px;
-  padding: 0 var(--syn-space-10) 0 var(--syn-space-8);
+  height: 24px;
+  padding: 0 var(--syn-space-12) 0 var(--syn-space-8);
   color: var(--syn-text-secondary);
   font: var(--syn-type-text-caption-1);
   /* Syn rule for Caption 1: default smoothing and a hairline stroke. */
@@ -193,7 +201,9 @@
   align-items: center;
   justify-content: center;
   gap: var(--syn-space-16);
-  min-height: 450px;
+  align-self: start;
+  /* As high as a 1-row edit card: the 52px bar, the 450px widget and the 1px borders. */
+  min-height: calc(52px + 450px + 2px);
   padding: var(--syn-space-16);
   border: 1px dashed var(--syn-text-muted);
   border-radius: var(--syn-radius-element);
@@ -231,3 +241,27 @@
 }
 .ep-edit-bar__history { display: flex; gap: var(--syn-space-8); }
 .ep-edit-bar__redo .syn-icon { transform: scaleX(-1); }
+
+/* Add Widget with no widgets on the page: the empty state of the Overview in Edit Mode. */
+.ep-edit-add.is-alone { gap: var(--syn-space-8); min-height: 320px; background: var(--syn-surface-subtle); }
+.ep-edit-add.is-alone:hover { background: var(--syn-surface-default); }
+.ep-edit-add__title { margin-top: var(--syn-space-8); color: var(--syn-text-primary); font: var(--syn-type-titles-title-4); }
+.ep-edit-add__hint { max-width: 60ch; color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+.ep-edit-add__cta {
+  margin-top: var(--syn-space-8);
+  padding: var(--syn-space-8) var(--syn-space-24);
+  border-radius: var(--syn-radius-element);
+  background: var(--syn-surface-inverse);
+  color: var(--syn-color-white-white);
+  font: var(--syn-type-button-text-button-secondary-s);
+}
+
+/* Shortcut keys in tooltips. */
+.ep-kbd {
+  margin-left: var(--syn-space-4);
+  padding: 0 var(--syn-space-4);
+  border: 1px solid currentColor;
+  border-radius: var(--syn-radius-xs);
+  font: inherit;
+  opacity: 0.8;
+}

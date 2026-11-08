@@ -1,12 +1,12 @@
-import { Card, FileItem, IconButton, StatusBadge, type IconName } from '@syn/design-system';
+import { Card, FileItem, StatusBadge, type IconName } from '@syn/design-system';
 import { InfoList } from './widgets';
+import { OpenLink } from '../shared/OpenLink';
 import {
   bglInformation, calculationType, documents, equipmentDetails, maintenance, technicalChecks, workshopOrders, type ScheduledItem,
 } from '../data/equipment';
 
 /* Widgets that "Manage Widgets" can add to the Overview. They follow the existing 450px Overview cards. */
 
-const OpenLink = ({ label }: { label: string }) => <IconButton icon="next" label={label} className="ep-widget__open syn-card__open" />;
 
 function InfoCard({ title, rows, open }: { title: string; rows: Array<[string, string | null]>; open: string }) {
   return (

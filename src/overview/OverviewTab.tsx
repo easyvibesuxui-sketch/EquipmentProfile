@@ -11,6 +11,7 @@ interface Props {
   /** Edit Mode: the layout is the draft and the grid can be edited. */
   editing?: boolean;
   onChange?: (layout: WidgetLayout) => void;
+  /** Opens Edit Mode; from the empty Overview it also opens Manage Widgets. */
   onEdit: () => void;
   onAddWidget?: () => void;
 }
@@ -43,8 +44,10 @@ export function OverviewTab({ layout, editing, onChange, onEdit, onAddWidget }: 
   if (cards.length === 0) {
     return (
       <div className="ep-overview ep-overview__empty">
-        <EmptyState action={<Button variant="secondary" size="sm" iconStart="settings" onClick={onEdit}>Edit widgets</Button>}>
-          No widgets on the Overview
+        {/* Zero state: what belongs here, why, and one action (Edit Mode with Manage Widgets open). */}
+        <EmptyState action={<Button size="sm" iconStart="plus-in-circle" onClick={onEdit}>Add widgets</Button>}>
+          <span className="ep-overview__empty-title">No widgets on the Overview</span>
+          <span className="ep-overview__empty-hint">Add widgets to see this machine's location, usage and history at a glance.</span>
         </EmptyState>
       </div>
     );

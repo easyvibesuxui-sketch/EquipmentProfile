@@ -82,7 +82,8 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
 - **Move:** drag a card anywhere (or by its grip): it follows the pointer, and, as with resizing, nothing reflows
   while dragging: a Dodger Blue outline ("Move here") shows exactly where it will land, and the move applies on
   release. The landing spot is found by laying the new order out in a hidden copy of the grid.
-- **Add Widget** (the dashed tile after the last card) and the banner's **Section** button open *Manage Widgets*:
+- **Add Widget** (the dashed tile after the last card, a 1/3 card as high as an edit card; with no widgets left it
+  spans the row as the empty state) and the banner's **Section** button open *Manage Widgets*:
   a collapsible group per category with a switch per widget. A widget switched on is added at the end of the page.
 - Keyboard: Tab to a card, Arrow Left/Right moves it, Shift+Left/Right changes its width, Shift+Up/Down its height
   by a row, Delete removes it.
@@ -90,7 +91,12 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
   card; its rows are the connected entities switched on in Manage Widgets.
 - Widths and heights are stored per card in the layout (`spans`, `heights`); below 1600px a card of up to 4 columns
   takes half the row and a wider one the full row. Phones keep the designed heights.
-- The layout is saved in the browser (`localStorage`, key `ep-overview-widgets-v1`), not per user yet.
+- The layout is saved in the browser (`localStorage`, key `ep-overview-widgets-v1`), not per user yet. While editing,
+  the draft is kept too (`ep-overview-widgets-draft-v1`): after a refresh Edit Mode reopens with "Unsaved changes
+  restored" and a Discard link; Save or Discard clears it.
+- Icon buttons (remove, Undo, Redo, the gear, the widgets' open chevrons) have real tooltips on hover and focus
+  (shortcuts as ⌘ on Apple, Ctrl elsewhere) and 44px hit areas; Syn's native `title` is turned off where a tooltip
+  is shown.
 
 `src/widgets/registry.tsx` lists the widgets, `src/widgets/layout.ts` holds the order, visibility, widths and the
 move/resize rules, `src/widgets/EditMode.tsx` the banner, the edit grid and the bottom bar.

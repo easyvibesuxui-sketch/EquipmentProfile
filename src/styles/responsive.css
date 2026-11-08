@@ -6,7 +6,7 @@
   .ep-col--half { --span: 6 !important; }
   .ep-col--wide, .ep-col--full { --span: 12 !important; order: 1; }
   /* The Overview is one dense grid: the half widgets close up around the wide ones without reordering. */
-  .ep-overview__grid .ep-col { order: 0; }
+  .ep-overview__grid .ep-col, .ep-edit-grid .ep-col { order: 0; }
 }
 
 @media (max-width: 639px) {

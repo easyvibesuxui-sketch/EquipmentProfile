@@ -18,7 +18,7 @@ export function ProfileTabs({ tabs, value, onChange, onManage }: { tabs: string[
       />
       {onManage && (
         <Tooltip content="Edit widgets" placement="left">
-          <IconButton icon="settings" label="Edit widgets" size="xs" className="ep-profile-tabs-row__manage" onClick={onManage} />
+          <IconButton icon="settings" label="Edit widgets" title={undefined} size="xs" className="ep-profile-tabs-row__manage" onClick={onManage} />
         </Tooltip>
       )}
     </div>

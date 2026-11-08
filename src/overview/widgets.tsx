@@ -1,11 +1,12 @@
 import { useState, type ReactNode } from 'react';
-import { Card, Icon, IconButton, Property, Segmented, type IconName } from '@syn/design-system';
+import { Card, Icon, Property, Segmented, type IconName } from '@syn/design-system';
 import { CheckInsDrawer } from './CheckInsDrawer';
 import { DependenceDrawer } from './DependenceDrawer';
 import { InfoDrawer } from './InfoDrawer';
 import { HistoryDrawer } from './HistoryDrawer';
 import { ColorDot } from '../shared/ColorDot';
 import { OpensDrawer } from '../shared/OpensDrawer';
+import { OpenLink } from '../shared/OpenLink';
 import { useEmptyDemo } from '../shared/useEmptyDemo';
 import {
   checkInLog, chargingLog, dependence, history, identificationGroups, identifications, specifications,
@@ -13,9 +14,6 @@ import {
 } from '../data/equipment';
 
 /** Opens the matching profile tab; Figma draws a 16px chevron at the widget's top right. */
-function OpenLink({ label }: { label: string }) {
-  return <IconButton icon="next" label={label} className="ep-widget__open syn-card__open" />;
-}
 
 export function InfoList({ rows }: { rows: Array<[string, string | null]> }) {
   return (

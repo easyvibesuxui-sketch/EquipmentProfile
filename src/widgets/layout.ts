@@ -148,6 +148,33 @@ export function setHeight(layout: WidgetLayout, card: string, height: number | n
 /** How the card regroups below 1600px (responsive.css): up to 4 columns takes half the row, more the full row. */
 export const fitOf = (span: number) => (span >= MAX_SPAN ? 'full' : span >= 5 ? 'wide' : 'half');
 
+/**
+ * The Edit Mode draft, kept in this browser while editing so a refresh or a closed tab loses nothing. It is
+ * restored on the next visit (Edit Mode opens again with a notice) and cleared on Save or Discard.
+ */
+const DRAFT_KEY = 'ep-overview-widgets-draft-v1';
+
+export function loadDraft(): { layout: WidgetLayout; savedAt: number } | null {
+  try {
+    const raw = window.localStorage.getItem(DRAFT_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { layout?: Partial<WidgetLayout>; savedAt?: number };
+    if (!parsed.layout || typeof parsed.savedAt !== 'number') return null;
+    return { layout: normalise(parsed.layout), savedAt: parsed.savedAt };
+  } catch {
+    return null;
+  }
+}
+
+export function saveDraft(layout: WidgetLayout | null) {
+  try {
+    if (layout) window.localStorage.setItem(DRAFT_KEY, JSON.stringify({ layout, savedAt: Date.now() }));
+    else window.localStorage.removeItem(DRAFT_KEY);
+  } catch {
+    /* Storage blocked: the draft lasts until the page closes. */
+  }
+}
+
 /** The saved layout, persisted in this browser. */
 export function useWidgetLayout() {
   const [layout, setLayout] = useState<WidgetLayout>(load);

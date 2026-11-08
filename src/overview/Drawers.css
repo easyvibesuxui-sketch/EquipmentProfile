@@ -88,6 +88,9 @@
   font: var(--syn-type-titles-title-4);
 }
 .ep-moves-drawer__empty .syn-icon { margin-bottom: var(--syn-space-4); }
+.ep-moves-drawer__empty > p { max-width: 48ch; text-align: center; }
+.ep-moves-drawer__empty > p:not(.ep-moves-drawer__empty-title) { font: var(--syn-type-text-body-xs); }
+.ep-moves-drawer__empty-title { color: var(--syn-text-primary); }
 
 /* A widget that opens its drawer on click. */
 .ep-widget-link { height: 100%; cursor: pointer; }

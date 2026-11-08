@@ -6,6 +6,9 @@ import {
 import './EditMode.css';
 
 const GAP = 24;
+/** Shortcut text for tooltips: ⌘ on Apple platforms, Ctrl elsewhere. */
+const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+const shortcut = (keys: string) => (isMac ? keys.replace('Ctrl+', '⌘').replace('Shift+', '⇧') : keys);
 /**
  * Width presets as the Figma Edit Mode names them on the 12-column grid: "1/3" is the 3-column card (436px at
  * 1920, four to a row), "2/3" two of them (6 columns, 896px, like the map), Full width all 12.
@@ -19,12 +22,28 @@ const SIZES = [
 const sizeOf = (span: number) => SIZES.reduce((best, s) => (Math.abs(s.span - span) < Math.abs(best - span) ? s.span : best), SIZES[0].span);
 
 /** Figma "Edit Mode" banner (17118:62279): in place of the tabs while editing. */
-export function EditBanner({ onSection, onReset }: { onSection: () => void; onReset: () => void }) {
+interface EditBannerProps {
+  onSection: () => void;
+  onReset: () => void;
+  /** When unsaved changes from an earlier visit were restored: when they were last edited. */
+  restoredAt?: number | null;
+  onDiscardRestored?: () => void;
+}
+
+const timeOf = (ms: number) => new Date(ms).toLocaleString(undefined, { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+
+export function EditBanner({ onSection, onReset, restoredAt, onDiscardRestored }: EditBannerProps) {
   return (
     <section className="ep-edit-banner" aria-labelledby="ep-edit-title">
       <div className="ep-edit-banner__text">
         <h2 id="ep-edit-title" className="ep-edit-banner__title">Edit Mode</h2>
         <p className="ep-edit-banner__hint">make overview page more comfortable for you. Replace or remove Widgets, change Widget size, change position.</p>
+        {restoredAt && (
+          <p className="ep-edit-banner__restored" role="status">
+            Unsaved changes restored, last edited {timeOf(restoredAt)}.
+            <button type="button" onClick={onDiscardRestored}>Discard them</button>
+          </p>
+        )}
       </div>
       {/* Figma "Manage widgets — Customize": a 80px Dodger Blue line drawing of a widget and a pencil. */}
       <svg className="ep-edit-banner__art" width="80" height="80" viewBox="0 0 80 80" fill="none" aria-hidden>
@@ -57,12 +76,12 @@ export function EditBar({ onDiscard, onSave, onUndo, onRedo, canUndo, canRedo }:
       <Button variant="secondary" size="md" className="ep-edit-bar__button" onClick={onDiscard}>Discard</Button>
       {/* Not in Figma: icon-only Undo and Redo between Discard and Save, named by their tooltips. */}
       <div className="ep-edit-bar__history" role="group" aria-label="History">
-        <Tooltip content="Undo (Ctrl+Z)">
-          <IconButton icon="undo" label="Undo" size="md" variant="outline" disabled={!canUndo} onClick={onUndo} />
+        <Tooltip content={<>Undo <kbd className="ep-kbd">{shortcut('Ctrl+Z')}</kbd></>}>
+          <IconButton icon="undo" label="Undo" title={undefined} size="md" variant="outline" disabled={!canUndo} onClick={onUndo} />
         </Tooltip>
-        <Tooltip content="Redo (Ctrl+Shift+Z)">
+        <Tooltip content={<>Redo <kbd className="ep-kbd">{shortcut('Ctrl+Shift+Z')}</kbd></>}>
           {/* Syn has no redo glyph: the undo glyph, mirrored. */}
-          <IconButton icon="undo" label="Redo" size="md" variant="outline" className="ep-edit-bar__redo" disabled={!canRedo} onClick={onRedo} />
+          <IconButton icon="undo" label="Redo" title={undefined} size="md" variant="outline" className="ep-edit-bar__redo" disabled={!canRedo} onClick={onRedo} />
         </Tooltip>
       </div>
       <Button size="md" className="ep-edit-bar__button" onClick={onSave}>Save</Button>
@@ -70,11 +89,14 @@ export function EditBar({ onDiscard, onSave, onUndo, onRedo, canUndo, canRedo }:
   );
 }
 
+/** Remove: a 28px circle (Figma) with a 44px hit area and a real tooltip naming the widget. */
 function CloseButton({ label, onClick, className }: { label: string; onClick: () => void; className: string }) {
   return (
-    <button type="button" className={`ep-edit-close ${className}`} aria-label={label} title={label} onClick={(e) => { e.stopPropagation(); onClick(); }}>
-      <Icon name="close" size={14} />
-    </button>
+    <Tooltip content={<>{label} <kbd className="ep-kbd">Delete</kbd></>} placement="left">
+      <button type="button" className={`ep-edit-close ${className}`} aria-label={label} onClick={(e) => { e.stopPropagation(); onClick(); }}>
+        <Icon name="close" size={14} />
+      </button>
+    </Tooltip>
   );
 }
 
@@ -317,7 +339,7 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
             onKeyDown={(e) => onKeyDown(e, card)}
           >
             <div className="ep-edit-item__bar">
-              <span className="ep-edit-grip" title="Drag to move" aria-hidden><Icon name="dragable" size={16} /></span>
+              <span className="ep-edit-grip" aria-hidden><Icon name="dragable" size={16} /></span>
               <div className="ep-edit-sizes" role="group" aria-label={`Width of ${label}`}>
                 {SIZES.map((sz) => (
                   <button key={sz.label} type="button" aria-pressed={sizeOf(span) === sz.span} onClick={() => onChange(setSpan(layout, card, sz.span))}>{sz.label}</button>
@@ -354,9 +376,24 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
           </div>
         );
       })}
-      <button type="button" className="ep-edit-add syn-grid__item ep-col ep-col--half" style={{ '--span': 3 } as CSSProperties} onClick={onAdd}>
+      {/* "Add Widget" is a 1/3 card (3 columns) as high as an edit card. With no widgets left it spans the row
+          and says what belongs here. */}
+      <button
+        type="button"
+        className={cards.length ? 'ep-edit-add syn-grid__item ep-col ep-col--half' : 'ep-edit-add is-alone syn-grid__item ep-col ep-col--full'}
+        style={{ '--span': cards.length ? 3 : MAX_SPAN } as CSSProperties}
+        onClick={onAdd}
+      >
         <Icon name="plus-in-circle" size={34} />
-        <span className="syn-title-text">Add Widget</span>
+        {cards.length ? (
+          <span className="syn-title-text">Add Widget</span>
+        ) : (
+          <>
+            <span className="ep-edit-add__title syn-title-text">No widgets on the Overview</span>
+            <span className="ep-edit-add__hint">Add widgets to see this machine's location, usage and history at a glance.</span>
+            <span className="ep-edit-add__cta">Add Widget</span>
+          </>
+        )}
       </button>
       <p id="ep-edit-help" className="syn-visually-hidden">
         Drag, or press Arrow Left and Right, to move. Drag the right bar, or press Shift with Arrow Left or Right, to change the width; drag the bottom bar, or press Shift with Arrow Up or Down, to change the height by a row. Delete removes it.
