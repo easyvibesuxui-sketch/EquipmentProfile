@@ -95,8 +95,8 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
   the draft is kept too (`ep-overview-widgets-draft-v1`): after a refresh Edit Mode reopens with "Unsaved changes
   restored" and a Discard link; Save or Discard clears it.
 - Icon buttons (remove, Undo, Redo, the gear, the widgets' open chevrons) have real tooltips on hover and focus
-  (shortcuts as ⌘ on Apple, Ctrl elsewhere) and 44px hit areas; Syn's native `title` is turned off where a tooltip
-  is shown.
+  (shortcuts as ⌘ on Apple, Ctrl elsewhere) and 44px hit areas. Syn's `IconButton` and map controls have no
+  native `title`: they draw the Syn tooltip themselves (`tooltip`, `tooltipPlacement`), kept inside the viewport.
 
 `src/widgets/registry.tsx` lists the widgets, `src/widgets/layout.ts` holds the order, visibility, widths and the
 move/resize rules, `src/widgets/EditMode.tsx` the banner, the edit grid and the bottom bar.

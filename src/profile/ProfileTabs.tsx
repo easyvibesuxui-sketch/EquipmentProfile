@@ -1,4 +1,4 @@
-import { IconButton, Segmented, Tooltip } from '@syn/design-system';
+import { IconButton, Segmented } from '@syn/design-system';
 import './ProfileTabs.css';
 
 /**
@@ -17,9 +17,7 @@ export function ProfileTabs({ tabs, value, onChange, onManage }: { tabs: string[
         onChange={onChange}
       />
       {onManage && (
-        <Tooltip content="Edit widgets" placement="left">
-          <IconButton icon="settings" label="Edit widgets" title={undefined} size="xs" className="ep-profile-tabs-row__manage" onClick={onManage} />
-        </Tooltip>
+        <IconButton icon="settings" label="Edit widgets" size="xs" tooltipPlacement="left" className="ep-profile-tabs-row__manage" onClick={onManage} />
       )}
     </div>
   );

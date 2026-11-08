@@ -76,13 +76,9 @@ export function EditBar({ onDiscard, onSave, onUndo, onRedo, canUndo, canRedo }:
       <Button variant="secondary" size="md" className="ep-edit-bar__button" onClick={onDiscard}>Discard</Button>
       {/* Not in Figma: icon-only Undo and Redo between Discard and Save, named by their tooltips. */}
       <div className="ep-edit-bar__history" role="group" aria-label="History">
-        <Tooltip content={<>Undo <kbd className="ep-kbd">{shortcut('Ctrl+Z')}</kbd></>}>
-          <IconButton icon="undo" label="Undo" title={undefined} size="md" variant="outline" disabled={!canUndo} onClick={onUndo} />
-        </Tooltip>
-        <Tooltip content={<>Redo <kbd className="ep-kbd">{shortcut('Ctrl+Shift+Z')}</kbd></>}>
-          {/* Syn has no redo glyph: the undo glyph, mirrored. */}
-          <IconButton icon="undo" label="Redo" title={undefined} size="md" variant="outline" className="ep-edit-bar__redo" disabled={!canRedo} onClick={onRedo} />
-        </Tooltip>
+        <IconButton icon="undo" label="Undo" tooltip={<>Undo <kbd className="ep-kbd">{shortcut('Ctrl+Z')}</kbd></>} size="md" variant="outline" disabled={!canUndo} onClick={onUndo} />
+        {/* Syn has no redo glyph: the undo glyph, mirrored. */}
+        <IconButton icon="undo" label="Redo" tooltip={<>Redo <kbd className="ep-kbd">{shortcut('Ctrl+Shift+Z')}</kbd></>} size="md" variant="outline" className="ep-edit-bar__redo" disabled={!canRedo} onClick={onRedo} />
       </div>
       <Button size="md" className="ep-edit-bar__button" onClick={onSave}>Save</Button>
     </div>
