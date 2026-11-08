@@ -145,7 +145,7 @@ export function setHeight(layout: WidgetLayout, card: string, height: number | n
   return { ...layout, heights };
 }
 
-/** How the card regroups below 1200px (responsive.css): up to 4 columns takes half the row, more the full row. */
+/** How the card regroups below 1024px (responsive.css): up to 4 columns takes half the row, more the full row. */
 export const fitOf = (span: number) => (span >= MAX_SPAN ? 'full' : span >= 5 ? 'wide' : 'half');
 
 /**

@@ -28,6 +28,12 @@
 .ep-info__row dt { color: var(--syn-text-muted); }
 .ep-info__row dd { margin: 0; text-align: right; overflow-wrap: break-word; /* the label wraps first; a code like a VIN breaks only if it cannot fit a line */ }
 .ep-info__row dd.is-empty { color: var(--syn-text-muted); }
+/* A 1/3 card near 1024px (content under 210px): each label sits over its value, so values keep one line. */
+.ep-info__body { container-type: inline-size; }
+@container (max-width: 209px) {
+  .ep-info__row { flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: var(--syn-space-2); }
+  .ep-info__row dd { text-align: left; overflow-wrap: anywhere; }
+}
 .ep-info__footer { margin: 0; padding-top: var(--syn-space-32); font: var(--syn-type-text-body-s); }
 .ep-info__more { align-self: flex-start; padding-right: 0; padding-bottom: 0; padding-left: 0; border: 0; background: none; color: var(--syn-text-primary); text-align: left; cursor: pointer; }
 .ep-info__more:hover { text-decoration: underline; text-underline-offset: 4px; }
