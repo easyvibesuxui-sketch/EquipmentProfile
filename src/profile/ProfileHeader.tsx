@@ -28,7 +28,7 @@ function Fact({ fact }: { fact: HeaderFact }) {
         <MaskIcon src={factIcons[fact.id]} size={14} />
         {fact.label}
       </dt>
-      <dd><ColorDot color={fact.dot} /><span className="syn-title-text">{fact.value}</span></dd>
+      <dd><ColorDot color={fact.dot} /><span className="syn-title-text" title={fact.value}>{fact.value}</span></dd>
     </div>
   );
 }

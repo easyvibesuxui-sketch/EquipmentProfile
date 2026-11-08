@@ -215,10 +215,12 @@
 .ep-header__tag-count--compact { display: none; }
 
 /*
- * A narrow equipment card (content under 880px, i.e. below ~1700px): compact, so the row stays close to Figma's
- * 157px. The facts become a tight grid with AS4U as its last cell, and the tags keep the first one plus a count.
+ * A narrower equipment card than Figma's keeps the facts on one row, as in Figma, while it can (content 640–879px,
+ * about 1280–1700px): AS4U moves up beside the title, the gaps tighten and the longest values end in "…" (the full
+ * value is their tooltip). The tags keep the first one plus a count. Under 640px (1024–1279px) the facts and AS4U
+ * form a two-row grid instead.
  */
-.ep-header__content { container: ep-header / inline-size; }
+.ep-header__content { position: relative; container: ep-header / inline-size; }
 @container ep-header (max-width: 879px) {
   .ep-header__content { gap: var(--syn-space-8); }
   .ep-header__heading { gap: var(--syn-space-8); }
@@ -226,11 +228,20 @@
   .ep-header__tags { flex-wrap: nowrap; min-width: 0; padding-left: var(--syn-space-10); }
   .ep-header__tag-extra, .ep-header__tag-count { display: none; }
   .ep-header__tag-count--compact { display: list-item; list-style: none; }
-  .ep-header__facts { display: grid; flex: 1 1 100%; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: var(--syn-space-6) var(--syn-space-12); }
   .ep-header__fact { justify-content: flex-start; gap: var(--syn-space-2); height: auto; min-width: 0; padding: 0; }
   .ep-header__fact dd { min-width: 0; }
-  .ep-header__fact dd > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .ep-header__fact--inventory { gap: var(--syn-space-2); border-right: 0; }
+  .ep-header__fact dd > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ep-header__fact--inventory { flex: none; gap: var(--syn-space-2); padding-right: var(--syn-space-12); }
   .ep-header__fact--inventory dt { font: var(--syn-type-text-caption-1); }
+}
+@container ep-header (min-width: 640px) and (max-width: 879px) {
+  .ep-header__title { padding-right: 136px; } /* room for AS4U */
+  .ep-header__facts { flex-wrap: nowrap; gap: var(--syn-space-12); }
+  .ep-header__fact { flex: 0 1 auto; }
+  .ep-header__as4u { position: absolute; top: 0; right: 40px; align-items: flex-end; gap: var(--syn-space-6); height: auto; margin: 0; padding: 0; }
+}
+@container ep-header (max-width: 639px) {
+  .ep-header__facts { display: grid; flex: 1 1 100%; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: var(--syn-space-6) var(--syn-space-12); }
+  .ep-header__fact--inventory { border-right: 0; padding-right: 0; }
   .ep-header__as4u { align-items: flex-start; justify-content: flex-start; gap: var(--syn-space-2); height: auto; margin-left: 0; padding: 0; }
 }

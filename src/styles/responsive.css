@@ -9,12 +9,13 @@
   .ep-header.syn-grid { --ep-device-w: max(256px, calc((100% - 11 * 24px) / 6 + 24px)); grid-template-columns: minmax(0, 1fr) repeat(2, var(--ep-device-w)); }
   .ep-header > .ep-header__col-main, .ep-header > .ep-header__col-device { grid-column: auto; }
 }
+/* Narrower than ~1760px the photo is 96px, giving the equipment card's facts room for one row. */
+@media (min-width: 1024px) and (max-width: 1759px) { .ep-header__photo { width: 96px; height: 96px; } }
 @media (min-width: 1024px) and (max-width: 1439px) {
   .ep-header.syn-grid { --ep-device-w: 168px; }
-  .ep-header__photo { width: 96px; height: 96px; }
   .ep-header__title { font: var(--syn-type-titles-title-1); }
   .ep-header__device-media { display: none; }
-  .ep-header__device-info { justify-content: flex-start; gap: var(--syn-space-20); }
+  .ep-header__device-info { justify-content: flex-start; gap: var(--syn-space-10); }
 }
 
 @media (max-width: 1023px) {
