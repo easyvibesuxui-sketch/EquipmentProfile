@@ -1,19 +1,30 @@
-/* The cooperative-gesture hint: a 45% Eerie Black veil with the line in the middle, above tiles and controls. */
-.ep-map-hint {
+/*
+ * A sleeping map: a grey veil (the map turns grey under a Silver Chalice tint) above the tiles and the pin. Waking,
+ * a clear circle grows from the pointer until the veil is gone; asleep again, the veil fades back in.
+ */
+@property --ep-reveal {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+.ep-map-sleep {
+  --ep-reveal: 0px;
   position: absolute;
   inset: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--syn-space-16);
-  background: rgb(21 21 21 / 0.45);
-  color: var(--syn-color-white-white);
-  font: var(--syn-type-text-body-m-2);
-  text-align: center;
-  opacity: 0;
+  z-index: 650; /* over the tiles, overlays and pin; under Leaflet's controls (800) */
+  background: rgb(167 176 179 / 0.35); /* Silver Chalice */
+  backdrop-filter: grayscale(1);
+  -webkit-backdrop-filter: grayscale(1);
   pointer-events: none;
-  transition: opacity var(--syn-duration-base);
+  -webkit-mask-image: radial-gradient(circle at var(--ep-x, 50%) var(--ep-y, 50%), transparent var(--ep-reveal), #000 calc(var(--ep-reveal) + 1px));
+  mask-image: radial-gradient(circle at var(--ep-x, 50%) var(--ep-y, 50%), transparent var(--ep-reveal), #000 calc(var(--ep-reveal) + 1px));
+  transition: --ep-reveal 200ms ease-out, opacity 300ms ease;
 }
-.ep-map-hint.is-on { opacity: 1; }
-@media (prefers-reduced-motion: reduce) { .ep-map-hint { transition: none; } }
+/* Waking: the hole grows to the farthest corner over the wake time; leave early and it closes again. */
+.ep-map-sleep.is-waking { --ep-reveal: var(--ep-reveal-max, 1200px); transition: --ep-reveal var(--ep-wake-ms, 700ms) cubic-bezier(0.4, 0, 0.6, 1); }
+/* Awake: the veil is gone; it fades back in when the map falls asleep. */
+.ep-map-sleep.is-awake { --ep-reveal: var(--ep-reveal-max, 1200px); opacity: 0; transition: opacity 200ms ease; }
+@media (prefers-reduced-motion: reduce) {
+  .ep-map-sleep, .ep-map-sleep.is-waking { --ep-reveal: 0px; transition: opacity var(--syn-duration-base) ease; }
+  .ep-map-sleep.is-waking { opacity: 0.6; transition-duration: var(--ep-wake-ms, 700ms); }
+}

@@ -76,7 +76,7 @@ function LiveLocation() {
     }).addTo(m);
     m.on('zoomend', () => setZoom(m.getZoom()));
     map.current = m;
-    // On the page the wheel scrolls the page; Ctrl/⌘ + wheel zooms (see cooperativeGestures).
+    // On the page the map sleeps under a grey veil until the pointer rests on it (see cooperativeGestures).
     gestures.current = cooperativeGestures(m);
     // The card's width changes in Edit Mode (resize) and at the breakpoints; Leaflet only tracks the window.
     const ro = new ResizeObserver(() => m.invalidateSize());
