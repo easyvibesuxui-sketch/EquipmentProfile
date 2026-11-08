@@ -90,8 +90,9 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
 - The widgets are inert while editing (no drawers, no map panning). The Dependance card moves and resizes as one
   card; its rows are the connected entities switched on in Manage Widgets.
 - The header keeps Figma's one row (equipment card, Tracker, Tag) down to 1024px: the Tracker and Tag cards keep
-  Figma's two columns but at least 256px, and from 1024 to 1439px show their details only; the equipment card's
-  title, tags and facts wrap. The profile tabs stay on one row too and scroll sideways, with a fade, when they
+  Figma's two columns but at least 256px, and from 1024 to 1439px show their details only (168px). Under ~1700px
+  the equipment card goes compact (about 170px tall instead of growing): the facts and AS4U form a tight grid and
+  the tags show the first one plus a count. The profile tabs stay on one row too and scroll sideways, with a fade, when they
   do not fit.
 - Widths and heights are stored per card in the layout (`spans`, `heights`); below 1024px a card of up to 4 columns
   takes half the row and a wider one the full row. Phones keep the designed heights.

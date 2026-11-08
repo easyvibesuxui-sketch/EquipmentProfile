@@ -10,7 +10,7 @@
   .ep-header > .ep-header__col-main, .ep-header > .ep-header__col-device { grid-column: auto; }
 }
 @media (min-width: 1024px) and (max-width: 1439px) {
-  .ep-header.syn-grid { --ep-device-w: 184px; }
+  .ep-header.syn-grid { --ep-device-w: 168px; }
   .ep-header__photo { width: 96px; height: 96px; }
   .ep-header__title { font: var(--syn-type-titles-title-1); }
   .ep-header__device-media { display: none; }

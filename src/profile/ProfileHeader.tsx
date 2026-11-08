@@ -74,10 +74,12 @@ export function ProfileHeader() {
                     <span className="syn-title-text">{equipment.category}</span>
                   </span>
                   <ul className="ep-header__tags" aria-label="Tags">
-                    {equipment.tags.map((t) => (
-                      <li key={t}><Tag variant="soft" className="ep-header__tag"><ColorDot color="info" size={10} />{t}</Tag></li>
+                    {/* A narrow card keeps the first tag and folds the rest into the count (CSS swaps the two counts). */}
+                    {equipment.tags.map((t, i) => (
+                      <li key={t} className={i > 0 ? 'ep-header__tag-extra' : undefined}><Tag variant="soft" className="ep-header__tag"><ColorDot color="info" size={10} />{t}</Tag></li>
                     ))}
-                    <li><Tag variant="soft" className="ep-header__tag ep-header__tag--more">+{equipment.moreTags}</Tag></li>
+                    <li className="ep-header__tag-count"><Tag variant="soft" className="ep-header__tag ep-header__tag--more">+{equipment.moreTags}</Tag></li>
+                    <li className="ep-header__tag-count ep-header__tag-count--compact"><Tag variant="soft" className="ep-header__tag ep-header__tag--more">+{equipment.moreTags + equipment.tags.length - 1}</Tag></li>
                   </ul>
                 </div>
               </div>
@@ -97,18 +99,21 @@ export function ProfileHeader() {
                   <dd><span className="syn-title-text">{equipment.inventoryNumber}</span></dd>
                 </div>
                 {equipment.facts.map((f) => <Fact key={f.id} fact={f} />)}
+                {/* AS4U is the last fact: at the right end in Figma's row, a cell of the grid on a narrow card. */}
+                <div className="ep-header__as4u">
+                  <dt id="ep-as4u" className="ep-header__muted">{equipment.as4uLabel}</dt>
+                  <dd>
+                    <Switch
+                      label={equipment.as4uLabel}
+                      aria-labelledby="ep-as4u"
+                      size={20}
+                      checked={as4u}
+                      onChange={(e) => setAs4u(e.currentTarget.checked)}
+                      className="ep-switch-success"
+                    />
+                  </dd>
+                </div>
               </dl>
-              <div className="ep-header__as4u">
-                <span id="ep-as4u" className="ep-header__muted">{equipment.as4uLabel}</span>
-                <Switch
-                  label={equipment.as4uLabel}
-                  aria-labelledby="ep-as4u"
-                  size={20}
-                  checked={as4u}
-                  onChange={(e) => setAs4u(e.currentTarget.checked)}
-                  className="ep-switch-success"
-                />
-              </div>
             </div>
           </div>
         </section>

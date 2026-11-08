@@ -185,8 +185,12 @@
   white-space: nowrap;
   transform: translateX(-50%);
 }
+/* The hovered column rises above its neighbours so its tooltip is never under a taller bar. The bar fades by
+   mixing its colour (not opacity, which would fade the tooltip with it and trap it under the next columns). */
+.ep-plot__slot:hover { z-index: 3; }
 .ep-plot__slot:hover .ep-plot__tip { display: block; }
-.ep-plot__slot:hover .ep-plot__bar { opacity: var(--syn-opacity-hover); }
+.ep-plot__slot:hover .ep-plot__bar { background: color-mix(in srgb, var(--syn-action-brand) 74%, var(--syn-surface-default)); }
+.ep-plot__slot:hover .ep-plot__bar.is-sienna { background: color-mix(in srgb, var(--syn-color-secondary-dark-sienna) 74%, var(--syn-surface-default)); }
 .ep-plot__x { display: flex; justify-content: space-between; margin: var(--syn-space-8) 0 0 var(--syn-space-48); color: var(--syn-text-muted); font: var(--syn-type-text-caption-2); }
 
 /* Operation hours by hour */
