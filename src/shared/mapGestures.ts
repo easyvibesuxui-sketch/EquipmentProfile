@@ -7,7 +7,7 @@ const REVEAL_MS = 360;
 const SLEEP_MS = 600;
 
 /** A hand with a tap ring (the "click to activate" glyph), drawn for the map's veil. */
-const HAND = `<svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true" focusable="false">
+const HAND = `<svg width="24" height="24" viewBox="0 0 36 36" fill="none" aria-hidden="true" focusable="false">
 <path d="M14.5 4.5a4 4 0 0 1 4 4M10.5 8.5a4 4 0 0 1 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
 <path d="M13 31.5c-1.6-1.4-4.9-5.2-6.3-7.3-.9-1.3-.6-2.9.7-3.6 1.1-.6 2.4-.3 3.2.6l1.9 2.1V9.5a1.75 1.75 0 0 1 3.5 0v8.25m0-1.75a1.75 1.75 0 0 1 3.5 0v1.75m0-.75a1.75 1.75 0 0 1 3.5 0v1.25m0-.25a1.75 1.75 0 0 1 3.5 0v5.5c0 3.4-1.1 5.8-2.6 7.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
