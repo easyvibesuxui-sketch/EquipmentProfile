@@ -77,10 +77,10 @@ export function EditBar({ onDiscard, onSave, onUndo, onRedo, canUndo, canRedo, o
   return (
     <div className="ep-edit-bar" role="region" aria-label="Edit Mode actions">
       <Button variant="secondary" size="md" className="ep-edit-bar__button" onClick={onDiscard}>Discard</Button>
-      {/* Not in Figma: icon-only Undo, Reset to default and Redo between Discard and Save, named by their tooltips. */}
+      {/* Not in Figma: icon-only Undo and Redo (named by their tooltips) around Reset to default, between Discard and Save. */}
       <div className="ep-edit-bar__history" role="group" aria-label="History">
         <IconButton icon="undo" label="Undo" tooltip={<>Undo <kbd className="ep-kbd">{shortcut('Ctrl+Z')}</kbd></>} size="md" variant="outline" disabled={!canUndo} onClick={onUndo} />
-        <IconButton icon="refresh-change" label="Reset to default" size="md" variant="outline" disabled={!canReset} onClick={onReset} />
+        <Button variant="secondary" size="md" iconStart="refresh-change" className="ep-edit-bar__reset" aria-label="Reset to default" disabled={!canReset} onClick={onReset}>Reset to default</Button>
         {/* Syn has no redo glyph: the undo glyph, mirrored. */}
         <IconButton icon="undo" label="Redo" tooltip={<>Redo <kbd className="ep-kbd">{shortcut('Ctrl+Shift+Z')}</kbd></>} size="md" variant="outline" className="ep-edit-bar__redo" disabled={!canRedo} onClick={onRedo} />
       </div>
@@ -89,10 +89,10 @@ export function EditBar({ onDiscard, onSave, onUndo, onRedo, canUndo, canRedo, o
   );
 }
 
-/** Remove: a 28px circle (Figma) with a 44px hit area and a real tooltip naming the widget. */
+/** Remove: a 28px circle (Figma) with a 44px hit area and a tooltip below it naming the widget (Delete still removes). */
 function CloseButton({ label, onClick, className }: { label: string; onClick: () => void; className: string }) {
   return (
-    <Tooltip content={<>{label} <kbd className="ep-kbd">Delete</kbd></>} placement="left">
+    <Tooltip content={label} placement="bottom" className="ep-edit-close-tip">
       <button type="button" className={`ep-edit-close ${className}`} aria-label={label} onClick={(e) => { e.stopPropagation(); onClick(); }}>
         <Icon name="close" size={14} />
       </button>

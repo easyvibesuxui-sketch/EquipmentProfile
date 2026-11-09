@@ -63,7 +63,7 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
   time, a whole drag or resize being one step; a new edit clears Redo.
   Everything is a draft until Save; Discard drops it.
 - The banner's **Section** is its only action (filled Eerie Black).
-- **Reset to default** (icon-only, between Undo and Redo in the bottom bar; not in Figma) puts the draft back to the Figma Overview: widgets, order and
+- **Reset to default** (an outlined button with its label between Undo and Redo in the bottom bar, icon-only on phones; not in Figma) puts the draft back to the Figma Overview: widgets, order and
   widths. Save keeps it, Discard drops it.
 - Every card is in its edit outline at once, no click needed: a dashed border, a bar with the move grip,
   **1/3 · 2/3 · Full width** (3, 6 or 12 columns, as the Figma names them: four 1/3 cards fit in a row) and the round **remove** button, and the resize handles.

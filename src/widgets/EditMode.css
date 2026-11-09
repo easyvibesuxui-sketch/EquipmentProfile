@@ -288,3 +288,14 @@
   font: inherit;
   opacity: 0.8;
 }
+
+/* The remove tooltip opens below its button, right-aligned to it, so on a right-hand card it stays on the page. */
+.ep-edit-close-tip .syn-tooltip__bubble--bottom { right: -6px; left: auto; max-width: none; white-space: nowrap; transform: none; }
+.ep-edit-close-tip .syn-tooltip__bubble--bottom::after { right: 12px; left: auto; margin-left: 0; }
+/* Reset to default: Syn's outlined secondary button with its label, between Undo and Redo. */
+.ep-edit-bar__reset.syn-button { padding-inline: var(--syn-space-16); }
+@media (max-width: 639px) {
+  /* Phones keep it icon-only (its name stays in aria-label) so the bar fits. */
+  .ep-edit-bar__reset.syn-button { width: 40px; min-width: 0; height: 40px; padding: 0; }
+  .ep-edit-bar__reset .syn-button__label { display: none; }
+}
