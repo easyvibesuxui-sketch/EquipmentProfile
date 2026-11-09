@@ -89,12 +89,10 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
   by a row, Delete removes it.
 - The widgets are inert while editing (no drawers, no map panning). The Dependance card moves and resizes as one
   card; its rows are the connected entities switched on in Manage Widgets.
-- The Current Location map is click to activate, so scrolling the page past them never
-  zooms them: asleep they sit under a grey veil (the pin stays red) with a hand and "Click to activate map" (10px, centred), and the
-  wheel and one-finger drag stay with the page. A click, a tap or Enter activates one: the veil clears in a circle
+- The Current Location map is click to activate: asleep they sit under a grey veil (the pin stays red) with a hand and "Click to activate map" (10px, centred), and
+  one-finger drag stays with the page; the wheel zooms it at once and wakes it. A click, a tap or Enter activates one: the veil clears in a circle
   from the click point, then the wheel zooms and the map drags, and clicks on it no longer open the card's drawer.
-  It sleeps again 0.6s after the pointer leaves its frame, on a click elsewhere or on Escape. Ctrl/⌘ + wheel zooms
-  even asleep; the full map is always active (`src/shared/mapGestures.ts`). The Telemetry map has no veil: it
+  It sleeps again 0.6s after the pointer leaves its frame, on a click elsewhere or on Escape. The full map is always active (`src/shared/mapGestures.ts`). The Telemetry map has no veil: it
   is always live, and the wheel zooms it.
 - Scrollbars are Syn's (Figma "Scroll"): 4px Cultured track and Jet thumb, 10px on hover, on the page and every
   scrolling area (drawers, lists).

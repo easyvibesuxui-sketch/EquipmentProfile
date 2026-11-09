@@ -14,12 +14,12 @@ const HAND = `<svg width="24" height="24" viewBox="0 0 36 36" fill="none" aria-h
 
 /**
  * Click to activate (as Leaflet.Sleep and Google's embeds do): on the page a map sleeps under a grey veil with
- * "Click to activate map", and the wheel and one-finger drag stay with the page, so scrolling past never zooms it.
+ * "Click to activate map"; one-finger drag stays with the page. The wheel zooms it at once and wakes it.
  *
  * - A click (or Enter / Space on the veil, or a tap) activates it: the veil clears in a circle growing from the
  *   click point, then the wheel zooms and the map drags. Clicks on an active map do not open the card's drawer.
  * - It sleeps again 0.6s after the pointer leaves it, on a click or tap elsewhere, or on Escape.
- * - Ctrl/⌘ + wheel (or a trackpad pinch) zooms even while asleep.
+ * - The wheel (or a trackpad pinch) zooms even while asleep, and wakes it.
  * - `setFree(true)`: a full-screen map is always active.
  */
 export function cooperativeGestures(m: L.Map) {
@@ -97,9 +97,12 @@ export function cooperativeGestures(m: L.Map) {
   // The CTA is visible again only after the next style pass, so it takes the focus a frame later.
   const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && awake && !free) { sleep(); requestAnimationFrame(() => cta.focus({ preventScroll: true })); } };
   const onFocusOut = (e: FocusEvent) => { if (awake && !free && !zone.contains(e.relatedTarget as Node)) sleep(); };
+  // The wheel zooms the map even while it sleeps: the first turn wakes it (the veil clears from the pointer) and
+  // zooms one step; Leaflet's own wheel zoom takes the following turns.
   const onWheel = (e: WheelEvent) => {
-    if (free || awake || !(e.ctrlKey || e.metaKey)) return; // asleep, a plain wheel scrolls the page
-    e.preventDefault(); // Ctrl/⌘ + wheel zooms the map, not the page
+    if (free || awake) return;
+    e.preventDefault(); // zoom the map, not the page
+    activate(e.clientX, e.clientY, false);
     const now = Date.now();
     if (now - last < 180) return; // one step per burst (trackpads send many small events)
     last = now;
