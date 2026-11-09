@@ -82,6 +82,8 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
 - **Move:** drag a card anywhere (or by its grip): it follows the pointer, and, as with resizing, nothing reflows
   while dragging: a Dodger Blue outline ("Move here") shows exactly where it will land, and the move applies on
   release. The landing spot is found by laying the new order out in a hidden copy of the grid.
+- **Layout grid** (Figma 17107:61363): behind the cards, Snow slots on the 12 columns fill every row (each row as tall
+  as its cards) and one empty row below the last, so every place a card can take shows, as in Zoho's dashboard editor.
 - **Add Widget** (the dashed tile after the last card, a 1/3 card as high as an edit card; with no widgets left it
   spans the row as the empty state) and the banner's **Section** button open *Manage Widgets*:
   a collapsible group per category with a switch per widget. A widget switched on is added at the end of the page.

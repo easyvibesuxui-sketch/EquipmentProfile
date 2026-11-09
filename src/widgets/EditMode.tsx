@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
 import { Button, Icon, IconButton, Tooltip } from '@syn/design-system';
 import {
   MAX_SPAN, MIN_SPAN, ROW_GAP, ROW_HEIGHT, fitOf, heightToRows, rowsToHeight, heightOf, moveCard, removeCard, setHeight, setSpan, spanOf, stepCard, visibleCards, type WidgetLayout,
@@ -6,6 +6,8 @@ import {
 import './EditMode.css';
 
 const GAP = 24;
+/** One layout slot (Figma 17107:61363): a 1-row edit card, i.e. its 52px bar over a 450px card and the 2px border. */
+const SLOT_HEIGHT = 52 + ROW_HEIGHT + 2;
 /** Shortcut text for tooltips: ⌘ on Apple platforms, Ctrl elsewhere. */
 const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
 const shortcut = (keys: string) => (isMac ? keys.replace('Ctrl+', '⌘').replace('Shift+', '⇧') : keys);
@@ -278,12 +280,43 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
     }
   };
 
+  // The layout grid behind the cards (Figma's white column slots, "as Zoho has it"): 12 slots per row, each row as
+  // tall as the cards that start on it, plus one empty 1-row-card row below the last, where a card can go next.
+  const [slotRows, setSlotRows] = useState<Array<{ top: number; height: number }>>([]);
+  const measureSlots = () => {
+    const el = grid.current;
+    if (!el) return;
+    const box = el.getBoundingClientRect();
+    const items = [...el.querySelectorAll<HTMLElement>(':scope > .ep-edit-item, :scope > .ep-edit-add')];
+    const tops = [...new Set(items.map((i) => Math.round(i.getBoundingClientRect().top - box.top)))].sort((a, b) => a - b);
+    const bottom = items.reduce((max, i) => Math.max(max, i.getBoundingClientRect().bottom - box.top), 0);
+    const rows = tops.map((top, k) => ({ top, height: (k + 1 < tops.length ? tops[k + 1] - GAP : Math.round(bottom)) - top }));
+    rows.push({ top: Math.round(bottom) + GAP, height: SLOT_HEIGHT });
+    setSlotRows((prev) => (JSON.stringify(prev) === JSON.stringify(rows) ? prev : rows));
+  };
+  useLayoutEffect(measureSlots);
+  useEffect(() => {
+    const el = grid.current;
+    if (!el) return undefined;
+    const ro = new ResizeObserver(() => measureSlots());
+    ro.observe(el);
+    return () => ro.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div
       className="ep-edit-grid syn-grid"
       ref={grid}
-      style={{ '--grid-gap': `${GAP}px` } as CSSProperties}
+      style={{ '--grid-gap': `${GAP}px`, '--ep-slot-h': `${SLOT_HEIGHT}px` } as CSSProperties}
     >
+      <div className="ep-edit-slots" aria-hidden>
+        {slotRows.map((r) => (
+          <div key={r.top} className="ep-edit-slots__row" style={{ top: r.top, height: r.height }}>
+            {Array.from({ length: 12 }, (_, i) => <span key={i} />)}
+          </div>
+        ))}
+      </div>
       {resize && preview && (
         <div
           className={preview.wraps ? 'ep-edit-preview is-wrapping' : 'ep-edit-preview'}
