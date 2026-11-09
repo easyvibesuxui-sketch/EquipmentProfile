@@ -40,7 +40,8 @@
   cursor: pointer;
   transition: opacity var(--syn-duration-base) ease, visibility 0s; /* shows (and takes focus) at once */
 }
-.ep-map-wake__label { display: flex; flex-direction: column; align-items: center; gap: var(--syn-space-4); }
+/* Just under the middle, so the location pin (24px, centred) stays clear: its bottom + 8px. */
+.ep-map-wake__label { display: flex; flex-direction: column; align-items: center; gap: var(--syn-space-4); transform: translateY(40px); }
 .ep-map-wake svg { filter: drop-shadow(0 1px 2px rgb(21 21 21 / 0.55)); }
 .ep-map-wake__label > span { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
 .ep-map-wake:hover .ep-map-wake__label > span { text-decoration-thickness: 1.5px; }
