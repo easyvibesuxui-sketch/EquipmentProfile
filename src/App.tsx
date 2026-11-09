@@ -92,7 +92,6 @@ export function App() {
         {editing ? (
           <EditBanner
             onSection={() => setManaging(true)}
-            onReset={() => { lastChange.current = 0; change(defaultLayout()); }}
             restoredAt={restoredAt}
             onDiscardRestored={discard}
           />
@@ -104,7 +103,13 @@ export function App() {
             <OverviewTab layout={draft ?? layout} editing={editing} onChange={change} onEdit={() => { edit(); setManaging(true); }} onAddWidget={() => setManaging(true)} />
           ) : tab === 'Telemetry' ? <TelemetryTab /> : <p className="ep-profile__placeholder">{tab} is not designed yet.</p>}
         </div>
-        {editing && <EditBar onDiscard={discard} onSave={save} onUndo={undo} onRedo={redo} canUndo={history.length > 0} canRedo={future.length > 0} />}
+        {editing && (
+          <EditBar
+            onDiscard={discard} onSave={save} onUndo={undo} onRedo={redo} canUndo={history.length > 0} canRedo={future.length > 0}
+            onReset={() => { lastChange.current = 0; change(defaultLayout()); }}
+            canReset={JSON.stringify(draft) !== JSON.stringify(defaultLayout())}
+          />
+        )}
       </div>
       {draft && <ManageWidgetsDrawer open={managing} layout={draft} onChange={(next) => { lastChange.current = 0; change(next); }} onClose={() => setManaging(false)} />}
     </AppShell>

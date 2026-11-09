@@ -26,7 +26,6 @@ const sizeOf = (span: number) => SIZES.reduce((best, s) => (Math.abs(s.span - sp
 /** Figma "Edit Mode" banner (17118:62279): in place of the tabs while editing. */
 interface EditBannerProps {
   onSection: () => void;
-  onReset: () => void;
   /** When unsaved changes from an earlier visit were restored: when they were last edited. */
   restoredAt?: number | null;
   onDiscardRestored?: () => void;
@@ -34,7 +33,7 @@ interface EditBannerProps {
 
 const timeOf = (ms: number) => new Date(ms).toLocaleString(undefined, { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 
-export function EditBanner({ onSection, onReset, restoredAt, onDiscardRestored }: EditBannerProps) {
+export function EditBanner({ onSection, restoredAt, onDiscardRestored }: EditBannerProps) {
   return (
     <section className="ep-edit-banner" aria-labelledby="ep-edit-title">
       <div className="ep-edit-banner__text">
@@ -56,7 +55,6 @@ export function EditBanner({ onSection, onReset, restoredAt, onDiscardRestored }
       </svg>
       {/* Not in Figma: puts the draft back to the default Overview; Save keeps it, Discard drops it. */}
       {/* Hierarchy: Section (add widgets) is the main action, filled Eerie Black; Reset is Syn's outlined secondary. */}
-      <Button variant="secondary" size="sm" iconStart="refresh-change" className="ep-edit-banner__reset" onClick={onReset}>Reset to default</Button>
       <Button size="sm" iconStart="plus-in-circle" className="ep-edit-banner__section" onClick={onSection}>Section</Button>
     </section>
   );
@@ -70,15 +68,19 @@ interface EditBarProps {
   onRedo: () => void;
   canUndo: boolean;
   canRedo: boolean;
+  /** Puts the draft back to the Figma Overview (undoable); off while the draft already is the default. */
+  onReset: () => void;
+  canReset: boolean;
 }
 
-export function EditBar({ onDiscard, onSave, onUndo, onRedo, canUndo, canRedo }: EditBarProps) {
+export function EditBar({ onDiscard, onSave, onUndo, onRedo, canUndo, canRedo, onReset, canReset }: EditBarProps) {
   return (
     <div className="ep-edit-bar" role="region" aria-label="Edit Mode actions">
       <Button variant="secondary" size="md" className="ep-edit-bar__button" onClick={onDiscard}>Discard</Button>
-      {/* Not in Figma: icon-only Undo and Redo between Discard and Save, named by their tooltips. */}
+      {/* Not in Figma: icon-only Undo, Reset to default and Redo between Discard and Save, named by their tooltips. */}
       <div className="ep-edit-bar__history" role="group" aria-label="History">
         <IconButton icon="undo" label="Undo" tooltip={<>Undo <kbd className="ep-kbd">{shortcut('Ctrl+Z')}</kbd></>} size="md" variant="outline" disabled={!canUndo} onClick={onUndo} />
+        <IconButton icon="refresh-change" label="Reset to default" size="md" variant="outline" disabled={!canReset} onClick={onReset} />
         {/* Syn has no redo glyph: the undo glyph, mirrored. */}
         <IconButton icon="undo" label="Redo" tooltip={<>Redo <kbd className="ep-kbd">{shortcut('Ctrl+Shift+Z')}</kbd></>} size="md" variant="outline" className="ep-edit-bar__redo" disabled={!canRedo} onClick={onRedo} />
       </div>
