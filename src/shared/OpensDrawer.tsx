@@ -2,7 +2,8 @@ import { useRef, type KeyboardEvent, type ReactNode } from 'react';
 
 /**
  * A widget the whole of which opens its drawer, as the Figma prototype does. Clicks on the widget's own
- * controls (view switch, map buttons, links), inside the open drawer, or at the end of a drag (panning a map)
+ * controls (view switch, map buttons, links, "Click to activate map"), on an active map, inside the open drawer, or at
+ * the end of a drag (panning a map)
  * do not count; the chevron (`.ep-widget__open`) does. With `label` (a card with no control of its own) the
  * card is focusable and opens on Enter or Space. `disabled` turns it off, e.g. while the map is full screen.
  */
@@ -26,7 +27,7 @@ export function OpensDrawer({ onOpen, label, disabled, children }: { onOpen: () 
       onClick={(e) => {
         if (disabled) return;
         const t = e.target as Element;
-        if (t.closest('dialog') || (t.closest('button, a, input, select, label, [role="tab"]') && !t.closest('.ep-widget__open'))) return;
+        if (t.closest('dialog, .is-map-awake') || (t.closest('button, a, input, select, label, [role="tab"]') && !t.closest('.ep-widget__open'))) return;
         const from = down.current;
         if (from && Math.hypot(e.clientX - from.x, e.clientY - from.y) > 5) return;
         onOpen();

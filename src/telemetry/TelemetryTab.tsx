@@ -30,7 +30,7 @@ function LocationMap() {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(m);
     L.control.attribution({ position: 'bottomright', prefix: false }).addAttribution('© OpenStreetMap').addTo(m);
     L.marker(c, { icon: L.divIcon({ className: 'ep-pin', html: '<span></span>', iconSize: [24, 24], iconAnchor: [12, 12] }), keyboard: false }).addTo(m);
-    const gestures = cooperativeGestures(m); // sleeps under a grey veil until the pointer rests on it
+    const gestures = cooperativeGestures(m); // sleeps under a grey veil until it is clicked
     return () => { gestures.destroy(); m.remove(); };
   }, []);
   return <div ref={el} className="ep-tele-map" role="region" aria-label={`Map of ${lastLocation.place}`} />;

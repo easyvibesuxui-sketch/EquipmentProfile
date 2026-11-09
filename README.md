@@ -89,12 +89,12 @@ The gear at the end of the profile tabs (Overview only) opens Edit Mode, built f
   by a row, Delete removes it.
 - The widgets are inert while editing (no drawers, no map panning). The Dependance card moves and resizes as one
   card; its rows are the connected entities switched on in Manage Widgets.
-- Maps on the page (Current Location card, Telemetry) sleep while the page scrolls (the hover-to-wake pattern of
-  Leaflet.Sleep): asleep they sit under a light grey veil (the pin stays red) and leave the wheel to the page. Resting the pointer on a map for
-  0.7s wakes it, and the veil clears in a circle growing from the pointer; then the wheel zooms and the map drags,
-  and 0.6s after the pointer leaves it sleeps again. Focus wakes it too, Ctrl/⌘ + wheel zooms even asleep, and on
-  touch screens one finger scrolls the page while two wake and move the map. The full map never sleeps
-  (`src/shared/mapGestures.ts`).
+- Maps on the page (Current Location card, Telemetry) are click to activate, so scrolling the page past them never
+  zooms them: asleep they sit under a grey veil (the pin stays red) with a hand and "Click to activate map", and the
+  wheel and one-finger drag stay with the page. A click, a tap or Enter activates one: the veil clears in a circle
+  from the click point, then the wheel zooms and the map drags, and clicks on it no longer open the card's drawer.
+  It sleeps again 0.6s after the pointer leaves its frame, on a click elsewhere or on Escape. Ctrl/⌘ + wheel zooms
+  even asleep; the full map is always active (`src/shared/mapGestures.ts`).
 - The header keeps Figma's one row (equipment card, Tracker, Tag) down to 1024px: the Tracker and Tag cards keep
   Figma's two columns but at least 256px, and from 1024 to 1439px show their details only. Everything keeps its
   Figma place and one line, and the cards stay 157px: under ~1760px the photo is 96px and the facts' gaps tighten;

@@ -1,32 +1,32 @@
 import L from 'leaflet';
 import './mapGestures.css';
 
-/** Rest the pointer this long on a sleeping map to wake it (Leaflet.Sleep's default is 750ms). */
-const WAKE_MS = 700;
-/** After the pointer leaves, the map falls asleep again after this long. */
+/** The veil clears in this long after a click (the reveal from the click point). */
+const REVEAL_MS = 360;
+/** After the pointer leaves an active map, it goes back to sleep after this long. */
 const SLEEP_MS = 600;
-/** On touch screens the map sleeps again this long after the last finger lifts. */
-const TOUCH_SLEEP_MS = 1500;
+
+/** A hand with a tap ring (the "click to activate" glyph), drawn for the map's veil. */
+const HAND = `<svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true" focusable="false">
+<path d="M14.5 4.5a4 4 0 0 1 4 4M10.5 8.5a4 4 0 0 1 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M13 31.5c-1.6-1.4-4.9-5.2-6.3-7.3-.9-1.3-.6-2.9.7-3.6 1.1-.6 2.4-.3 3.2.6l1.9 2.1V9.5a1.75 1.75 0 0 1 3.5 0v8.25m0-1.75a1.75 1.75 0 0 1 3.5 0v1.75m0-.75a1.75 1.75 0 0 1 3.5 0v1.25m0-.25a1.75 1.75 0 0 1 3.5 0v5.5c0 3.4-1.1 5.8-2.6 7.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
 
 /**
- * A map that sleeps while the page scrolls (the "hover to wake" pattern of Leaflet.Sleep). Asleep, the map sits
- * under a grey veil and leaves the wheel and one-finger drag to the page, so scrolling past it never zooms it.
+ * Click to activate (as Leaflet.Sleep and Google's embeds do): on the page a map sleeps under a grey veil with
+ * "Click to activate map", and the wheel and one-finger drag stay with the page, so scrolling past never zooms it.
  *
- * - Mouse: resting the pointer on the map for 0.7s wakes it; the veil clears in a circle that grows from the pointer
- *   as the time runs (leave early and it closes again). A wheel turn restarts the wait, so a page that scrolls under
- *   a still pointer does not wake it. Awake, the wheel zooms and the map drags; 0.6s after the pointer leaves, the
- *   veil comes back.
- * - Keyboard: focusing the map wakes it at once; leaving it puts it to sleep.
- * - Touch: one finger scrolls the page; two fingers wake the map (the veil clears from between them) and pan and
- *   pinch it.
- * - Ctrl/⌘ + wheel (or a trackpad pinch) zooms even while asleep, as a shortcut.
- * - `setFree(true)`: a full-screen map never sleeps.
+ * - A click (or Enter / Space on the veil, or a tap) activates it: the veil clears in a circle growing from the
+ *   click point, then the wheel zooms and the map drags. Clicks on an active map do not open the card's drawer.
+ * - It sleeps again 0.6s after the pointer leaves it, on a click or tap elsewhere, or on Escape.
+ * - Ctrl/⌘ + wheel (or a trackpad pinch) zooms even while asleep.
+ * - `setFree(true)`: a full-screen map is always active.
  */
 export function cooperativeGestures(m: L.Map) {
   const el = m.getContainer();
-  const coarse = window.matchMedia('(pointer: coarse)').matches;
-  // The veil lives in its own pane between the tiles (200) and the pin (600), so the pin stays red; it is kept
-  // over the container as the map pane moves.
+  // The map's own frame (Syn MapView with its zoom and layer buttons) counts as the map for leaving and outside clicks.
+  const zone: HTMLElement = el.closest('.syn-map') ?? el;
+  // The grey tint lives in its own pane between the tiles (200) and the pin (600), so the pin stays red.
   const pane = m.getPane('epSleep') ?? m.createPane('epSleep');
   pane.style.zIndex = '550';
   pane.style.pointerEvents = 'none';
@@ -41,131 +41,110 @@ export function cooperativeGestures(m: L.Map) {
   fit();
   m.on('move zoomend viewreset resize', fit);
 
+  // The call to action sits above everything in the map (the pin included) and takes the click anywhere on it.
+  const cta = L.DomUtil.create('button', 'ep-map-wake', el) as HTMLButtonElement;
+  cta.type = 'button';
+  cta.innerHTML = `<span class="ep-map-wake__label">${HAND}<span>Click to activate map</span></span>`;
+  L.DomEvent.disableClickPropagation(cta);
+
   let free = false;
   let awake = false;
-  let wakeTimer = 0;
   let sleepTimer = 0;
   let last = 0;
 
   const enable = (on: boolean) => {
-    if (on) { m.scrollWheelZoom.enable(); m.dragging.enable(); return; }
-    m.scrollWheelZoom.disable();
-    m.dragging.disable();
+    if (on) { m.scrollWheelZoom.enable(); m.dragging.enable(); } else { m.scrollWheelZoom.disable(); m.dragging.disable(); }
   };
   const place = (x: number, y: number) => {
     const r = el.getBoundingClientRect();
-    veil.style.setProperty('--ep-x', `${x - r.left}px`);
-    veil.style.setProperty('--ep-y', `${y - r.top}px`);
-    // The circle has to reach the farthest corner from the pointer.
-    const dx = Math.max(x - r.left, r.right - x);
-    const dy = Math.max(y - r.top, r.bottom - y);
+    const px = x || r.left + r.width / 2;
+    const py = y || r.top + r.height / 2;
+    veil.style.setProperty('--ep-x', `${px - r.left}px`);
+    veil.style.setProperty('--ep-y', `${py - r.top}px`);
+    const dx = Math.max(px - r.left, r.right - px);
+    const dy = Math.max(py - r.top, r.bottom - py);
     veil.style.setProperty('--ep-reveal-max', `${Math.ceil(Math.hypot(dx, dy)) + 2}px`);
   };
-  const wake = () => {
-    window.clearTimeout(wakeTimer);
+  const activate = (x: number, y: number, viaKeyboard: boolean) => {
     window.clearTimeout(sleepTimer);
     if (awake) return;
     awake = true;
-    veil.classList.remove('is-waking');
-    veil.classList.add('is-awake');
+    place(x, y);
+    veil.style.setProperty('--ep-wake-ms', `${REVEAL_MS}ms`);
+    veil.classList.add('is-waking');
+    window.setTimeout(() => { if (awake) { veil.classList.remove('is-waking'); veil.classList.add('is-awake'); } }, REVEAL_MS);
+    cta.classList.add('is-hidden');
+    el.classList.add('is-map-awake');
     enable(true);
+    // Focus moves into the map (the CTA is about to hide): keyboard users carry on there (arrows pan, +/- zoom),
+    // and a hidden, focused CTA would otherwise blur and put the map straight back to sleep.
+    if (viaKeyboard || document.activeElement === cta) el.focus({ preventScroll: true });
   };
   const sleep = () => {
-    window.clearTimeout(wakeTimer);
     window.clearTimeout(sleepTimer);
-    veil.classList.remove('is-waking');
-    if (free) return;
+    if (free || !awake) return;
     awake = false;
-    veil.classList.remove('is-awake');
+    veil.classList.remove('is-waking', 'is-awake');
+    cta.classList.remove('is-hidden');
+    el.classList.remove('is-map-awake');
     enable(false);
   };
-  /** Starts the wake countdown: the veil opens from the point and the map wakes when it is gone. */
-  const startWaking = (x: number, y: number, ms: number) => {
-    if (free || awake) return;
-    window.clearTimeout(sleepTimer);
-    place(x, y);
-    veil.classList.remove('is-waking');
-    void veil.offsetWidth; // restart the reveal
-    veil.style.setProperty('--ep-wake-ms', `${ms}ms`);
-    veil.classList.add('is-waking');
-    window.clearTimeout(wakeTimer);
-    wakeTimer = window.setTimeout(wake, ms);
-  };
-  const cancelWaking = () => { window.clearTimeout(wakeTimer); veil.classList.remove('is-waking'); };
 
-  const onEnter = (e: MouseEvent) => startWaking(e.clientX, e.clientY, WAKE_MS);
-  const onMove = (e: MouseEvent) => {
-    if (free || awake) return;
-    if (!veil.classList.contains('is-waking')) startWaking(e.clientX, e.clientY, WAKE_MS);
-  };
-  const onLeave = () => {
-    if (free) return;
-    cancelWaking();
-    if (awake) { window.clearTimeout(sleepTimer); sleepTimer = window.setTimeout(sleep, SLEEP_MS); }
-  };
+  const onCta = (e: MouseEvent) => activate(e.clientX, e.clientY, e.detail === 0);
+  const onLeave = () => { if (awake && !free) { window.clearTimeout(sleepTimer); sleepTimer = window.setTimeout(sleep, SLEEP_MS); } };
+  const onEnter = () => window.clearTimeout(sleepTimer);
+  const onOutside = (e: PointerEvent) => { if (awake && !free && !zone.contains(e.target as Node)) sleep(); };
+  // The CTA is visible again only after the next style pass, so it takes the focus a frame later.
+  const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && awake && !free) { sleep(); requestAnimationFrame(() => cta.focus({ preventScroll: true })); } };
+  const onFocusOut = (e: FocusEvent) => { if (awake && !free && !zone.contains(e.relatedTarget as Node)) sleep(); };
   const onWheel = (e: WheelEvent) => {
-    if (free || awake) return; // Leaflet's own wheel zoom handles it
-    if (e.ctrlKey || e.metaKey) {
-      e.preventDefault(); // zoom the map, not the page
-      const now = Date.now();
-      if (now - last < 180) return; // one step per burst (trackpads send many small events)
-      last = now;
-      m.setZoomAround(m.mouseEventToContainerPoint(e), m.getZoom() + (e.deltaY < 0 ? 1 : -1));
-      return;
-    }
-    // The page is scrolling: restart the wait so a page moving under a still pointer does not wake the map.
-    cancelWaking();
-    window.clearTimeout(wakeTimer);
-    wakeTimer = window.setTimeout(() => startWaking(e.clientX, e.clientY, WAKE_MS), 250);
-  };
-  const onTouchStart = (e: TouchEvent) => {
-    if (free) return;
-    window.clearTimeout(sleepTimer);
-    if (e.touches.length > 1 && !awake) {
-      const [a, b] = [e.touches[0], e.touches[1]];
-      place((a.clientX + b.clientX) / 2, (a.clientY + b.clientY) / 2);
-      veil.style.setProperty('--ep-wake-ms', '240ms');
-      veil.classList.add('is-waking');
-      wake();
-    }
-  };
-  const onTouchEnd = (e: TouchEvent) => {
-    if (free || e.touches.length) return;
-    window.clearTimeout(sleepTimer);
-    sleepTimer = window.setTimeout(sleep, TOUCH_SLEEP_MS);
+    if (free || awake || !(e.ctrlKey || e.metaKey)) return; // asleep, a plain wheel scrolls the page
+    e.preventDefault(); // Ctrl/⌘ + wheel zooms the map, not the page
+    const now = Date.now();
+    if (now - last < 180) return; // one step per burst (trackpads send many small events)
+    last = now;
+    m.setZoomAround(m.mouseEventToContainerPoint(e), m.getZoom() + (e.deltaY < 0 ? 1 : -1));
   };
 
-  el.addEventListener('mouseenter', onEnter);
-  el.addEventListener('mousemove', onMove);
-  el.addEventListener('mouseleave', onLeave);
+  cta.addEventListener('click', onCta);
+  zone.addEventListener('mouseleave', onLeave);
+  zone.addEventListener('mouseenter', onEnter);
+  zone.addEventListener('keydown', onKey);
+  zone.addEventListener('focusout', onFocusOut);
   el.addEventListener('wheel', onWheel, { passive: false });
-  el.addEventListener('focus', wake);
-  el.addEventListener('blur', sleep);
-  el.addEventListener('touchstart', onTouchStart, { passive: true });
-  el.addEventListener('touchend', onTouchEnd, { passive: true });
-  if (coarse) m.dragging.disable();
-  sleep();
+  document.addEventListener('pointerdown', onOutside, true);
+  enable(false);
 
   const setFree = (next: boolean) => {
     free = next;
-    if (next) { window.clearTimeout(wakeTimer); window.clearTimeout(sleepTimer); veil.classList.remove('is-waking'); veil.classList.add('is-awake'); awake = true; enable(true); } else sleep();
+    if (next) {
+      window.clearTimeout(sleepTimer);
+      awake = true;
+      veil.classList.remove('is-waking');
+      veil.classList.add('is-awake');
+      cta.classList.add('is-hidden');
+      el.classList.add('is-map-awake');
+      enable(true);
+    } else if (awake) {
+      awake = true; // force the sleep below
+      sleep();
+    }
   };
 
   return {
     setFree,
     destroy: () => {
-      m.off('move zoomend viewreset resize', fit);
-      veil.remove();
-      window.clearTimeout(wakeTimer);
       window.clearTimeout(sleepTimer);
-      el.removeEventListener('mouseenter', onEnter);
-      el.removeEventListener('mousemove', onMove);
-      el.removeEventListener('mouseleave', onLeave);
+      m.off('move zoomend viewreset resize', fit);
+      cta.removeEventListener('click', onCta);
+      zone.removeEventListener('mouseleave', onLeave);
+      zone.removeEventListener('mouseenter', onEnter);
+      zone.removeEventListener('keydown', onKey);
+      zone.removeEventListener('focusout', onFocusOut);
       el.removeEventListener('wheel', onWheel);
-      el.removeEventListener('focus', wake);
-      el.removeEventListener('blur', sleep);
-      el.removeEventListener('touchstart', onTouchStart);
-      el.removeEventListener('touchend', onTouchEnd);
+      document.removeEventListener('pointerdown', onOutside, true);
+      veil.remove();
+      cta.remove();
     },
   };
 }
