@@ -5,19 +5,14 @@ The **Overview** tab is from the Figma frame
 [Equipment Profile Home](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=13767-3742);
 the **Telemetry** tab from [Equipment Accessories](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=14571-18707).
 
-## Live site
+## Preview
 
-https://easyvibesuxui-sketch.github.io/EquipmentProfile/ — GitHub Pages, served from the `gh-pages` branch.
-To update it, build and push `dist/` to that branch:
-
-```bash
-npm run build && touch dist/.nojekyll
-npx gh-pages -d dist --dotfiles   # or commit dist/ to gh-pages by hand
-```
+There is no public site: the GitHub Pages copy was taken down. Run it locally with `npm install && npm run dev`, or build
+with `npm run build` and serve `dist/`.
 
 ## Empty states
 
-Open the page with `#empty` (for example https://easyvibesuxui-sketch.github.io/EquipmentProfile/#empty) to see the
+Open the page with `#empty` (for example http://localhost:5173/#empty) to see the
 widgets with nothing linked: the map "No tracker" view and Dependance with "Not linked yet". `src/shared/useEmptyDemo.ts`
 is the switch; replace it with real data checks once the API exists.
 
