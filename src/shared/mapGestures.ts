@@ -148,3 +148,25 @@ export function cooperativeGestures(m: L.Map) {
     },
   };
 }
+
+/**
+ * A map that needs no veil (the Telemetry map sits well in its panel): it stays live, drags and keeps its pin, but
+ * the plain wheel still scrolls the page; Ctrl/⌘ + wheel (or a trackpad pinch) zooms it. On touch screens one finger
+ * scrolls the page and two move and pinch the map.
+ */
+export function quietWheel(m: L.Map) {
+  const el = m.getContainer();
+  let last = 0;
+  m.scrollWheelZoom.disable();
+  if (window.matchMedia('(pointer: coarse)').matches) m.dragging.disable();
+  const onWheel = (e: WheelEvent) => {
+    if (!(e.ctrlKey || e.metaKey)) return;
+    e.preventDefault();
+    const now = Date.now();
+    if (now - last < 180) return;
+    last = now;
+    m.setZoomAround(m.mouseEventToContainerPoint(e), m.getZoom() + (e.deltaY < 0 ? 1 : -1));
+  };
+  el.addEventListener('wheel', onWheel, { passive: false });
+  return { destroy: () => el.removeEventListener('wheel', onWheel) };
+}
