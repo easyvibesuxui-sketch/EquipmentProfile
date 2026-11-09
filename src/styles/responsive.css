@@ -64,3 +64,11 @@
   .ep-history__title, .ep-history__line { white-space: normal; }
   .ep-moves__date { white-space: normal; }
 }
+
+/* Phones: every card spans the row, so the app's grids are one column. Syn's 12 columns with 24px gutters need 264px,
+   more than a 320px phone gives the page. (App-level; Syn's Grid is unchanged.) */
+@media (max-width: 639px) {
+  .ep-profile .syn-grid { grid-template-columns: minmax(0, 1fr); }
+  .ep-profile .syn-grid > .syn-grid__item { grid-column: 1 / -1; }
+}
+@media (max-width: 359px) { .ep-widget--split .syn-segmented__option { min-width: 88px; padding-inline: var(--syn-space-8); } }

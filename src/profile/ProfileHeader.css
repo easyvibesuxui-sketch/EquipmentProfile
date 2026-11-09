@@ -198,10 +198,10 @@
  * The cards keep 157px; the photo and the device media keep their size.
  */
 .ep-header__col-main { display: flex; }
-.ep-header__main { flex: 1; height: auto; min-height: 157px; }
+.ep-header__main { flex: 1; min-width: 0; height: auto; min-height: 157px; }
 .ep-header__photo { align-self: flex-start; width: 133px; height: 133px; }
 .ep-header__col-device { display: flex; }
-.ep-header__device { flex: 1; height: auto; min-height: 157px; }
+.ep-header__device { flex: 1; min-width: 0; height: auto; min-height: 157px; }
 .ep-header__device-media { align-self: flex-start; height: 133px; }
 .ep-header__update { flex-wrap: wrap; white-space: normal; }
 
@@ -249,3 +249,5 @@
   .ep-header__fact, .ep-header__as4u { flex: none; }
   .ep-header__as4u { margin-left: 0; }
 }
+/* The smallest phones (320px): the device details may break inside a value rather than widen the page. */
+@media (max-width: 359px) { .ep-header__imei, .ep-header__update { flex-wrap: wrap; white-space: normal; overflow-wrap: anywhere; } }

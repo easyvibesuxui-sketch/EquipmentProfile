@@ -256,8 +256,11 @@
   .ep-edit-banner { flex-wrap: wrap; }
   .ep-edit-banner__art { display: none; }
   .ep-edit-sizes button { width: auto; min-width: 48px; }
-  .ep-edit-bar { padding: var(--syn-space-12) var(--syn-space-16); }
-  .ep-edit-bar__button.syn-button { width: auto; flex: 1; }
+  .ep-edit-bar { gap: var(--syn-space-8); padding: var(--syn-space-12); }
+  .ep-edit-bar__button.syn-button { width: auto; min-width: 0; flex: 1; padding-inline: var(--syn-space-12); }
+  /* Undo, Reset and Redo at 40px with a 4px gap, so Discard and Save keep room on a 375px phone. */
+  .ep-edit-bar__history { gap: var(--syn-space-4); }
+  .ep-edit-bar__history .syn-icon-button { width: 40px; height: 40px; }
 }
 .ep-edit-bar__history { display: flex; gap: var(--syn-space-8); }
 .ep-edit-bar__redo .syn-icon { transform: scaleX(-1); }
