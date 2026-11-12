@@ -418,7 +418,8 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
                 onPointerUp={endResize}
                 onPointerCancel={endResize}
               >
-                {handle === 'se' && <Icon name="enlarge" size={14} />}
+                {/* Diagonal arrows (Syn "expand"): resizes both ways; "enlarge" is the four-way move glyph. */}
+                {handle === 'se' && <Icon name="expand" size={14} />}
               </span>
             ))}
           </div>
