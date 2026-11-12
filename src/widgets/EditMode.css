@@ -282,15 +282,16 @@
   justify-content: center;
   width: 24px;
   height: 24px;
-  border-color: var(--syn-border-strong);
+  /* Light at rest like the other handles (Silver Chalice border and lines), Eerie Black on hover and while resizing. */
+  border-color: var(--syn-text-muted);
   border-radius: 2px;
-  color: var(--syn-text-primary);
+  color: var(--syn-text-muted);
   cursor: nwse-resize;
 }
 .ep-edit-handle--se::after { display: none; }
 .ep-edit-handle:hover, .ep-edit-item.is-resizing .ep-edit-handle { border-color: var(--syn-border-strong); }
 .ep-edit-handle:hover::after, .ep-edit-item.is-resizing .ep-edit-handle::after { background: var(--syn-text-primary); }
-.ep-edit-handle--se:hover { background: var(--syn-surface-inverse); color: var(--syn-color-white-white); }
+.ep-edit-handle--se:hover, .ep-edit-item.is-resizing .ep-edit-handle--se { color: var(--syn-text-primary); }
 /* Bigger hit areas than the drawn handles. */
 .ep-edit-handle::before { content: ''; position: absolute; inset: -8px; }
 /* Phones stack the cards: no resizing there. */
