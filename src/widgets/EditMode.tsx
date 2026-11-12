@@ -41,7 +41,9 @@ function ScopeSwitcher({ value, onChange }: { value: Scope; onChange: (scope: Sc
     refs.current[next]?.focus();
   };
   return (
-    <div className="ep-scope" role="radiogroup" aria-labelledby="ep-scope-label">
+    <div className="ep-scope" role="radiogroup" aria-labelledby="ep-scope-label" style={{ '--at': SCOPES.findIndex((s) => s.id === value) } as CSSProperties}>
+      {/* The Eerie Black thumb slides under the chosen option. */}
+      <span className="ep-scope__thumb" aria-hidden />
       {SCOPES.map((s, i) => (
         <button
           key={s.id}
@@ -84,10 +86,15 @@ export function EditBanner({ scope, onScope, following, onWidgets, restoredAt, o
           <div className="ep-edit-banner__status">
             <span id="ep-scope-label" className="ep-edit-banner__label">View</span>
             <ScopeSwitcher value={scope} onChange={onScope} />
+            {scope === 'mine' && (
+              <span className={following ? 'ep-edit-banner__chip' : 'ep-edit-banner__chip is-own'} role="status">
+                {following ? 'Following the organization' : 'Your own Overview'}
+              </span>
+            )}
           </div>
         )}
         {scope === 'mine' && following && (
-          <p className="ep-edit-banner__note">You follow your organization's Overview. Any change here starts your own.</p>
+          <p className="ep-edit-banner__note">Any change here starts your own Overview; the organization's stays as it is.</p>
         )}
         {restoredAt && (
           <p className="ep-edit-banner__restored" role="status">
@@ -341,7 +348,8 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
       ref={grid}
       style={{ '--grid-gap': `${GAP}px`, '--ep-row': `${ROW_HEIGHT}px`, '--ep-row-gap': `${ROW_GAP}px`, '--ep-spare': SPARE_ROWS } as CSSProperties}
     >
-      <div className="ep-edit-slots" aria-hidden>
+      {/* Free slots are a mouse shortcut to Widgets (the banner's Widgets button is the keyboard way). */}
+      <div className="ep-edit-slots" aria-hidden onClick={(e) => { if ((e.target as Element).tagName === 'SPAN') onAdd(); }}>
         {Array.from({ length: slotRows * 12 }, (_, i) => <span key={i} />)}
       </div>
       {resize && preview && (
@@ -372,7 +380,7 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
           )}
         </>
       )}
-      {cards.map((card) => {
+      {cards.map((card, index) => {
         const span = spanOf(layout, card);
         const rows = rowsOf(layout, card);
         const label = labelOf(card);
@@ -389,7 +397,7 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
             key={card}
             data-card={card}
             className={cls}
-            style={{ '--span': span, '--rows': rows, ...live } as CSSProperties}
+            style={{ '--span': span, '--rows': rows, '--i': index, ...live } as CSSProperties}
             tabIndex={0}
             role="group"
             aria-label={`${label}, ${span} of 12 columns, ${rowsText(rows)}`}

@@ -121,6 +121,8 @@ export function App() {
         <div role="tabpanel" id="ep-tabpanel" aria-label={tab} className="ep-profile__panel">
           {tab === 'Overview' ? (
             <OverviewTab
+              // A new view in Edit Mode lays its cards in afresh (a short fade), so the switch reads as a change.
+              key={draft ? scope : 'view'}
               layout={draftLayout ?? effectiveLayout(views)} editing={editing} onChange={change}
               onEdit={() => { edit(); setManaging(true); }} onAddWidget={() => setManaging(true)}
             />
