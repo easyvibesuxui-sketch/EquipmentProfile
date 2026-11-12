@@ -17,9 +17,6 @@
 .ep-edit-banner__status { display: flex; flex-wrap: wrap; align-items: center; gap: var(--syn-space-12); margin-top: var(--syn-space-16); }
 .ep-edit-banner__label { color: var(--syn-text-primary); font: var(--syn-type-titles-title-5); }
 .ep-edit-banner__note { margin: var(--syn-space-8) 0 0; color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
-.ep-edit-banner__restored { display: flex; flex-wrap: wrap; align-items: center; gap: var(--syn-space-8); margin: var(--syn-space-4) 0 0; color: var(--syn-text-secondary); font: var(--syn-type-text-body-xs); }
-.ep-edit-banner__restored button { padding: 0; border: 0; background: none; color: var(--syn-text-primary); font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-.ep-edit-banner__restored button:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
 .ep-edit-banner__art { flex: none; align-self: center; margin: -12px 0; stroke: var(--syn-color-secondary-dodger-blue); stroke-opacity: 0.45; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 /* "Widgets" (Figma): White, 8px corners, padding 8/32, a 14px plus, Montserrat Medium 12; bottom right of the banner. */
 .ep-edit-banner__widgets {
@@ -222,14 +219,15 @@
   flex-direction: column;
   overflow: visible;
   border: 1px dashed var(--syn-text-muted);
-  background: var(--syn-surface-muted);
+  /* White throughout: the grip and remove sit on the widget's own White, no grey strip. */
+  background: var(--syn-surface-default);
   filter: drop-shadow(1px 3px 3px rgb(21 21 21 / 0.08));
 }
 .ep-edit-item .ep-edit-item__content {
   flex: 1 1 auto;
   min-height: 0;
   overflow: hidden;
-  border-radius: var(--ep-radius-panel) var(--ep-radius-panel) var(--syn-radius-widget) var(--syn-radius-widget);
+  border-radius: 0 0 var(--syn-radius-widget) var(--syn-radius-widget);
   background: var(--syn-surface-default);
 }
 .ep-edit-item__bar { display: flex; flex: none; box-sizing: border-box; height: 52px; align-items: center; justify-content: space-between; gap: var(--syn-space-8); padding: var(--syn-space-12); }

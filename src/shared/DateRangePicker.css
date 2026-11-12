@@ -1,0 +1,112 @@
+/* Date range picker (Syn Figma "Large double calendar", 1430:24294). */
+.ep-range {
+  position: fixed;
+  z-index: 60;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--syn-space-16);
+  padding: var(--syn-space-24) var(--syn-space-24) var(--syn-space-20);
+  border-radius: var(--syn-radius-widget);
+  background: var(--syn-surface-default);
+  box-shadow: 0 8px 28px rgb(21 21 21 / 0.16);
+  color: var(--syn-text-primary);
+  font: var(--syn-type-text-body-s, 14px/1.4 var(--syn-font-family, sans-serif));
+  animation: ep-range-in 160ms ease-out;
+}
+@keyframes ep-range-in { from { opacity: 0; transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) { .ep-range { animation: none; } }
+
+/* Start / End fields: which end the next click sets. */
+.ep-range__fields { display: flex; justify-content: center; gap: var(--syn-space-8); }
+.ep-range__field {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--syn-space-8);
+  min-width: 150px;
+  padding: var(--syn-space-8) var(--syn-space-16);
+  border: 1px solid transparent;
+  border-radius: var(--syn-radius-element);
+  background: var(--syn-surface-default);
+  box-shadow: 0 1px 4px rgb(21 21 21 / 0.08);
+  font: var(--syn-type-text-body-xs);
+  white-space: nowrap;
+}
+.ep-range__field.is-active { border-color: var(--syn-border-strong); box-shadow: none; }
+
+.ep-range__months { display: grid; grid-template-columns: 1fr 1fr; gap: var(--syn-space-48); }
+.ep-range.is-single .ep-range__months { grid-template-columns: 1fr; }
+.ep-range__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--syn-space-12); }
+.ep-range__title { font: var(--syn-type-titles-title-5); }
+.ep-range__nav, .ep-range__nav-space { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; }
+.ep-range__nav { padding: 0; border: 0; border-radius: var(--syn-radius-full); background: none; color: var(--syn-text-primary); cursor: pointer; }
+.ep-range__nav:hover { background: var(--syn-surface-muted); }
+.ep-range__nav:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+
+.ep-range__grid { display: flex; flex-direction: column; gap: 0; }
+.ep-range__week { display: grid; grid-template-columns: repeat(7, 1fr); }
+.ep-range__wd { padding: var(--syn-space-8) 0 var(--syn-space-12); color: var(--syn-text-muted); font: var(--syn-type-text-caption-2); text-align: center; letter-spacing: 0.04em; }
+.ep-range__cell { position: relative; display: flex; align-items: center; justify-content: center; height: 48px; }
+.ep-range__cell.is-outside { color: var(--syn-border-default); font: var(--syn-type-text-body-xs); }
+/* The band between start and end: light Candy Apple, running into the half of the start and end cells. */
+.ep-range__cell.is-between, .ep-range__cell.is-start::before, .ep-range__cell.is-end::before { background: rgb(255 25 0 / 0.08); }
+.ep-range__cell.is-start::before, .ep-range__cell.is-end::before { content: ''; position: absolute; top: 4px; bottom: 4px; }
+.ep-range__cell.is-between { background-clip: content-box; padding: 4px 0; box-sizing: border-box; }
+.ep-range__cell.is-start::before { left: 50%; right: 0; }
+.ep-range__cell.is-end::before { left: 0; right: 50%; }
+
+.ep-range__day {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--syn-radius-full);
+  background: none;
+  color: var(--syn-text-primary);
+  font: var(--syn-type-text-body-xs);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.ep-range__day:hover:not(:disabled) { border-color: var(--syn-border-strong); }
+.ep-range__day:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.ep-range__day.is-today { border-color: var(--syn-action-brand); }
+.ep-range__day:disabled { color: var(--syn-border-default); cursor: default; }
+.is-start > .ep-range__day, .is-end > .ep-range__day, .is-single > .ep-range__day { background: var(--syn-surface-inverse); color: var(--syn-color-white-white); }
+.ep-range__chev { flex: none; }
+
+.ep-range__presets { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--syn-space-12); }
+.ep-range__chips { display: flex; flex-wrap: wrap; gap: var(--syn-space-8); }
+.ep-range__chip {
+  padding: var(--syn-space-4) var(--syn-space-16);
+  border: 1px solid var(--syn-text-muted);
+  border-radius: var(--syn-radius-full);
+  background: var(--syn-surface-default);
+  color: var(--syn-text-primary);
+  font: var(--syn-type-text-body-xs);
+  cursor: pointer;
+}
+.ep-range__chip:hover { border-color: var(--syn-border-strong); }
+.ep-range__chip:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.ep-range__info { display: inline-flex; align-items: center; gap: var(--syn-space-6); margin: 0; color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+.ep-range__info .syn-icon { color: var(--syn-color-secondary-dodger-blue); }
+
+.ep-range__foot { display: flex; align-items: center; justify-content: space-between; }
+.ep-range__clear { padding: var(--syn-space-8) var(--syn-space-4); border: 0; background: none; color: var(--syn-text-primary); font: var(--syn-type-titles-title-5); cursor: pointer; }
+.ep-range__clear:hover { text-decoration: underline; text-underline-offset: 3px; }
+.ep-range__clear:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.ep-range__foot .syn-button { min-width: 100px; }
+
+@media (max-width: 759px) {
+  .ep-range { padding: var(--syn-space-16); }
+  .ep-range__cell { height: 42px; }
+  .ep-range__day { width: 36px; height: 36px; }
+  .ep-range__field { min-width: 0; flex: 1; }
+}

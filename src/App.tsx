@@ -24,7 +24,6 @@ export function App() {
   // Edit Mode works on a draft of both: Save stores it, Discard drops it.
   // An unsaved Edit Mode draft from an earlier visit reopens Edit Mode with a notice.
   const [restored] = useState(loadDraft);
-  const [restoredAt, setRestoredAt] = useState<number | null>(restored?.savedAt ?? null);
   const [draft, setDraft] = useState<Draft | null>(restored ? { views: restored.views, scope: restored.scope } : null);
   useEffect(() => { saveDraft(draft); }, [draft]);
   const [managing, setManaging] = useState(false);
@@ -89,9 +88,9 @@ export function App() {
 
   const clearHistory = () => { setHistory([]); setFuture([]); lastChange.current = 0; };
   // Managers open on the organization's Overview, everyone else on their own.
-  const edit = () => { setRestoredAt(null); setTab('Overview'); clearHistory(); setDraft({ views, scope: currentUser.isManager ? 'org' : 'mine' }); };
-  const save = () => { if (draft) setViews(draft.views); setRestoredAt(null); setDraft(null); clearHistory(); setManaging(false); };
-  const discard = () => { setRestoredAt(null); setDraft(null); clearHistory(); setManaging(false); };
+  const edit = () => { setTab('Overview'); clearHistory(); setDraft({ views, scope: currentUser.isManager ? 'org' : 'mine' }); };
+  const save = () => { if (draft) setViews(draft.views); setDraft(null); clearHistory(); setManaging(false); };
+  const discard = () => { setDraft(null); clearHistory(); setManaging(false); };
 
   const scope = draft?.scope ?? 'mine';
   const draftLayout = draft ? (scope === 'org' ? draft.views.org : effectiveLayout(draft.views)) : null;
@@ -112,8 +111,6 @@ export function App() {
             onScope={currentUser.isManager ? (s) => setDraft((d) => (d ? { ...d, scope: s } : d)) : undefined}
             following={draft.views.mine === null}
             onWidgets={() => setManaging(true)}
-            restoredAt={restoredAt}
-            onDiscardRestored={discard}
           />
         ) : (
           <ProfileTabs tabs={profileTabs} value={tab} onChange={setTab} onManage={tab === 'Overview' ? edit : undefined} />

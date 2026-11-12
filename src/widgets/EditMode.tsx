@@ -15,8 +15,6 @@ const SPARE_ROWS = 2;
 const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
 const shortcut = (keys: string) => (isMac ? keys.replace('Ctrl+', '⌘').replace('Shift+', '⇧') : keys);
 
-const timeOf = (ms: number) => new Date(ms).toLocaleString(undefined, { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
-
 const SCOPES: Array<{ id: Scope; label: string }> = [
   { id: 'org', label: 'Organization' },
   { id: 'mine', label: 'You' },
@@ -71,12 +69,9 @@ interface EditBannerProps {
   /** In the You view: there is no own layout yet, the Overview follows the organization's. */
   following?: boolean;
   onWidgets: () => void;
-  /** When unsaved changes from an earlier visit were restored: when they were last edited. */
-  restoredAt?: number | null;
-  onDiscardRestored?: () => void;
 }
 
-export function EditBanner({ scope, onScope, following, onWidgets, restoredAt, onDiscardRestored }: EditBannerProps) {
+export function EditBanner({ scope, onScope, following, onWidgets }: EditBannerProps) {
   return (
     <section className="ep-edit-banner" aria-labelledby="ep-edit-title">
       <div className="ep-edit-banner__text">
@@ -95,12 +90,6 @@ export function EditBanner({ scope, onScope, following, onWidgets, restoredAt, o
         )}
         {scope === 'mine' && following && (
           <p className="ep-edit-banner__note">Any change here starts your own Overview; the organization's stays as it is.</p>
-        )}
-        {restoredAt && (
-          <p className="ep-edit-banner__restored" role="status">
-            Unsaved changes restored, last edited {timeOf(restoredAt)}.
-            <button type="button" onClick={onDiscardRestored}>Discard them</button>
-          </p>
         )}
       </div>
       {/* Figma: a 116px Dodger Blue line drawing of a widget and a pencil. */}
