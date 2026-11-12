@@ -426,8 +426,12 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
                 onPointerUp={endResize}
                 onPointerCancel={endResize}
               >
-                {/* Diagonal arrows (Syn "expand"): resizes both ways; "enlarge" is the four-way move glyph. */}
-                {handle === 'se' && <Icon name="expand" size={14} />}
+                {/* Three diagonal lines, the resize grip of a text field (the arrows read as expand, four arrows as move). */}
+                {handle === 'se' && (
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+                    <path d="M12.5 3.5l-9 9M12.5 7l-5.5 5.5M12.5 10.5l-2 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+                  </svg>
+                )}
               </span>
             ))}
           </div>
