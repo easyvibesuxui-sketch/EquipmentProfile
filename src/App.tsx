@@ -6,62 +6,68 @@ import { ProfileTabs } from './profile/ProfileTabs';
 import { OverviewTab } from './overview/OverviewTab';
 import { TelemetryTab } from './telemetry/TelemetryTab';
 import { profileTabs } from './data/equipment';
-import { defaultLayout, loadDraft, saveDraft, useWidgetLayout, type WidgetLayout } from './widgets/layout';
+import {
+  currentUser, defaultLayout, effectiveLayout, loadDraft, saveDraft, useViews, type Scope, type Views, type WidgetLayout,
+} from './widgets/layout';
 import { ManageWidgetsDrawer } from './widgets/ManageWidgetsDrawer';
 import { EditBanner, EditBar } from './widgets/EditMode';
 // Last, so the breakpoints win over the component stylesheets.
 import './styles/responsive.css';
 
+type Draft = { views: Views; scope: Scope };
+const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+
 export function App() {
   const [tab, setTab] = useState(profileTabs[0]);
-  const [layout, setLayout] = useWidgetLayout();
-  // Edit Mode works on a draft: Save stores it, Discard drops it.
+  // The saved Overviews: the organization's (set by a manager) and the person's own, if any.
+  const [views, setViews] = useViews();
+  // Edit Mode works on a draft of both: Save stores it, Discard drops it.
   // An unsaved Edit Mode draft from an earlier visit reopens Edit Mode with a notice.
   const [restored] = useState(loadDraft);
   const [restoredAt, setRestoredAt] = useState<number | null>(restored?.savedAt ?? null);
-  const [draft, setDraft] = useState<WidgetLayout | null>(restored?.layout ?? null);
+  const [draft, setDraft] = useState<Draft | null>(restored ? { views: restored.views, scope: restored.scope } : null);
   useEffect(() => { saveDraft(draft); }, [draft]);
   const [managing, setManaging] = useState(false);
   const editing = draft !== null;
   // Undo / Redo: the drafts before each edit, and the ones undone. A drag or resize sends many changes;
   // changes less than 400ms apart count as one edit, so one Undo takes back the whole gesture.
-  const [history, setHistory] = useState<WidgetLayout[]>([]);
-  const [future, setFuture] = useState<WidgetLayout[]>([]);
+  const [history, setHistory] = useState<Views[]>([]);
+  const [future, setFuture] = useState<Views[]>([]);
   const lastChange = useRef(0);
-  const draftRef = useRef<WidgetLayout | null>(null);
+  const draftRef = useRef<Draft | null>(null);
   draftRef.current = draft;
   const historyRef = useRef(history);
   historyRef.current = history;
   const futureRef = useRef(future);
   futureRef.current = future;
 
-  const change = useCallback((next: WidgetLayout) => {
+  const changeViews = useCallback((next: Views) => {
+    const current = draftRef.current;
+    if (!current) return;
     const now = Date.now();
-    const current = draftRef.current;
-    if (current && now - lastChange.current > 400) setHistory((h) => [...h, current]);
+    if (now - lastChange.current > 400) setHistory((h) => [...h, current.views]);
     lastChange.current = now;
-    draftRef.current = next;
+    const d = { ...current, views: next };
+    draftRef.current = d;
     setFuture([]);
-    setDraft(next);
+    setDraft(d);
   }, []);
-  const undo = useCallback(() => {
-    const h = historyRef.current;
+  // An edit of the layout in view: the organization's, or the person's own (which starts their own layout).
+  const change = useCallback((layout: WidgetLayout) => {
     const current = draftRef.current;
-    if (!h.length || !current) return;
-    lastChange.current = 0;
-    setFuture((f) => [...f, current]);
-    setHistory(h.slice(0, -1));
-    setDraft(h[h.length - 1]);
-  }, []);
-  const redo = useCallback(() => {
-    const f = futureRef.current;
+    if (!current) return;
+    changeViews(current.scope === 'org' ? { ...current.views, org: layout } : { ...current.views, mine: layout });
+  }, [changeViews]);
+  const step = (from: Views[], to: (fn: (v: Views[]) => Views[]) => void, setFrom: (v: Views[]) => void) => {
     const current = draftRef.current;
-    if (!f.length || !current) return;
+    if (!from.length || !current) return;
     lastChange.current = 0;
-    setHistory((h) => [...h, current]);
-    setFuture(f.slice(0, -1));
-    setDraft(f[f.length - 1]);
-  }, []);
+    to((v) => [...v, current.views]);
+    setFrom(from.slice(0, -1));
+    setDraft({ ...current, views: from[from.length - 1] });
+  };
+  const undo = useCallback(() => step(historyRef.current, setFuture, setHistory), []);
+  const redo = useCallback(() => step(futureRef.current, setHistory, setFuture), []);
 
   // Ctrl/Cmd+Z undoes; Ctrl/Cmd+Shift+Z and Ctrl+Y redo.
   useEffect(() => {
@@ -81,17 +87,31 @@ export function App() {
     return () => window.removeEventListener(DASHCAM_PLAY_EVENT, open);
   }, []);
 
-  const edit = () => { setRestoredAt(null); setTab('Overview'); setHistory([]); setFuture([]); lastChange.current = 0; setDraft(layout); };
-  const save = () => { if (draft) setLayout(draft); setRestoredAt(null); setDraft(null); setHistory([]); setFuture([]); setManaging(false); };
-  const discard = () => { setRestoredAt(null); setDraft(null); setHistory([]); setFuture([]); setManaging(false); };
+  const clearHistory = () => { setHistory([]); setFuture([]); lastChange.current = 0; };
+  // Managers open on the organization's Overview, everyone else on their own.
+  const edit = () => { setRestoredAt(null); setTab('Overview'); clearHistory(); setDraft({ views, scope: currentUser.isManager ? 'org' : 'mine' }); };
+  const save = () => { if (draft) setViews(draft.views); setRestoredAt(null); setDraft(null); clearHistory(); setManaging(false); };
+  const discard = () => { setRestoredAt(null); setDraft(null); clearHistory(); setManaging(false); };
+
+  const scope = draft?.scope ?? 'mine';
+  const draftLayout = draft ? (scope === 'org' ? draft.views.org : effectiveLayout(draft.views)) : null;
+  const canReset = draft ? (scope === 'org' ? !same(draft.views.org, defaultLayout()) : draft.views.mine !== null) : false;
+  const reset = () => {
+    if (!draft) return;
+    lastChange.current = 0;
+    changeViews(scope === 'org' ? { ...draft.views, org: defaultLayout() } : { ...draft.views, mine: null });
+  };
 
   return (
     <AppShell module="Fleet" current="planner">
       <div className={editing ? 'ep-profile is-editing' : 'ep-profile'}>
         <ProfileHeader />
-        {editing ? (
+        {draft ? (
           <EditBanner
-            onSection={() => setManaging(true)}
+            scope={scope}
+            onScope={currentUser.isManager ? (s) => setDraft((d) => (d ? { ...d, scope: s } : d)) : undefined}
+            following={draft.views.mine === null}
+            onWidgets={() => setManaging(true)}
             restoredAt={restoredAt}
             onDiscardRestored={discard}
           />
@@ -100,18 +120,26 @@ export function App() {
         )}
         <div role="tabpanel" id="ep-tabpanel" aria-label={tab} className="ep-profile__panel">
           {tab === 'Overview' ? (
-            <OverviewTab layout={draft ?? layout} editing={editing} onChange={change} onEdit={() => { edit(); setManaging(true); }} onAddWidget={() => setManaging(true)} />
+            <OverviewTab
+              layout={draftLayout ?? effectiveLayout(views)} editing={editing} onChange={change}
+              onEdit={() => { edit(); setManaging(true); }} onAddWidget={() => setManaging(true)}
+            />
           ) : tab === 'Telemetry' ? <TelemetryTab /> : <p className="ep-profile__placeholder">{tab} is not designed yet.</p>}
         </div>
         {editing && (
           <EditBar
             onDiscard={discard} onSave={save} onUndo={undo} onRedo={redo} canUndo={history.length > 0} canRedo={future.length > 0}
-            onReset={() => { lastChange.current = 0; change(defaultLayout()); }}
-            canReset={JSON.stringify(draft) !== JSON.stringify(defaultLayout())}
+            onReset={reset} canReset={canReset}
+            resetLabel={scope === 'org' ? 'Reset the organization Overview to the default' : 'Reset to the organization Overview'}
           />
         )}
       </div>
-      {draft && <ManageWidgetsDrawer open={managing} layout={draft} onChange={(next) => { lastChange.current = 0; change(next); }} onClose={() => setManaging(false)} />}
+      {draft && draftLayout && (
+        <ManageWidgetsDrawer
+          open={managing} scope={scope} layout={draftLayout} org={draft.views.org} canAddAny={currentUser.isManager}
+          onChange={(next) => { lastChange.current = 0; change(next); }} onClose={() => setManaging(false)}
+        />
+      )}
     </AppShell>
   );
 }

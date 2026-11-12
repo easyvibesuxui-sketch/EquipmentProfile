@@ -23,7 +23,12 @@ export const widgetCategories: Array<{ id: WidgetCategory; label: string }> = [
  * Width on the 12-column grid. Below 1024px "half" takes 6 columns and "wide" and "full" take 12;
  * below 640px every widget is full width (see responsive.css).
  */
-export type WidgetSize = { span: 3 | 4 | 5 | 6 | 8 | 12; fit: 'half' | 'wide' | 'full' };
+export type WidgetSize = {
+  span: 3 | 4 | 5 | 6 | 8 | 12;
+  fit: 'half' | 'wide' | 'full';
+  /** Rows on the 213px row grid as designed (2 = the 450px card); 2 when left out. */
+  rows?: number;
+};
 
 export interface WidgetDef {
   id: string;
@@ -59,7 +64,7 @@ export const widgets: WidgetDef[] = [
   { id: 'checkins-charging', category: 'overview', label: 'Checkins and charging', size: { span: 5, fit: 'wide' }, defaultOn: true, render: () => <CheckInsWidget /> },
   { id: 'recent-actions', category: 'overview', label: 'Recent actions from History', size: { span: 4, fit: 'half' }, defaultOn: true, render: () => <HistoryWidget /> },
   { id: 'operating-hours', category: 'overview', label: 'Operating Hours', size: full, defaultOn: true, render: () => <OperatingHoursWidget /> },
-  { id: 'operation-hours-by-hour', category: 'overview', label: 'Operation Hours by hour', size: full, defaultOn: true, render: () => <OperationByHourWidget /> },
+  { id: 'operation-hours-by-hour', category: 'overview', label: 'Operation Hours by hour', size: { ...full, rows: 3 }, defaultOn: true, render: () => <OperationByHourWidget /> },
   { id: 'distance-travelled', category: 'overview', label: 'Distance travelled', size: full, defaultOn: true, render: () => <DistanceWidget /> },
   { id: 'equipment-details', category: 'specifications', label: 'Equipment Details', size: half3, defaultOn: false, render: () => <EquipmentDetailsWidget /> },
   { id: 'calculation-type', category: 'specifications', label: 'Calculation type', size: half3, defaultOn: false, render: () => <CalculationTypeWidget /> },

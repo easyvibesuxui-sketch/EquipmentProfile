@@ -252,3 +252,9 @@
 .ep-sized { height: var(--ep-h); }
 .ep-sized > *, .ep-sized .ep-widget-link, .ep-sized .ep-location { height: 100%; }
 .ep-sized .ep-widget.syn-card, .ep-sized .ep-tele-hero { height: 100%; min-height: 0; overflow: hidden; }
+/* A chart with a set height: the plot takes what is left between the header and the legend, so the legend stays. */
+.ep-sized .ep-chart.syn-card { display: flex; flex-direction: column; }
+.ep-sized .ep-plot { display: flex; flex: 1 1 auto; min-height: 0; flex-direction: column; padding-top: var(--syn-space-24); }
+.ep-sized .ep-plot__area { flex: 1 1 auto; height: auto; min-height: 60px; }
+.ep-sized .ep-chart__footer { flex: none; }
+.ep-sized .ep-chart.syn-card > :not(.syn-card__header):not(.ep-chart__footer) { display: flex; flex: 1 1 auto; min-height: 0; flex-direction: column; }

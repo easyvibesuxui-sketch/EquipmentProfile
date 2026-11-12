@@ -23,12 +23,13 @@ interface Props {
  */
 export function OverviewTab({ layout, editing, onChange, onEdit, onAddWidget }: Props) {
   const cards = visibleCards(layout);
-  const render = (card: string) => {
+  // `fill`: the height the widget gets (Edit Mode: its rows under the bar); else a height set in Edit Mode.
+  // With a height the card fills it (lists scroll, maps and slots stretch).
+  const render = (card: string, fill?: number) => {
     const node = card === CONNECTED
       ? <DependenceWidget rows={visibleConnected(layout).map(connectedIdOf)} />
       : widgetById.get(card)?.render?.();
-    // A height set in Edit Mode: the card fills it (lists scroll, maps and slots stretch).
-    const h = heightOf(layout, card);
+    const h = fill ?? heightOf(layout, card);
     return h ? <div className="ep-sized" style={{ '--ep-h': `${h}px` } as CSSProperties}>{node}</div> : node;
   };
   const labelOf = (card: string) => (card === CONNECTED ? 'Dependance' : widgetById.get(card)?.label ?? card);

@@ -17,15 +17,20 @@ export interface WidgetLayout {
 export const CONNECTED = 'connected';
 export const MIN_SPAN = 3;
 export const MAX_SPAN = 12;
-/** Heights snap to rows of the 450px Overview card, with the 24px gutter between rows: 450, 924, 1398. */
-export const ROW_HEIGHT = 450;
+/**
+ * The row grid of Figma 17107:61363: rows of 213px with the 24px gutter, so a widget of 2 rows is the 450px Overview
+ * card, 4 rows 924px and 6 rows 1398px. Heights snap to whole rows.
+ */
+export const ROW_HEIGHT = 213;
 export const ROW_GAP = 24;
-export const MAX_ROWS = 3;
+export const MIN_ROWS = 1;
+export const MAX_ROWS = 6;
 export const rowsToHeight = (rows: number) => rows * ROW_HEIGHT + (rows - 1) * ROW_GAP;
-export const heightToRows = (height: number) => Math.max(1, Math.min(MAX_ROWS, Math.round((height + ROW_GAP) / (ROW_HEIGHT + ROW_GAP))));
-const MIN_HEIGHT = rowsToHeight(1);
+export const heightToRows = (height: number) => Math.max(MIN_ROWS, Math.min(MAX_ROWS, Math.round((height + ROW_GAP) / (ROW_HEIGHT + ROW_GAP))));
+const MIN_HEIGHT = rowsToHeight(MIN_ROWS);
 const MAX_HEIGHT = rowsToHeight(MAX_ROWS);
 
+/** The person's own layout (it was the only one before the Organization view). */
 const STORAGE_KEY = 'ep-overview-widgets-v1';
 
 export const defaultLayout = (): WidgetLayout => ({
@@ -55,23 +60,6 @@ function normalise(saved: Partial<WidgetLayout> | null): WidgetLayout {
     hidden: [...saved.hidden.filter((id) => widgetById.has(id)), ...added.filter((id) => base.hidden.includes(id))],
     spans,
   };
-}
-
-function load(): WidgetLayout {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    return normalise(raw ? (JSON.parse(raw) as Partial<WidgetLayout>) : null);
-  } catch {
-    return defaultLayout();
-  }
-}
-
-function save(layout: WidgetLayout) {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(layout));
-  } catch {
-    /* Private mode or blocked storage: the layout lasts until reload. */
-  }
 }
 
 /** The widgets of one category, in page order. */
@@ -134,10 +122,18 @@ export const setSpan = (layout: WidgetLayout, card: string, span: number): Widge
   spans: { ...layout.spans, [card]: Math.max(MIN_SPAN, Math.min(MAX_SPAN, Math.round(span))) },
 });
 
+/** The rows a card takes when its height was never changed: its designed height on the row grid. */
+export const defaultRows = (card: string) => (card === CONNECTED ? 2 : widgetById.get(card)?.size.rows ?? 2);
+/** The rows a card takes on the grid: the height set in Edit Mode, else the designed one. */
+export const rowsOf = (layout: WidgetLayout, card: string) => {
+  const h = layout.heights[card];
+  return h ? heightToRows(h) : defaultRows(card);
+};
+
 /** The card's height in px, or undefined for its designed height. */
 export const heightOf = (layout: WidgetLayout, card: string): number | undefined => layout.heights[card];
 
-/** Sets the card's height to the nearest of 1, 2 or 3 rows; `null` restores the designed height. */
+/** Sets the card's height to the nearest whole number of rows (1 to 6); `null` restores the designed height. */
 export function setHeight(layout: WidgetLayout, card: string, height: number | null): WidgetLayout {
   const heights = { ...layout.heights };
   if (height === null) delete heights[card];
@@ -149,38 +145,79 @@ export function setHeight(layout: WidgetLayout, card: string, height: number | n
 export const fitOf = (span: number) => (span >= MAX_SPAN ? 'full' : span >= 5 ? 'wide' : 'half');
 
 /**
- * The Edit Mode draft, kept in this browser while editing so a refresh or a closed tab loses nothing. It is
- * restored on the next visit (Edit Mode opens again with a notice) and cleared on Save or Discard.
+ * Two layouts (Figma Edit Mode "View": Organization / You):
+ * - `org`: what the manager sets for everyone in the organization: which widgets show, where and how big.
+ * - `mine`: the signed-in person's own layout; `null` means it follows the organization's.
+ * The Overview shows `mine` if there is one, else `org`. A manager can switch on widgets for themself that the
+ * organization does not show; anyone else can only show or hide what the organization offers.
  */
-const DRAFT_KEY = 'ep-overview-widgets-draft-v1';
+export type Scope = 'org' | 'mine';
+export interface Views { org: WidgetLayout; mine: WidgetLayout | null }
 
-export function loadDraft(): { layout: WidgetLayout; savedAt: number } | null {
+/** The prototype's signed-in person ("M.M."): a manager, so Edit Mode offers both views. */
+export const currentUser = { isManager: true };
+
+const ORG_KEY = 'ep-overview-widgets-org-v1';
+
+function loadKey(key: string): WidgetLayout | null {
+  try {
+    const raw = window.localStorage.getItem(key);
+    return raw ? normalise(JSON.parse(raw) as Partial<WidgetLayout>) : null;
+  } catch {
+    return null;
+  }
+}
+function saveKey(key: string, layout: WidgetLayout | null) {
+  try {
+    if (layout) window.localStorage.setItem(key, JSON.stringify(layout));
+    else window.localStorage.removeItem(key);
+  } catch {
+    /* Private mode or blocked storage: the layout lasts until reload. */
+  }
+}
+
+/** The layout the Overview shows. */
+export const effectiveLayout = (views: Views) => views.mine ?? views.org;
+
+/** The saved layouts, persisted in this browser (the organization's would live on the server). */
+export function useViews() {
+  const [views, setViews] = useState<Views>(() => ({ org: loadKey(ORG_KEY) ?? defaultLayout(), mine: loadKey(STORAGE_KEY) }));
+  const apply = useCallback((next: Views) => {
+    setViews(next);
+    saveKey(ORG_KEY, next.org);
+    saveKey(STORAGE_KEY, next.mine);
+  }, []);
+  return [views, apply] as const;
+}
+
+/**
+ * The Edit Mode draft (both layouts and the view being edited), kept in this browser while editing so a refresh or
+ * a closed tab loses nothing. It is restored on the next visit (Edit Mode opens again with a notice) and cleared on
+ * Save or Discard.
+ */
+const DRAFT_KEY = 'ep-overview-widgets-draft-v2';
+
+export function loadDraft(): { views: Views; scope: Scope; savedAt: number } | null {
   try {
     const raw = window.localStorage.getItem(DRAFT_KEY);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as { layout?: Partial<WidgetLayout>; savedAt?: number };
-    if (!parsed.layout || typeof parsed.savedAt !== 'number') return null;
-    return { layout: normalise(parsed.layout), savedAt: parsed.savedAt };
+    const parsed = JSON.parse(raw) as { views?: { org?: Partial<WidgetLayout>; mine?: Partial<WidgetLayout> | null }; scope?: Scope; savedAt?: number };
+    if (!parsed.views?.org || typeof parsed.savedAt !== 'number') return null;
+    return {
+      views: { org: normalise(parsed.views.org), mine: parsed.views.mine ? normalise(parsed.views.mine) : null },
+      scope: parsed.scope === 'mine' || !currentUser.isManager ? 'mine' : 'org',
+      savedAt: parsed.savedAt,
+    };
   } catch {
     return null;
   }
 }
 
-export function saveDraft(layout: WidgetLayout | null) {
+export function saveDraft(draft: { views: Views; scope: Scope } | null) {
   try {
-    if (layout) window.localStorage.setItem(DRAFT_KEY, JSON.stringify({ layout, savedAt: Date.now() }));
+    if (draft) window.localStorage.setItem(DRAFT_KEY, JSON.stringify({ ...draft, savedAt: Date.now() }));
     else window.localStorage.removeItem(DRAFT_KEY);
   } catch {
     /* Storage blocked: the draft lasts until the page closes. */
   }
-}
-
-/** The saved layout, persisted in this browser. */
-export function useWidgetLayout() {
-  const [layout, setLayout] = useState<WidgetLayout>(load);
-  const apply = useCallback((next: WidgetLayout) => {
-    setLayout(next);
-    save(next);
-  }, []);
-  return [layout, apply] as const;
 }

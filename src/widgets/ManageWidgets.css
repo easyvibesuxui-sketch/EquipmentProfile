@@ -61,3 +61,10 @@
 .ep-overview__empty .syn-empty__text { display: flex; flex-direction: column; gap: var(--syn-space-4); text-align: center; }
 .ep-overview__empty-title { color: var(--syn-text-primary); }
 .ep-overview__empty-hint { max-width: 60ch; color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+
+/* Which Overview the switches change: the organization's or the person's own. */
+.ep-widgets-scope { display: flex; flex-wrap: wrap; align-items: center; gap: var(--syn-space-8); margin: 0 0 var(--syn-space-16); color: var(--syn-text-secondary); font: var(--syn-type-text-body-xs); }
+.ep-widgets-scope__badge { padding: var(--syn-space-2) var(--syn-space-8); border-radius: var(--syn-radius-element); background: var(--syn-surface-inverse); color: var(--syn-color-white-white); font: var(--syn-type-text-caption-2); }
+/* A widget the organization does not show, in the You view. */
+.ep-widgets-row__label { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--syn-space-4) var(--syn-space-8); }
+.ep-widgets-row__note { color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }

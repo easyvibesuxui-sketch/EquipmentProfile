@@ -1,13 +1,12 @@
 /* Edit Mode of the Overview (Figma 17068:71648, 17107:58944, 17107:61363). */
 
-/* Banner: Dodger Blue dashed 1px, a 2% Dodger Blue tint, 12px corners, padding 24/12. */
+/* Banner (Figma 17107:61461): Dodger Blue dashed 1px, a 2% Dodger Blue tint, 12px corners, padding 24/12. */
 .ep-edit-banner {
   position: relative;
   display: flex;
   align-items: center;
   gap: var(--syn-space-24);
-  min-height: 89px;
-  padding: var(--syn-space-24) var(--syn-space-12);
+  padding: var(--syn-space-24) var(--syn-space-12) var(--syn-space-24) var(--syn-space-24);
   border: 1px dashed var(--syn-color-secondary-dodger-blue);
   border-radius: var(--syn-radius-widget);
   background: rgb(69 154 247 / 0.02);
@@ -15,47 +14,103 @@
 .ep-edit-banner__text { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: var(--syn-space-2); }
 .ep-edit-banner__title { position: relative; top: var(--syn-title-offset); margin: 0; color: var(--syn-text-primary); font: var(--syn-type-titles-title-4); }
 .ep-edit-banner__hint { margin: 0; color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+.ep-edit-banner__status { display: flex; flex-wrap: wrap; align-items: center; gap: var(--syn-space-12); margin-top: var(--syn-space-16); }
+.ep-edit-banner__label { color: var(--syn-text-primary); font: var(--syn-type-titles-title-5); }
+.ep-edit-banner__note { margin: var(--syn-space-8) 0 0; color: var(--syn-text-secondary); font: var(--syn-type-text-body-xs); }
 .ep-edit-banner__restored { display: flex; flex-wrap: wrap; align-items: center; gap: var(--syn-space-8); margin: var(--syn-space-4) 0 0; color: var(--syn-text-secondary); font: var(--syn-type-text-body-xs); }
 .ep-edit-banner__restored button { padding: 0; border: 0; background: none; color: var(--syn-text-primary); font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .ep-edit-banner__restored button:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
-.ep-edit-banner__art { flex: none; margin: -24px 0; stroke: var(--syn-color-secondary-dodger-blue); stroke-opacity: 0.45; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.ep-edit-banner__section.syn-button { flex: none; padding-inline: var(--syn-space-32); }
+.ep-edit-banner__art { flex: none; align-self: center; margin: -12px 0; stroke: var(--syn-color-secondary-dodger-blue); stroke-opacity: 0.45; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+/* "Widgets" (Figma): White, 8px corners, padding 8/32, a 14px plus, Montserrat Medium 12; bottom right of the banner. */
+.ep-edit-banner__widgets {
+  display: inline-flex;
+  flex: none;
+  align-self: flex-end;
+  align-items: center;
+  gap: var(--syn-space-8);
+  min-height: 32px;
+  padding: var(--syn-space-8) var(--syn-space-32);
+  border: 1px solid var(--syn-border-default);
+  border-radius: var(--syn-radius-element);
+  background: var(--syn-surface-default);
+  color: var(--syn-text-primary);
+  font: var(--syn-type-button-text-button-secondary-s);
+  cursor: pointer;
+}
+.ep-edit-banner__widgets:hover { border-color: var(--syn-border-strong); }
+.ep-edit-banner__widgets:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
 
-/* The grid: the Overview's 12 columns, dense flow; the Smoke column slots sit behind the cards while resizing. */
-.ep-edit-grid { position: relative; grid-auto-flow: row dense; padding-bottom: calc(var(--ep-slot-h, 504px) + var(--grid-gap, 24px)); }
+/* View switcher (Figma "Switcher"): a Smoke track with a White 1px border, 8px corners, 4px padding and gap;
+   180px options, the chosen one Eerie Black with White Title 5. */
+.ep-scope { display: inline-flex; gap: var(--syn-space-4); padding: var(--syn-space-4); border: 1px solid var(--syn-color-white-white); border-radius: var(--syn-radius-element); background: var(--syn-surface-raised); }
+.ep-scope__option {
+  width: 180px;
+  min-height: 35px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: var(--syn-radius-element);
+  background: var(--syn-surface-default);
+  color: var(--syn-text-primary);
+  font: var(--syn-type-titles-title-5);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--syn-duration-fast), color var(--syn-duration-fast);
+}
+.ep-scope__option[aria-checked='true'] { background: var(--syn-surface-inverse); color: var(--syn-color-white-white); }
+.ep-scope__option:not([aria-checked='true']):hover { background: var(--syn-surface-muted); }
+.ep-scope__option:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+
+/* The grid (Figma 17107:61363): 12 columns and 213px rows with 24px gutters, dense flow; a card spans its
+   columns and rows. Two spare rows below the last card (bottom padding) keep room to grow and to drop. */
+.ep-edit-grid {
+  position: relative;
+  grid-auto-flow: row dense;
+  grid-auto-rows: var(--ep-row, 213px);
+  padding-bottom: calc(var(--ep-spare, 2) * (var(--ep-row, 213px) + var(--ep-row-gap, 24px)));
+}
+.ep-edit-grid > .ep-edit-item, .ep-edit-grid > .ep-edit-add, .ep-edit-ghost > * { grid-row: span var(--rows, 2); }
 /*
- * The layout grid (Figma 17107:61363, "as Zoho has it"): Snow slots on the 12 columns behind every row of cards (each
- * row as tall as its cards) and in one empty row below the last (the grid's bottom padding), so every place shows.
+ * The background grid ("as Zoho has it"): a White 213px slot in every column of every row, behind, between and
+ * below the cards, so every place a card can take shows while editing.
  */
-.ep-edit-slots { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-.ep-edit-slots__row { position: absolute; right: 0; left: 0; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--grid-gap, 24px); }
-.ep-edit-slots__row > span { border-radius: var(--syn-radius-widget); background: var(--syn-surface-raised); box-shadow: inset 0 0 0 1px rgb(21 21 21 / 0.03); }
-/* Phones stack the cards in one column, so the slots go. */
-@media (max-width: 639px) { .ep-edit-slots { display: none; } .ep-edit-grid { padding-bottom: 0; } }
-/* While resizing: a Dodger Blue outline of the size the card snaps to, with its columns marked by faint
-   gutters inside it. Nothing else on the page moves until release. */
+.ep-edit-slots {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-auto-rows: var(--ep-row, 213px);
+  gap: var(--ep-row-gap, 24px) var(--grid-gap, 24px);
+  overflow: hidden;
+  pointer-events: none;
+}
+.ep-edit-slots > span { border-radius: var(--syn-radius-widget); background: var(--syn-surface-default); box-shadow: inset 0 0 0 1px rgb(21 21 21 / 0.04); }
+/* Phones stack the cards in one column with their own heights, so the slots go. */
+@media (max-width: 639px) {
+  .ep-edit-slots { display: none; }
+  .ep-edit-grid { grid-auto-rows: auto; padding-bottom: 0; }
+  .ep-edit-grid > .ep-edit-item, .ep-edit-grid > .ep-edit-add { grid-row: auto; }
+}
+/* While resizing: a Dodger Blue outline of the columns and rows the card snaps to. */
 .ep-edit-preview {
   position: absolute;
-  z-index: 5;
+  z-index: 5; /* over the card being resized */
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: center;
   box-sizing: border-box;
   border: 2px solid var(--syn-color-secondary-dodger-blue);
   border-radius: var(--syn-radius-widget);
-  background-color: rgb(69 154 247 / 0.06);
-  background-image: repeating-linear-gradient(90deg, transparent 0 var(--col), rgb(69 154 247 / 0.14) var(--col) calc(var(--col) + var(--gap)));
+  background-color: rgb(69 154 247 / 0.08);
   pointer-events: none;
   transition: width var(--syn-duration-fast), height var(--syn-duration-fast);
 }
 .ep-edit-preview.is-wrapping { border-style: dashed; }
-/* Moving: the outline where the card lands, without the column marks. */
-.ep-edit-preview--move { align-items: center; background-image: none; transition: left var(--syn-duration-fast), top var(--syn-duration-fast), width var(--syn-duration-fast), height var(--syn-duration-fast); }
-.ep-edit-preview--move > span { margin-top: 0; }
-.ep-edit-ghost { position: absolute; top: 0; right: 0; left: 0; z-index: -1; grid-auto-flow: row dense; visibility: hidden; pointer-events: none; }
-.ep-edit-ghost > * { align-self: start; }
+/* Moving: the outline where the card lands. */
+.ep-edit-preview--move { z-index: 5; align-items: center; transition: left var(--syn-duration-fast), top var(--syn-duration-fast), width var(--syn-duration-fast), height var(--syn-duration-fast); }
+.ep-edit-ghost { position: absolute; top: 0; right: 0; left: 0; z-index: -1; grid-auto-flow: row dense; grid-auto-rows: var(--ep-row, 213px); visibility: hidden; pointer-events: none; }
 .ep-edit-preview > span {
-  margin-top: var(--syn-space-12);
+  margin-bottom: var(--syn-space-24);
   padding: var(--syn-space-4) var(--syn-space-12);
   border-radius: var(--syn-radius-full);
   background: var(--syn-color-secondary-dodger-blue);
@@ -67,8 +122,7 @@
 .ep-edit-item {
   position: relative;
   z-index: 1;
-  /* Each card keeps its own height instead of stretching to the row, so height changes show at once. */
-  align-self: start;
+  box-sizing: border-box;
   border-radius: var(--syn-radius-widget);
   cursor: grab;
   touch-action: none;
@@ -77,10 +131,13 @@
 .ep-edit-item:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 4px; }
 .ep-edit-item__content { pointer-events: none; }
 .ep-edit-item.is-dragging { z-index: 6; opacity: 0.55; cursor: grabbing; }
-.ep-edit-item.is-dragging .ep-edit-item__content > *, .ep-edit-item.is-resizing .ep-edit-item__content > * { outline: 1px dashed var(--syn-text-muted); outline-offset: 0; border-radius: var(--syn-radius-widget); }
+/* Resizing: the card follows the pointer above its neighbours, with the snapped outline under it. */
+.ep-edit-item.is-resizing { z-index: 4; align-self: start; justify-self: start; box-shadow: var(--syn-shadow-float); }
+/* The widget fills whatever the card's size is, also while it follows the pointer. */
+.ep-edit-item .ep-sized { height: 100%; }
 
-/* Every card in Edit Mode: Cultured, a Silver Chalice dashed border and a 52px bar on top (sizes and remove),
-   the widget below with 24px top corners (Figma "Witget With Slot"). */
+/* Every card in Edit Mode (Figma "Witget With Slot"): Cultured, a Silver Chalice dashed border, its rows high
+   including the bar (grip left, remove right); the widget below with 24px top and 12px bottom corners. */
 .ep-edit-item {
   display: flex;
   flex-direction: column;
@@ -89,40 +146,14 @@
   background: var(--syn-surface-muted);
   filter: drop-shadow(1px 3px 3px rgb(21 21 21 / 0.08));
 }
-.ep-edit-item .ep-edit-item__content { flex: none; overflow: hidden; border-radius: var(--ep-radius-panel) var(--ep-radius-panel) var(--syn-radius-widget) var(--syn-radius-widget); }
-.ep-edit-item__bar { display: flex; flex: none; align-items: center; justify-content: space-between; gap: var(--syn-space-8); padding: var(--syn-space-12); }
-
-.ep-edit-sizes { display: flex; gap: var(--syn-space-4); padding: var(--syn-space-2); border-radius: var(--syn-radius-widget); background: var(--syn-surface-default); }
-.ep-edit-sizes button {
-  width: 96px;
-  height: var(--syn-size-control-xs);
-  padding: 0 var(--syn-space-8);
-  border: 1px solid var(--syn-border-default);
-  border-radius: 18px;
+.ep-edit-item .ep-edit-item__content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: var(--ep-radius-panel) var(--ep-radius-panel) var(--syn-radius-widget) var(--syn-radius-widget);
   background: var(--syn-surface-default);
-  color: var(--syn-text-muted);
-  font: var(--syn-type-text-caption-2);
-  font-size: 12px;
-  line-height: 1.4;
-  white-space: nowrap;
-  cursor: pointer;
 }
-.ep-edit-sizes button[aria-pressed='true'] { background: var(--syn-surface-inverse); color: var(--syn-color-white-white); }
-.ep-edit-sizes button:not([aria-pressed='true']):hover { color: var(--syn-text-primary); }
-.ep-edit-sizes button { position: relative; }
-/* 44px-tall hit area around the 24px Figma pills. */
-.ep-edit-sizes button::before { content: ''; position: absolute; inset: -11px 0; }
-.ep-edit-sizes button:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
-
-/* Cards narrower than the 300px Figma pills (a 1/3 card under ~1500px): the pills share the bar, "Full". */
-.ep-edit-item { container: ep-edit / inline-size; }
-.ep-edit-sizes__short { display: none; }
-@container ep-edit (max-width: 399px) {
-  .ep-edit-sizes { flex: 1 1 auto; min-width: 0; }
-  .ep-edit-sizes button { flex: 1 1 0; width: auto; min-width: 0; padding: 0 var(--syn-space-4); }
-  .ep-edit-sizes__long { display: none; }
-  .ep-edit-sizes__short { display: inline; }
-}
+.ep-edit-item__bar { display: flex; flex: none; box-sizing: border-box; height: 52px; align-items: center; justify-content: space-between; gap: var(--syn-space-8); padding: var(--syn-space-12); }
 
 /* Remove: a 28px White circle, Silver Chalice border (Cultured in the bar), the 24px close glyph. */
 .ep-edit-close {
@@ -145,74 +176,53 @@
 .ep-edit-close:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
 .ep-edit-close--bar { border-color: var(--syn-border-default); }
 
-/* Resize handles, always visible: White pills with a Silver Chalice border on the side and bottom edges, a
-   corner grip at the bottom right; Eerie Black on hover and while resizing. */
+/* Resize handles (Figma "Witget With Slot"): White pills with a Silver Chalice border straddling the right edge
+   (18×61) and the bottom edge (61×18), and the "Enlarge" corner, a 24px White square with an Eerie Black border
+   just outside the bottom right. Eerie Black on hover and while resizing. */
 .ep-edit-handle {
   position: absolute;
   z-index: 3;
   box-sizing: border-box;
-  border: 1px solid var(--syn-text-secondary);
+  border: 1px solid var(--syn-text-muted);
   border-radius: var(--syn-radius-full);
   background: var(--syn-surface-default);
   box-shadow: var(--syn-shadow-default);
   touch-action: none;
   transition: background-color var(--syn-duration-fast), border-color var(--syn-duration-fast);
 }
-.ep-edit-handle::after { content: ''; position: absolute; border-radius: var(--syn-radius-full); background: var(--syn-text-secondary); }
-.ep-edit-handle--e { top: calc(50% - 24px); right: -6px; width: 12px; height: 48px; cursor: ew-resize; }
-.ep-edit-handle--e::after { top: 12px; left: calc(50% - 1px); width: 2px; height: 24px; }
-/* The bottom handle is a labelled pill: the arrows and the height (Auto, 1, 2 or 3 rows). */
-.ep-edit-handle--s {
-  bottom: -12px;
-  left: 50%;
+.ep-edit-handle::after { content: ''; position: absolute; border-radius: var(--syn-radius-full); background: var(--syn-text-muted); }
+.ep-edit-handle--e { top: calc(50% - 30.5px); right: -9px; width: 18px; height: 61px; cursor: ew-resize; }
+.ep-edit-handle--e::after { top: 18px; left: calc(50% - 1px); width: 2px; height: 25px; }
+.ep-edit-handle--s { bottom: -9px; left: calc(50% - 30.5px); width: 61px; height: 18px; cursor: ns-resize; }
+.ep-edit-handle--s::after { top: calc(50% - 1px); left: 18px; width: 25px; height: 2px; }
+.ep-edit-handle--se {
+  right: -5px;
+  bottom: -5px;
   display: inline-flex;
   align-items: center;
-  gap: var(--syn-space-4);
+  justify-content: center;
+  width: 24px;
   height: 24px;
-  padding: 0 var(--syn-space-12) 0 var(--syn-space-8);
-  color: var(--syn-text-secondary);
-  font: var(--syn-type-text-caption-1);
-  /* Syn rule for Caption 1: default smoothing and a hairline stroke. */
-  -webkit-font-smoothing: auto;
-  -moz-osx-font-smoothing: auto;
-  -webkit-text-stroke: var(--syn-text-crisp-stroke) currentColor;
-  white-space: nowrap;
-  cursor: ns-resize;
-  transform: translateX(-50%);
-  user-select: none;
-}
-.ep-edit-handle--s::after { display: none; }
-.ep-edit-handle--s:hover, .ep-edit-item.is-resizing .ep-edit-handle--s { color: var(--syn-text-primary); }
-/* Corner grip: three diagonal lines in the bottom-right corner, as on a resizable text box. */
-.ep-edit-handle--se {
-  right: 2px;
-  bottom: 2px;
-  width: 16px;
-  height: 16px;
-  border: 0;
-  border-radius: 0 0 var(--syn-radius-widget) 0;
-  box-shadow: none;
-  background:
-    linear-gradient(135deg, transparent 0 45%, var(--syn-text-secondary) 45% 52%, transparent 52% 62%, var(--syn-text-secondary) 62% 69%, transparent 69% 79%, var(--syn-text-secondary) 79% 86%, transparent 86%);
+  border-color: var(--syn-border-strong);
+  border-radius: 2px;
+  color: var(--syn-text-primary);
   cursor: nwse-resize;
 }
 .ep-edit-handle--se::after { display: none; }
 .ep-edit-handle:hover, .ep-edit-item.is-resizing .ep-edit-handle { border-color: var(--syn-border-strong); }
 .ep-edit-handle:hover::after, .ep-edit-item.is-resizing .ep-edit-handle::after { background: var(--syn-text-primary); }
-.ep-edit-handle--se:hover {
-  background:
-    linear-gradient(135deg, transparent 0 45%, var(--syn-text-primary) 45% 52%, transparent 52% 62%, var(--syn-text-primary) 62% 69%, transparent 69% 79%, var(--syn-text-primary) 79% 86%, transparent 86%);
-}
+.ep-edit-handle--se:hover { background: var(--syn-surface-inverse); color: var(--syn-color-white-white); }
 /* Bigger hit areas than the drawn handles. */
 .ep-edit-handle::before { content: ''; position: absolute; inset: -8px; }
+/* Phones stack the cards: no resizing there. */
+@media (max-width: 639px) { .ep-edit-handle { display: none; } }
 
 /* Move grip at the left of the bar; the whole card can be dragged. */
-.ep-edit-grip { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 24px; height: 28px; color: var(--syn-text-muted); cursor: grab; }
+.ep-edit-grip { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 28px; height: 28px; color: var(--syn-text-muted); cursor: grab; }
 .ep-edit-item:hover .ep-edit-grip { color: var(--syn-text-primary); }
-.ep-edit-sizes { margin-right: auto; }
 .ep-edit-item.is-dragging { transition: none; box-shadow: var(--syn-shadow-float); }
 
-/* "Add Widget" (Figma New Widget 17107:61128): 450px, Silver Chalice dashed, 2% Candy Apple tint, 6% on hover. */
+/* No widgets on the page: the empty state of the Overview in Edit Mode, two rows high across the grid. */
 .ep-edit-add {
   position: relative;
   z-index: 1; /* above the slots */
@@ -220,19 +230,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--syn-space-16);
-  align-self: start;
-  /* As high as a 1-row edit card: the 52px bar, the 450px widget and the 1px borders. */
-  min-height: calc(52px + 450px + 2px);
   padding: var(--syn-space-16);
   border: 1px dashed var(--syn-text-muted);
   border-radius: var(--syn-radius-element);
-  background: linear-gradient(rgb(255 25 0 / 0.02), rgb(255 25 0 / 0.02)), var(--syn-surface-muted); /* opaque over the slots */
   color: var(--syn-text-muted);
   font: var(--syn-type-titles-title-5);
   cursor: pointer;
 }
-.ep-edit-add:hover { background: linear-gradient(rgb(255 25 0 / 0.06), rgb(255 25 0 / 0.06)), var(--syn-surface-muted); }
 .ep-edit-add:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
 
 /* Bottom Line: White, 24px corners, drop shadow, padding 20/24/20/32; stays at the bottom of the window. */
@@ -253,9 +257,13 @@
 .ep-edit-bar__button.syn-button { width: 168px; }
 
 @media (max-width: 639px) {
-  .ep-edit-banner { flex-wrap: wrap; }
+  .ep-edit-banner { flex-wrap: wrap; padding: var(--syn-space-16); }
+  .ep-edit-banner__widgets { align-self: auto; }
+  .ep-edit-banner__text { flex-basis: 100%; }
+  .ep-edit-banner__status { flex-wrap: nowrap; }
+  .ep-scope { display: flex; flex: 1 1 auto; min-width: 0; }
+  .ep-scope__option { flex: 1 1 0; width: auto; min-width: 0; }
   .ep-edit-banner__art { display: none; }
-  .ep-edit-sizes button { width: auto; min-width: 48px; }
   .ep-edit-bar { gap: var(--syn-space-8); padding: var(--syn-space-12); }
   .ep-edit-bar__button.syn-button { width: auto; min-width: 0; flex: 1; padding-inline: var(--syn-space-12); }
   /* Undo, Reset and Redo at 40px with a 4px gap, so Discard and Save keep room on a 375px phone. */
@@ -292,8 +300,8 @@
 /* The remove tooltip opens below its button, right-aligned to it, so on a right-hand card it stays on the page. */
 .ep-edit-close-tip .syn-tooltip__bubble--bottom { right: -6px; left: auto; max-width: none; white-space: nowrap; transform: none; }
 .ep-edit-close-tip .syn-tooltip__bubble--bottom::after { right: 12px; left: auto; margin-left: 0; }
-/* Reset to default: Syn's outlined secondary button with its label, between Undo and Redo. */
-.ep-edit-bar__reset.syn-button { padding-inline: var(--syn-space-16); }
+/* Reset (Figma): 168×48 with its icon, in the middle of the bar between Undo and Redo. */
+.ep-edit-bar__reset.syn-button { width: 168px; }
 @media (max-width: 639px) {
   /* Phones keep it icon-only (its name stays in aria-label) so the bar fits. */
   .ep-edit-bar__reset.syn-button { width: 40px; min-width: 0; height: 40px; padding: 0; }
