@@ -145,8 +145,14 @@ export function ManageWidgetsDrawer({ open, scope, layout, org, canAddAny, onCha
                   const expanded = preview === id;
                   const previewId = `ep-wp-${id}`;
                   return (
-                    <li key={id} className={expanded ? 'ep-widgets-row is-expanded' : 'ep-widgets-row'}>
-                      <div className="ep-widgets-row__line">
+                    // Figma "Status Line" states (17386:59329): Default (Cultured border), Hover and On (Eerie Black),
+                    // Selected (On and open: the chevron points up and the preview shows).
+                    <li key={id} className={['ep-widgets-row', canPreview && 'has-preview', canPreview && !hidden.has(id) && 'is-on', expanded && 'is-expanded'].filter(Boolean).join(' ')}>
+                      {/* The whole line opens the preview (the chevron is its keyboard control); the switch stays its own. */}
+                      <div
+                        className="ep-widgets-row__line"
+                        onClick={canPreview ? (e) => { if (!(e.target as Element).closest('.syn-switch, button')) setPreview(expanded ? null : id); } : undefined}
+                      >
                         <span className="ep-widgets-row__label" id={`ep-w-${id}`}>
                           {w.label}
                           {notInOrg && <span className="ep-widgets-row__note">{canAddAny ? 'Only for you' : 'Not shown in your organization'}</span>}
