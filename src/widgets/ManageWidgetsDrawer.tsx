@@ -166,7 +166,13 @@ export function ManageWidgetsDrawer({ open, scope, layout, org, canAddAny, onCha
                           )}
                           <Switch
                             label={w.label} hideLabel aria-labelledby={`ep-w-${id}`} size={24} disabled={locked}
-                            checked={!hidden.has(id)} onChange={(e) => setDraft(turn(draft, id, e.currentTarget.checked))}
+                            checked={!hidden.has(id)}
+                            onChange={(e) => {
+                              const on = e.currentTarget.checked;
+                              setDraft(turn(draft, id, on));
+                              // Switched on: the preview opens below (Figma "Selected"); switched off: it closes.
+                              if (canPreview) setPreview(on ? id : preview === id ? null : preview);
+                            }}
                           />
                         </span>
                       </div>

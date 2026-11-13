@@ -218,7 +218,7 @@
   flex-direction: column;
   overflow: visible;
   border: 1px dashed var(--syn-text-muted);
-  background: var(--syn-surface-muted);
+  background: var(--syn-surface-default);
   filter: drop-shadow(1px 3px 3px rgb(21 21 21 / 0.08));
 }
 .ep-edit-item .ep-edit-item__content {
@@ -236,7 +236,7 @@
   align-items: center;
   gap: var(--syn-space-6);
   padding: var(--syn-space-12);
-  border-radius: var(--ep-radius-panel) var(--ep-radius-panel) 0 0;
+  border-radius: var(--syn-radius-widget) var(--syn-radius-widget) 0 0;
   background: var(--syn-surface-default);
 }
 .ep-edit-item__title { flex: 1; min-width: 0; overflow: hidden; color: var(--syn-text-primary); font: var(--syn-type-titles-title-5); text-overflow: ellipsis; white-space: nowrap; }
