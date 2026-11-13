@@ -43,12 +43,18 @@ export function ManageWidgetsDrawer({ open, scope, layout, org, canAddAny, onCha
   const [query, setQuery] = useState('');
   const [type, setType] = useState<WidgetCategory | 'all'>('all');
   const [collapsed, setCollapsed] = useState<Set<WidgetCategory>>(new Set());
-  const [preview, setPreview] = useState<string | null>(null);
+  // Open previews, each row on its own: opening one never closes another, so no row moves under the pointer.
+  const [open_, setOpen] = useState<Set<string>>(new Set());
+  const setPreview = (id: string, show: boolean) => setOpen((o) => {
+    const next = new Set(o);
+    if (show) next.add(id); else next.delete(id);
+    return next;
+  });
 
   // Each opening starts from the page as it is.
   useEffect(() => {
     if (!open) return;
-    setDraft(layout); setQuery(''); setType('all'); setPreview(null);
+    setDraft(layout); setQuery(''); setType('all'); setOpen(new Set());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
@@ -59,10 +65,12 @@ export function ManageWidgetsDrawer({ open, scope, layout, org, canAddAny, onCha
   const groups = useMemo(
     () => widgetCategories
       .filter((c) => type === 'all' || c.id === type)
-      .map((c) => ({ ...c, ids: categoryIds(draft, c.id).filter((id) => matches(widgetById.get(id)!)) }))
+      // Rows keep the order the drawer opened with: a widget switched on goes to the end of the page, but its
+      // row stays where it was, so the list never jumps under the pointer.
+      .map((c) => ({ ...c, ids: categoryIds(layout, c.id).filter((id) => matches(widgetById.get(id)!)) }))
       .filter((g) => g.ids.length > 0),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [draft, type, q],
+    [layout, type, q],
   );
 
   const toggleGroup = (id: WidgetCategory) => setCollapsed((c) => {
@@ -145,7 +153,7 @@ export function ManageWidgetsDrawer({ open, scope, layout, org, canAddAny, onCha
                   const isOn = !hidden.has(id);
                   // The preview opens only for a widget that is on; off, the chevron shows but does nothing.
                   const canOpen = canPreview && isOn;
-                  const expanded = canOpen && preview === id;
+                  const expanded = canOpen && open_.has(id);
                   const previewId = `ep-wp-${id}`;
                   return (
                     // Figma "Status Line" states (17386:59329): Default (Cultured border), Hover and On (Eerie Black),
@@ -154,7 +162,7 @@ export function ManageWidgetsDrawer({ open, scope, layout, org, canAddAny, onCha
                       {/* The whole line of a widget that is on opens the preview (the chevron is its keyboard control). */}
                       <div
                         className="ep-widgets-row__line"
-                        onClick={canOpen ? (e) => { if (!(e.target as Element).closest('.syn-switch, button')) setPreview(expanded ? null : id); } : undefined}
+                        onClick={canOpen ? (e) => { if (!(e.target as Element).closest('.syn-switch, button')) setPreview(id, !expanded); } : undefined}
                       >
                         <span className="ep-widgets-row__label" id={`ep-w-${id}`}>
                           {w.label}
@@ -170,7 +178,7 @@ export function ManageWidgetsDrawer({ open, scope, layout, org, canAddAny, onCha
                               aria-label={canOpen ? `${expanded ? 'Hide' : 'Show'} preview of ${w.label}` : `Switch ${w.label} on to see its preview`}
                               aria-disabled={!canOpen}
                               tabIndex={canOpen ? 0 : -1}
-                              onClick={() => { if (canOpen) setPreview(expanded ? null : id); }}
+                              onClick={() => { if (canOpen) setPreview(id, !expanded); }}
                             >
                               <Icon name={expanded ? 'up' : 'down'} size={24} />
                             </button>
@@ -182,7 +190,7 @@ export function ManageWidgetsDrawer({ open, scope, layout, org, canAddAny, onCha
                               const on = e.currentTarget.checked;
                               setDraft(turn(draft, id, on));
                               // Switched on: the preview opens below (Figma "Selected"); switched off: it closes.
-                              if (canPreview) setPreview(on ? id : preview === id ? null : preview);
+                              if (canPreview) setPreview(id, on);
                             }}
                           />
                         </span>
