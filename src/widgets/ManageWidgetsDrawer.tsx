@@ -142,16 +142,19 @@ export function ManageWidgetsDrawer({ open, scope, layout, org, canAddAny, onCha
                   const notInOrg = scope === 'mine' && orgHidden.has(id);
                   const locked = notInOrg && !canAddAny && hidden.has(id);
                   const canPreview = cat.id === 'overview' && !!w.render;
-                  const expanded = preview === id;
+                  const isOn = !hidden.has(id);
+                  // The preview opens only for a widget that is on; off, the chevron shows but does nothing.
+                  const canOpen = canPreview && isOn;
+                  const expanded = canOpen && preview === id;
                   const previewId = `ep-wp-${id}`;
                   return (
                     // Figma "Status Line" states (17386:59329): Default (Cultured border), Hover and On (Eerie Black),
                     // Selected (On and open: the chevron points up and the preview shows).
-                    <li key={id} className={['ep-widgets-row', canPreview && 'has-preview', canPreview && !hidden.has(id) && 'is-on', expanded && 'is-expanded'].filter(Boolean).join(' ')}>
-                      {/* The whole line opens the preview (the chevron is its keyboard control); the switch stays its own. */}
+                    <li key={id} className={['ep-widgets-row', canPreview && 'has-preview', canOpen && 'can-open', canPreview && isOn && 'is-on', expanded && 'is-expanded'].filter(Boolean).join(' ')}>
+                      {/* The whole line of a widget that is on opens the preview (the chevron is its keyboard control). */}
                       <div
                         className="ep-widgets-row__line"
-                        onClick={canPreview ? (e) => { if (!(e.target as Element).closest('.syn-switch, button')) setPreview(expanded ? null : id); } : undefined}
+                        onClick={canOpen ? (e) => { if (!(e.target as Element).closest('.syn-switch, button')) setPreview(expanded ? null : id); } : undefined}
                       >
                         <span className="ep-widgets-row__label" id={`ep-w-${id}`}>
                           {w.label}
@@ -163,9 +166,11 @@ export function ManageWidgetsDrawer({ open, scope, layout, org, canAddAny, onCha
                               type="button"
                               className="ep-widgets-row__more"
                               aria-expanded={expanded}
-                              aria-controls={previewId}
-                              aria-label={`${expanded ? 'Hide' : 'Show'} preview of ${w.label}`}
-                              onClick={() => setPreview(expanded ? null : id)}
+                              aria-controls={expanded ? previewId : undefined}
+                              aria-label={canOpen ? `${expanded ? 'Hide' : 'Show'} preview of ${w.label}` : `Switch ${w.label} on to see its preview`}
+                              aria-disabled={!canOpen}
+                              tabIndex={canOpen ? 0 : -1}
+                              onClick={() => { if (canOpen) setPreview(expanded ? null : id); }}
                             >
                               <Icon name={expanded ? 'up' : 'down'} size={24} />
                             </button>

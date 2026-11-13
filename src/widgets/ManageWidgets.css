@@ -48,7 +48,8 @@
 /* Figma "Status Line" states (17386:59329), Overview rows: Default has a Cultured border; Hover, On (Variant4)
    and Selected (on and open) an Eerie Black one. The other groups' rows keep the Cultured border. */
 .ep-widgets-row.has-preview:hover, .ep-widgets-row.is-on, .ep-widgets-row.is-expanded { border-color: var(--syn-border-strong); }
-.ep-widgets-row.has-preview .ep-widgets-row__line { cursor: pointer; }
+.ep-widgets-row.can-open .ep-widgets-row__line { cursor: pointer; }
+.ep-widgets-row__more[aria-disabled='true'] { cursor: default; }
 .ep-widgets-row__line { display: flex; align-items: center; gap: var(--syn-space-8); min-height: 22px; }
 .ep-widgets-row__label { flex: 1; min-width: 0; }
 .ep-widgets-row__controls { display: flex; flex: none; align-items: center; gap: var(--syn-space-24); }
