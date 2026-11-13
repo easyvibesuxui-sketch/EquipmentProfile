@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
 import { Button, Icon, Switch, TextField } from '@syn/design-system';
 import { PanelDrawer } from '../shared/PanelDrawer';
-import { widgetById, widgetCategories, widgets, type WidgetCategory, type WidgetDef } from './registry';
-import { categoryIds, setVisible, type Scope, type WidgetLayout } from './layout';
+import { connectedIdOf, widgetById, widgetCategories, widgets, type WidgetCategory, type WidgetDef } from './registry';
+import { DependenceWidget } from '../overview/widgets';
+import { categoryIds, rowsToHeight, setVisible, type Scope, type WidgetLayout } from './layout';
 import './ManageWidgets.css';
 
 interface Props {
@@ -25,6 +26,28 @@ const groupTitle = (id: WidgetCategory, label: string) => (id === 'overview' ? '
 const typeLabel = (id: WidgetCategory, label: string) => (id === 'connected' ? 'Connected Entities' : label);
 const countOf = (id: WidgetCategory) => widgets.filter((w) => w.category === id).length;
 
+/** The preview card (Figma 560 x 320). */
+const PREVIEW_W = 560;
+const PREVIEW_H = 320;
+/** A widget's size on the 1920 page: 12 columns of 129.33px with 24px gutters, rows of 213px. */
+const pageWidth = (span: number) => span * ((1816 - 11 * 24) / 12) + (span - 1) * 24;
+
+/**
+ * The live widget in the preview card. Narrow widgets fill the card; wide ones (8 columns and more) are drawn at
+ * their page size and scaled down whole, as a thumbnail, so their layout does not break.
+ */
+function PreviewBody({ span, rows, children }: { span: number; rows: number; children: ReactNode }) {
+  const w = pageWidth(span);
+  if (w <= PREVIEW_W * 1.25) return <div className="ep-sized" style={{ '--ep-h': '100%' } as CSSProperties}>{children}</div>;
+  const h = rowsToHeight(rows);
+  const scale = Math.min(PREVIEW_W / w, PREVIEW_H / h);
+  return (
+    <div className="ep-widgets-preview__thumb" style={{ width: w * scale, height: h * scale }}>
+      <div className="ep-sized" style={{ width: w, '--ep-h': `${h}px`, transform: `scale(${scale})` } as CSSProperties}>{children}</div>
+    </div>
+  );
+}
+
 /** A widget switched on goes to the end of the order, so it appears last on the page. */
 function turn(layout: WidgetLayout, id: string, on: boolean): WidgetLayout {
   const next = setVisible(layout, [id], on);
@@ -36,7 +59,7 @@ function turn(layout: WidgetLayout, id: string, on: boolean): WidgetLayout {
  * Figma "Manage Organization Widgets" (17386:48732, rows 17386:59329): a 1280px drawer with a search, a Type
  * filter (All and each group, with counts), the groups with a switch per widget, and Discard / Submit. The
  * switches work on a copy: Submit puts them into the Edit Mode draft, Discard (or closing) drops them.
- * Overview widgets open a preview: the live widget, what it shows and its minimum size.
+ * Every widget opens a preview (when it is on): the live widget, what it shows and its minimum size.
  */
 export function ManageWidgetsDrawer({ open, scope, layout, org, canAddAny, onChange, onClose }: Props) {
   const [draft, setDraft] = useState(layout);
@@ -149,7 +172,8 @@ export function ManageWidgetsDrawer({ open, scope, layout, org, canAddAny, onCha
                   // themself; anyone else cannot.
                   const notInOrg = scope === 'mine' && orgHidden.has(id);
                   const locked = notInOrg && !canAddAny && hidden.has(id);
-                  const canPreview = cat.id === 'overview' && !!w.render;
+                  // Every widget has a preview: its live card; a connected entity, the Dependance card with just its row.
+                  const canPreview = !!w.render || cat.id === 'connected';
                   const isOn = !hidden.has(id);
                   // The preview opens only for a widget that is on; off, the chevron shows but does nothing.
                   const canOpen = canPreview && isOn;
@@ -199,7 +223,9 @@ export function ManageWidgetsDrawer({ open, scope, layout, org, canAddAny, onCha
                         <div className="ep-widgets-preview" id={previewId}>
                           <div className="ep-widgets-preview__stage">
                             <div className="ep-widgets-preview__card" {...{ inert: '' }}>
-                              <div className="ep-sized" style={{ '--ep-h': '296px' } as CSSProperties}>{w.render!()}</div>
+                              <PreviewBody span={w.size.span} rows={w.size.rows ?? 2}>
+                                {w.render ? w.render() : <DependenceWidget rows={[connectedIdOf(id)]} />}
+                              </PreviewBody>
                             </div>
                           </div>
                           <div className="ep-widgets-preview__foot">

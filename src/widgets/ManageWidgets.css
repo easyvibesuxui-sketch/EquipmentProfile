@@ -83,7 +83,11 @@
   filter: drop-shadow(1px 3px 3px rgb(21 21 21 / 0.08));
   pointer-events: none;
 }
-.ep-widgets-preview__card .ep-sized { height: 100%; }
+.ep-widgets-preview__card { display: flex; align-items: center; justify-content: center; }
+.ep-widgets-preview__card > .ep-sized { width: 100%; height: 100%; }
+/* A wide widget at its page size, scaled down whole. */
+.ep-widgets-preview__thumb { flex: none; overflow: hidden; }
+.ep-widgets-preview__thumb > .ep-sized { transform-origin: 0 0; }
 .ep-widgets-preview__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--syn-space-8); padding: var(--syn-space-8) var(--syn-space-12); font: var(--syn-type-titles-title-6); }
 .ep-widgets-preview__min { color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
 
