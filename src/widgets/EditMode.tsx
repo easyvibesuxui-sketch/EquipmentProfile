@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
-import { Button, Icon, IconButton, Tooltip } from '@syn/design-system';
+import { Button, Icon, Tooltip } from '@syn/design-system';
 import {
   MAX_ROWS, MAX_SPAN, MIN_ROWS, MIN_SPAN, ROW_GAP, ROW_HEIGHT, fitOf, rowsOf, rowsToHeight, moveCard, removeCard, setHeight, setSpan, spanOf, stepCard, visibleCards,
   type Scope, type WidgetLayout,
@@ -11,9 +11,6 @@ const GAP = 24;
 const ROW_STEP = ROW_HEIGHT + ROW_GAP;
 /** Empty rows of slots below the last card, where cards can grow or go next. */
 const SPARE_ROWS = 2;
-/** Shortcut text for tooltips: ⌘ on Apple platforms, Ctrl elsewhere. */
-const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
-const shortcut = (keys: string) => (isMac ? keys.replace('Ctrl+', '⌘').replace('Shift+', '⇧') : keys);
 
 const SCOPES: Array<{ id: Scope; label: string }> = [
   { id: 'org', label: 'Organization' },
@@ -111,27 +108,18 @@ export function EditBanner({ scope, onScope, following, onWidgets }: EditBannerP
 interface EditBarProps {
   onDiscard: () => void;
   onSave: () => void;
-  onUndo: () => void;
-  onRedo: () => void;
-  canUndo: boolean;
-  canRedo: boolean;
   /** Organization: back to the default Overview; You: back to following the organization (undoable). */
   onReset: () => void;
   canReset: boolean;
   resetLabel: string;
 }
 
-export function EditBar({ onDiscard, onSave, onUndo, onRedo, canUndo, canRedo, onReset, canReset, resetLabel }: EditBarProps) {
+export function EditBar({ onDiscard, onSave, onReset, canReset, resetLabel }: EditBarProps) {
   return (
     <div className="ep-edit-bar" role="region" aria-label="Edit Mode actions">
       <Button variant="secondary" size="md" className="ep-edit-bar__button" onClick={onDiscard}>Discard</Button>
-      {/* Reset in the middle as in Figma; Undo and Redo (not in Figma, asked for earlier) on either side of it. */}
-      <div className="ep-edit-bar__history" role="group" aria-label="History">
-        <IconButton icon="undo" label="Undo" tooltip={<>Undo <kbd className="ep-kbd">{shortcut('Ctrl+Z')}</kbd></>} size="md" variant="outline" disabled={!canUndo} onClick={onUndo} />
-        <Button variant="secondary" size="md" iconStart="refresh-change" className="ep-edit-bar__reset" aria-label={resetLabel} title={resetLabel} disabled={!canReset} onClick={onReset}>Reset</Button>
-        {/* Syn has no redo glyph: the undo glyph, mirrored. */}
-        <IconButton icon="undo" label="Redo" tooltip={<>Redo <kbd className="ep-kbd">{shortcut('Ctrl+Shift+Z')}</kbd></>} size="md" variant="outline" className="ep-edit-bar__redo" disabled={!canRedo} onClick={onRedo} />
-      </div>
+      {/* Reset in the middle, as in Figma. Undo / Redo have no buttons; Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z still work. */}
+      <Button variant="secondary" size="md" iconStart="refresh-change" className="ep-edit-bar__reset" aria-label={resetLabel} title={resetLabel} disabled={!canReset} onClick={onReset}>Reset</Button>
       <Button size="md" className="ep-edit-bar__button" onClick={onSave}>Save</Button>
     </div>
   );

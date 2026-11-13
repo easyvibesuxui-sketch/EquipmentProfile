@@ -127,7 +127,7 @@ export function App() {
         </div>
         {editing && (
           <EditBar
-            onDiscard={discard} onSave={save} onUndo={undo} onRedo={redo} canUndo={history.length > 0} canRedo={future.length > 0}
+            onDiscard={discard} onSave={save}
             onReset={reset} canReset={canReset}
             resetLabel={scope === 'org' ? 'Reset the organization Overview to the default' : 'Reset to the organization Overview'}
           />
