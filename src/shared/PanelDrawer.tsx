@@ -10,16 +10,18 @@ interface Props {
   footer?: ReactNode;
   children?: ReactNode;
   className?: string;
+  /** Panel width; 640 by default (the profile's side panels). */
+  width?: number;
 }
 
 /** Syn Drawer at the 640px panel size the profile's Figma drawers use. */
-export function PanelDrawer({ open, onClose, title, headerActions, footer, children, className }: Props) {
+export function PanelDrawer({ open, onClose, title, headerActions, footer, children, className, width = 640 }: Props) {
   return (
     <Drawer
       open={open}
       onClose={onClose}
       label={title}
-      width={640}
+      width={width}
       className={className ? `ep-panel-drawer ${className}` : 'ep-panel-drawer'}
       headerStart={<h2 className="ep-panel-drawer__title">{title}</h2>}
       headerActions={headerActions}

@@ -39,6 +39,9 @@ export interface WidgetDef {
   defaultOn: boolean;
   /** Connected entities have no card of their own: they are the rows of the Dependance card. */
   render?: () => ReactNode;
+  /** Manage Widgets preview (Overview widgets, Figma 17386:59329): what the widget shows, and its minimum size. */
+  description?: string;
+  minSize?: string;
 }
 
 const half3: WidgetSize = { span: 3, fit: 'half' };
@@ -56,16 +59,16 @@ const connectedOn = new Set<ConnectedId>(['primary', 'linked', 'inventory', 'cre
 /** Every widget the Overview can show, in the default order of the page. */
 export const widgets: WidgetDef[] = [
   { id: 'technical-specifications', category: 'specifications', label: 'Technical specifications', size: half3, defaultOn: true, render: () => <SpecificationsWidget /> },
-  { id: 'current-location', category: 'overview', label: 'Current location', size: { span: 6, fit: 'wide' }, defaultOn: true, render: () => <LocationWidget /> },
+  { id: 'current-location', category: 'overview', label: 'Current location', size: { span: 6, fit: 'wide' }, defaultOn: true, description: 'Map with the last known position of the equipment.', minSize: '2/1 box', render: () => <LocationWidget /> },
   { id: 'specific-machine-information', category: 'specifications', label: 'Specific machine information', size: half3, defaultOn: true, render: () => <IdentificationsWidget /> },
   ...connectedOrder.map((id): WidgetDef => ({
     id: `connected-${id}`, category: 'connected', label: connectedLabels[id], size: half3, defaultOn: connectedOn.has(id),
   })),
-  { id: 'checkins-charging', category: 'overview', label: 'Checkins and charging', size: { span: 5, fit: 'wide' }, defaultOn: true, render: () => <CheckInsWidget /> },
-  { id: 'recent-actions', category: 'overview', label: 'Recent actions from History', size: { span: 4, fit: 'half' }, defaultOn: true, render: () => <HistoryWidget /> },
-  { id: 'operating-hours', category: 'overview', label: 'Operating Hours', size: full, defaultOn: true, render: () => <OperatingHoursWidget /> },
-  { id: 'operation-hours-by-hour', category: 'overview', label: 'Operation Hours by hour', size: { ...full, rows: 3 }, defaultOn: true, render: () => <OperationByHourWidget /> },
-  { id: 'distance-travelled', category: 'overview', label: 'Distance travelled', size: full, defaultOn: true, render: () => <DistanceWidget /> },
+  { id: 'checkins-charging', category: 'overview', label: 'Checkins and charging', size: { span: 5, fit: 'wide' }, defaultOn: true, description: 'Check-ins to projects and warehouses, and charging sessions.', render: () => <CheckInsWidget /> },
+  { id: 'recent-actions', category: 'overview', label: 'Recent actions from History', size: { span: 4, fit: 'half' }, defaultOn: true, description: 'The latest changes to this equipment: what changed, who changed it and when.', render: () => <HistoryWidget /> },
+  { id: 'operating-hours', category: 'overview', label: 'Operating Hours', size: full, defaultOn: true, description: 'Hours the equipment ran each day, with its idle hours.', render: () => <OperatingHoursWidget /> },
+  { id: 'operation-hours-by-hour', category: 'overview', label: 'Operation Hours by hour', size: { ...full, rows: 3 }, defaultOn: true, description: 'The hours worked each day of the week, hour by hour.', render: () => <OperationByHourWidget /> },
+  { id: 'distance-travelled', category: 'overview', label: 'Distance travelled', size: full, defaultOn: true, description: 'Distance travelled each day; long trips stand out.', render: () => <DistanceWidget /> },
   { id: 'equipment-details', category: 'specifications', label: 'Equipment Details', size: half3, defaultOn: false, render: () => <EquipmentDetailsWidget /> },
   { id: 'calculation-type', category: 'specifications', label: 'Calculation type', size: half3, defaultOn: false, render: () => <CalculationTypeWidget /> },
   { id: 'bgl-information', category: 'specifications', label: 'BGL Information', size: half3, defaultOn: false, render: () => <BglWidget /> },

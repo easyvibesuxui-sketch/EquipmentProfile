@@ -109,7 +109,7 @@ export function App() {
           <EditBanner
             scope={scope}
             onScope={currentUser.isManager ? (s) => setDraft((d) => (d ? { ...d, scope: s } : d)) : undefined}
-            following={draft.views.mine === null}
+            widgetCount={draftLayout ? draftLayout.order.length - draftLayout.hidden.length : 0}
             onWidgets={() => setManaging(true)}
           />
         ) : (

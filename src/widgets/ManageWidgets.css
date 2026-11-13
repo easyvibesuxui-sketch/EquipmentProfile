@@ -35,7 +35,7 @@
 }
 .ep-widgets-row {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: var(--syn-space-8);
   min-height: 40px;
   padding: var(--syn-space-8);
@@ -43,11 +43,98 @@
   border-radius: var(--syn-radius-element);
   background: var(--syn-surface-default);
   font: var(--syn-type-titles-title-6);
+  transition: border-color var(--syn-duration-fast);
 }
+/* Figma row states: Hover and open (Selected) have an Eerie Black border. */
+.ep-widgets-row:hover, .ep-widgets-row.is-expanded { border-color: var(--syn-border-strong); }
+.ep-widgets-row__line { display: flex; align-items: center; gap: var(--syn-space-8); min-height: 22px; }
 .ep-widgets-row__label { flex: 1; min-width: 0; }
+.ep-widgets-row__controls { display: flex; flex: none; align-items: center; gap: var(--syn-space-24); }
+.ep-widgets-row__more {
+  position: relative;
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--syn-text-muted);
+  cursor: pointer;
+}
+.ep-widgets-row__more::before { content: ''; position: absolute; inset: -10px; }
+.ep-widgets-row__more:hover, .ep-widgets-row__more[aria-expanded='true'] { color: var(--syn-text-primary); }
+.ep-widgets-row__more:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; border-radius: var(--syn-radius-xs); }
+
+/* Preview (Figma "Map Content"): the live widget, 560 x 320 on a Cultured stage, then what it shows and its
+   minimum size. */
+.ep-widgets-preview { display: flex; flex-direction: column; }
+.ep-widgets-preview__stage { display: flex; justify-content: center; padding: var(--syn-space-12); border-radius: 0 0 var(--syn-radius-element) var(--syn-radius-element); background: var(--syn-surface-muted); }
+.ep-widgets-preview__card {
+  width: min(560px, 100%);
+  height: 320px;
+  overflow: hidden;
+  border-radius: var(--syn-radius-widget);
+  background: var(--syn-surface-default);
+  filter: drop-shadow(1px 3px 3px rgb(21 21 21 / 0.08));
+  pointer-events: none;
+}
+.ep-widgets-preview__card .ep-sized { height: 100%; }
+.ep-widgets-preview__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--syn-space-8); padding: var(--syn-space-8) var(--syn-space-12); font: var(--syn-type-titles-title-6); }
+.ep-widgets-preview__min { color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+
+/* Search and the Type filter (Figma "Input Field Container"): padding 16/16/12/32. */
+.ep-widgets-tools { display: flex; flex-direction: column; gap: var(--syn-space-16); padding: var(--syn-space-16) var(--syn-space-16) var(--syn-space-12) var(--syn-grid-margin); }
+.ep-widgets-search { width: min(420px, 100%); }
+.ep-widgets-type { display: flex; flex-direction: column; gap: var(--syn-space-8); }
+.ep-widgets-type__label { color: var(--syn-text-primary); font: var(--syn-type-titles-title-5); }
+/* The filter: a Smoke track with a White border (as the Edit Mode View switcher); the chosen type Eerie Black
+   with a Candy Apple count, the others White with a Cultured border and a Jet count. */
+.ep-widgets-filter { display: flex; flex-wrap: wrap; gap: var(--syn-space-4); padding: var(--syn-space-4); border: 1px solid var(--syn-color-white-white); border-radius: var(--syn-radius-element); background: var(--syn-surface-raised); }
+.ep-widgets-filter__option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--syn-space-6);
+  min-height: 34px;
+  padding: var(--syn-space-8) var(--syn-space-16);
+  border: 1px solid var(--syn-border-default);
+  border-radius: var(--syn-radius-element);
+  background: var(--syn-surface-default);
+  color: var(--syn-text-primary);
+  font: var(--syn-type-titles-title-5);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ep-widgets-filter__option:hover { border-color: var(--syn-border-strong); }
+.ep-widgets-filter__option[aria-checked='true'] { border-color: var(--syn-surface-inverse); background: var(--syn-surface-inverse); color: var(--syn-color-white-white); }
+.ep-widgets-filter__option:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.ep-widgets-filter__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 var(--syn-space-4);
+  box-sizing: border-box;
+  border-radius: var(--syn-radius-full);
+  background: var(--syn-color-secondary-jet);
+  color: var(--syn-color-white-white);
+  font: var(--syn-font-weight-medium) 12px/1 var(--syn-font-family-body);
+  font-variant-numeric: tabular-nums;
+}
+.ep-widgets-filter__option[aria-checked='true'] .ep-widgets-filter__count { background: var(--syn-action-brand); }
+
+/* No widget matches the search. */
+.ep-widgets-empty { display: flex; flex-direction: column; align-items: flex-start; gap: var(--syn-space-8); padding: var(--syn-space-24) var(--syn-space-16) var(--syn-space-24) var(--syn-grid-margin); }
+.ep-widgets-empty__title { margin: 0; color: var(--syn-text-primary); font: var(--syn-type-titles-title-5); }
+.ep-widgets-empty__hint { margin: 0 0 var(--syn-space-8); color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+
+/* Footer (Figma "Bottom Line"): Discard as a text button, Submit 168px Eerie Black. */
+.ep-widgets-drawer .syn-drawer__footer { justify-content: space-between; }
+.ep-widgets-discard { min-height: 48px; padding: 0; border: 0; background: none; color: var(--syn-text-primary); font: var(--syn-type-titles-title-4); cursor: pointer; }
+.ep-widgets-discard:hover { text-decoration: underline; text-underline-offset: 3px; }
+.ep-widgets-discard:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
 
 @media (max-width: 640px) {
-  .ep-widgets-group { padding-left: var(--syn-space-16); }
+  .ep-widgets-group, .ep-widgets-tools, .ep-widgets-empty { padding-left: var(--syn-space-16); }
+  .ep-widgets-preview__card { height: 280px; }
 }
 
 /* The gear at the end of the profile tabs. */

@@ -16,10 +16,8 @@ const SCOPES: Array<{ id: Scope; label: string }> = [
   { id: 'org', label: 'Organization' },
   { id: 'mine', label: 'You' },
 ];
-const HINTS: Record<Scope, string> = {
-  org: 'Choose the widgets everyone in your organization sees on the Overview. Drag a widget to move it, drag its edges to resize it.',
-  mine: 'Make the Overview comfortable for you: show, move and resize widgets. Only you see these changes.',
-};
+/** Figma banner text (17107:61464). */
+const HINT = 'Make the overview page more comfortable for you. Replace or remove widgets, change widget size, change position.';
 
 /**
  * Figma "Switcher" (17107:61363): a Smoke track with a White border, 4px padding; the chosen option Eerie Black.
@@ -63,30 +61,22 @@ interface EditBannerProps {
   scope: Scope;
   /** Managers choose between the organization's Overview and their own; everyone else edits only their own. */
   onScope?: (scope: Scope) => void;
-  /** In the You view: there is no own layout yet, the Overview follows the organization's. */
-  following?: boolean;
+  /** Widgets switched on in the view being edited: the count on the Widgets button. */
+  widgetCount: number;
   onWidgets: () => void;
 }
 
-export function EditBanner({ scope, onScope, following, onWidgets }: EditBannerProps) {
+export function EditBanner({ scope, onScope, widgetCount, onWidgets }: EditBannerProps) {
   return (
     <section className="ep-edit-banner" aria-labelledby="ep-edit-title">
       <div className="ep-edit-banner__text">
         <h2 id="ep-edit-title" className="ep-edit-banner__title">Edit Mode</h2>
-        <p className="ep-edit-banner__hint">{HINTS[scope]}</p>
+        <p className="ep-edit-banner__hint">{HINT}</p>
         {onScope && (
           <div className="ep-edit-banner__status">
             <span id="ep-scope-label" className="ep-edit-banner__label">View</span>
             <ScopeSwitcher value={scope} onChange={onScope} />
-            {scope === 'mine' && (
-              <span className={following ? 'ep-edit-banner__chip' : 'ep-edit-banner__chip is-own'} role="status">
-                {following ? 'Following the organization' : 'Your own Overview'}
-              </span>
-            )}
           </div>
-        )}
-        {scope === 'mine' && following && (
-          <p className="ep-edit-banner__note">Any change here starts your own Overview; the organization's stays as it is.</p>
         )}
       </div>
       {/* Figma: a 116px Dodger Blue line drawing of a widget and a pencil. */}
@@ -96,9 +86,10 @@ export function EditBanner({ scope, onScope, following, onWidgets }: EditBannerP
         <path d="M44 59.5h-3.5V56l11-11a2.5 2.5 0 0 1 3.5 0v0a2.5 2.5 0 0 1 0 3.5l-11 11Z" />
         <path d="m49.5 47.5 3.5 3.5" />
       </svg>
-      <button type="button" className="ep-edit-banner__widgets" onClick={onWidgets}>
+      <button type="button" className="ep-edit-banner__widgets" onClick={onWidgets} aria-label={`Widgets, ${widgetCount} on`}>
         <Icon name="plus-in-circle" size={14} />
         Widgets
+        <span className="ep-edit-banner__count" aria-hidden>{widgetCount}</span>
       </button>
     </section>
   );
@@ -387,6 +378,7 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
           >
             <div className="ep-edit-item__bar">
               <span className="ep-edit-grip" aria-hidden><Icon name="dragable" size={20} /></span>
+              <span className="ep-edit-item__title">{label}</span>
               <CloseButton label={`Remove ${label}`} className="ep-edit-close--bar" onClick={() => onChange(removeCard(layout, card))} />
             </div>
             {/* The widget fills the card under its 52px bar (and inside the 1px borders). */}
