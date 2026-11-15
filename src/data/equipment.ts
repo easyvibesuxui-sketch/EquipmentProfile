@@ -37,7 +37,7 @@ export const equipment = {
 };
 
 export const profileTabs = [
-  'Overview', 'Specifications', 'Documents', '?Dependence?', 'Images', 'Utilization', 'Movement', 'Fuel',
+  'Overview', 'Specifications', 'Upkeep', '?Dependence?', 'Images', 'Utilization', 'Movement', 'Fuel',
   'Telemetry', 'Fault Codes', 'Maintenance', 'History', 'Tacho',
 ];
 
@@ -50,14 +50,45 @@ export const specifications = {
     ['Max Travel Speed', '32 Km/h'],
     ['Power', '7300 hp'],
   ] as Array<[string, string]>,
-  more: 3,
+  more: 12,
   /** Every specification, grouped, for the Specifications drawer; the card shows the first six rows above. */
-  groups: [
-    { title: 'Engine', rows: [['Displacement', '4'], ['Power', '7300 hp'], ['Fuel tank', '620 l']] },
-    { title: 'Performance', rows: [['Lifting Capacity', '3000'], ['Max Lifting Height', '3000'], ['Max Travel Speed', '32 Km/h'], ['Bucket capacity', '1.6 m³']] },
-    { title: 'Dimensions and weight', rows: [['Dimensions', '2.41m x 2.44m x 5.3m'], ['Operating weight', '34 500 kg']] },
-  ] as InfoGroup[],
+  groups: [] as InfoGroup[],
 };
+
+/** Every technical specification (the Specifications tab, and the groups of the Overview drawer). */
+export const specList: Array<{ group: string; label: string; value: string; unit?: string }> = [
+  { group: 'Engine', label: 'Displacement', value: '4' },
+  { group: 'Engine', label: 'Power', value: '7300', unit: 'hp' },
+  { group: 'Engine', label: 'Fuel tank', value: '620', unit: 'l' },
+  { group: 'Engine', label: 'Engine model', value: 'Cat C9.3B' },
+  { group: 'Engine', label: 'Emission standard', value: 'Stage V' },
+  { group: 'Performance', label: 'Lifting Capacity', value: '3000' },
+  { group: 'Performance', label: 'Max Lifting Height', value: '3000' },
+  { group: 'Performance', label: 'Max Travel Speed', value: '32', unit: 'km/h' },
+  { group: 'Performance', label: 'Bucket capacity', value: '1.6', unit: 'm³' },
+  { group: 'Performance', label: 'Max digging depth', value: '7.4', unit: 'm' },
+  { group: 'Performance', label: 'Max reach', value: '11.2', unit: 'm' },
+  { group: 'Performance', label: 'Swing speed', value: '9.5', unit: 'rpm' },
+  { group: 'Hydraulics', label: 'Hydraulic pressure', value: '350', unit: 'bar' },
+  { group: 'Hydraulics', label: 'Hydraulic flow', value: '2 × 280', unit: 'l/min' },
+  { group: 'Dimensions and weight', label: 'Dimensions', value: '2.41 × 2.44 × 5.3', unit: 'm' },
+  { group: 'Dimensions and weight', label: 'Operating weight', value: '34 500', unit: 'kg' },
+  { group: 'Dimensions and weight', label: 'Track width', value: '600', unit: 'mm' },
+  { group: 'Dimensions and weight', label: 'Ground pressure', value: '0.58', unit: 'bar' },
+];
+specifications.more = specList.length - specifications.rows.length;
+specifications.groups = [...new Set(specList.map((s) => s.group))].map((title) => ({
+  title,
+  rows: specList.filter((s) => s.group === title).map((s) => [s.label, s.unit ? `${s.value} ${s.unit}` : s.value] as [string, string]),
+}));
+
+/** The documents of the Specifications tab: the technical slots and other uploaded files. */
+export const otherDocuments = [
+  { name: 'Operating-manual-ZX350LC.pdf', size: '4.8 MB' },
+  { name: 'CE-declaration.pdf', size: '312 KB' },
+  { name: 'Insurance-certificate-2025.pdf', size: '540 KB' },
+  { name: 'Purchase-invoice.pdf', size: '1.1 MB' },
+];
 
 /** `null` renders as "--" in the muted colour, as in Figma. */
 export const identifications: Array<[string, string | null]> = [

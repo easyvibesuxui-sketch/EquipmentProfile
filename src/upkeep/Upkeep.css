@@ -1,0 +1,183 @@
+/* Upkeep tab (Figma 14948:43661): cards of 450, 24px between rows; Upcoming 355 wide beside Past (10px apart). */
+.ep-upkeep { display: flex; flex-direction: column; gap: var(--syn-space-24); }
+.ep-upkeep__inspections { display: grid; grid-template-columns: minmax(300px, 355px) minmax(0, 1fr); gap: 10px; }
+
+/* "Witget With Slot": white, radius 12, padding 12/12/16, 8px under the header. */
+.ep-upkeep-card.syn-card { gap: var(--syn-space-8); min-height: 450px; box-sizing: border-box; padding-bottom: var(--syn-space-16); }
+.ep-upkeep-card .syn-card__header { min-height: 24px; }
+/* Header buttons: 24px, Cultured edge, radius 2 (mail); the Candy Apple add circle. */
+.ep-upkeep__mail.syn-icon-button { border-color: var(--syn-color-grey-cultured); border-radius: var(--syn-radius-xs); }
+.ep-upkeep__mail.is-on.syn-icon-button { border-color: var(--syn-color-black-eerie-black); background: var(--syn-color-black-eerie-black); color: var(--syn-color-white-white); }
+.ep-upkeep__add.syn-icon-button { color: var(--syn-color-primary-candy-apple); }
+.ep-upkeep__add.syn-icon-button:hover { background: rgb(255 25 0 / 0.08); }
+
+/* Smoke well under the header (Workshop, Upcoming). */
+.ep-upkeep__well { display: flex; flex: 1; flex-direction: column; min-height: 0; border-radius: 0 0 var(--syn-radius-widget) var(--syn-radius-widget); background: var(--syn-color-light-smoke); }
+.ep-upkeep__workshop .ep-upkeep__well { align-items: center; justify-content: center; border-radius: var(--syn-radius-element); }
+.ep-upkeep__workshop .syn-empty { border-color: transparent; }
+
+/* Upcoming Technical inspection: items share the well, 16px apart; Title 3 name, Date (Body XS, Silver Chalice). */
+.ep-upcoming__well { padding: var(--syn-space-4); }
+.ep-upcoming__well > .syn-empty { margin: auto; }
+.ep-upcoming__list { display: flex; flex: 1; flex-direction: column; gap: var(--syn-space-16); margin: 0; padding: 0; list-style: none; }
+.ep-upcoming__item {
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--syn-space-16);
+  min-height: 160px;
+  padding: var(--syn-space-12);
+  border: 1px solid var(--syn-color-grey-cultured);
+  border-radius: var(--syn-radius-element);
+  background: var(--syn-surface-default);
+}
+.ep-upcoming__top { display: flex; align-items: flex-start; gap: var(--syn-space-24); }
+.ep-upcoming__name { flex: 1; margin: 0; color: var(--syn-text-primary); font: var(--syn-type-titles-title-3); }
+.ep-upcoming__date { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; gap: var(--syn-space-8); }
+.ep-upcoming__label { color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+/* The checklist art at the bottom right, in Cultured. */
+.ep-upcoming__art { position: absolute; right: var(--syn-space-12); bottom: var(--syn-space-12); color: var(--syn-color-grey-cultured); pointer-events: none; }
+
+/* Date chip: Cultured edge, radius 12, padding 4/12/4/8, Body S 2; Honey once late. */
+.ep-due {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--syn-space-4) var(--syn-space-12) var(--syn-space-4) var(--syn-space-8);
+  border: 1px solid var(--syn-color-grey-cultured);
+  border-radius: var(--syn-radius-widget);
+  background: var(--syn-surface-default);
+  color: var(--syn-text-primary);
+  font: var(--syn-type-text-body-s-2);
+  white-space: nowrap;
+}
+.ep-due.is-late { border-color: var(--syn-color-pending-honey); }
+.ep-due__icon, .ep-due__late { color: var(--syn-color-pending-honey); }
+
+/* Tables (Figma "Table"): a 32px Smoke header (Regular 12), rows of 48 on a Smoke well, 2px apart, Body S 2. */
+.ep-past.syn-card, .ep-maint.syn-card { min-width: 0; }
+.ep-table-wrap { flex: 1; min-width: 0; border-radius: var(--syn-radius-element); background: var(--syn-color-light-smoke); }
+.ep-table-wrap:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.ep-table { width: 100%; border-spacing: 0 2px; padding: 0 var(--syn-space-8) var(--syn-space-8); table-layout: fixed; color: var(--syn-text-primary); font: var(--syn-type-text-body-s-2); }
+.ep-table thead th {
+  height: 32px;
+  padding: 0 var(--syn-space-24) 0 var(--syn-space-16);
+  background: var(--syn-color-light-smoke);
+  font: 400 12px/15px var(--syn-font-family-body);
+  text-align: left;
+  white-space: nowrap;
+}
+.ep-table thead th:first-child { padding-left: var(--syn-space-24); }
+.ep-table td { height: 48px; padding: 0 var(--syn-space-24) 0 var(--syn-space-16); background: var(--syn-surface-default); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ep-table td:first-child { border-radius: var(--syn-radius-element) 0 0 var(--syn-radius-element); }
+.ep-table td:last-child { border-radius: 0 var(--syn-radius-element) var(--syn-radius-element) 0; }
+.ep-table tbody tr:hover td { background: var(--syn-color-light-snow); }
+.ep-table .w-64 { width: 64px; padding: 0; }
+.ep-table .w-120 { width: 120px; }
+.ep-table .w-220 { width: 220px; }
+.ep-table td.ep-table__actions { padding: 0 var(--syn-space-12); overflow: visible; text-align: center; }
+.ep-cell-clip { display: block; overflow: hidden; text-overflow: ellipsis; }
+.ep-sr { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.ep-table .ep-menu { display: inline-flex; }
+
+/* Past: Successful in Mantis with the check; Failed in Silver Chalice with the Honey cross. */
+.ep-status { display: inline-flex; align-items: center; gap: 6px; }
+/* Status needs its full width: the 120 column keeps 16px on the left only. */
+.ep-past__table td:nth-child(3) { padding-right: 0; overflow: visible; }
+.ep-status.is-ok { color: var(--syn-color-success-mantis); }
+.ep-status.is-failed { color: var(--syn-text-muted); }
+.ep-status.is-failed .syn-icon { color: var(--syn-color-pending-honey); }
+/* File: the Amber "PDF" chip; none yet: a Cultured chip with the add circle. */
+.ep-pdf, .ep-pdf-add { display: inline-flex; align-items: center; justify-content: center; height: 24px; border-radius: var(--syn-radius-widget); }
+.ep-pdf { padding: 0 var(--syn-space-8); background: var(--syn-color-secondary-amber); color: var(--syn-color-white-white); font: var(--syn-type-text-body-xs); text-decoration: none; }
+.ep-pdf:hover { filter: brightness(0.94); }
+.ep-pdf:focus-visible, .ep-pdf-add:focus-within { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.ep-pdf-add { position: relative; width: 44px; background: var(--syn-color-grey-cultured); color: var(--syn-text-muted); cursor: pointer; }
+.ep-pdf-add:hover { color: var(--syn-text-primary); }
+
+/* Maintenance: Upcoming / History (120 x 24, radius 8, Medium 10), then the table with a white header. */
+.ep-switcher.syn-segmented { align-self: flex-start; gap: var(--syn-space-4); padding: var(--syn-space-4); border-radius: var(--syn-radius-element); background: var(--syn-surface-default); }
+.ep-switcher .syn-segmented__option { width: 120px; min-width: 0; height: 24px; border-radius: var(--syn-radius-element); font: var(--syn-type-text-caption-1); }
+.ep-maint .ep-table-wrap { background: none; }
+.ep-maint__table { padding: 0; }
+.ep-maint__table thead th { height: 42px; background: var(--syn-surface-default); }
+.ep-maint__table tbody { background: var(--syn-color-light-smoke); }
+.ep-maint__name { display: inline-flex; align-items: center; gap: 6px; }
+.ep-maint__left { display: inline-flex; align-items: center; gap: 10px; }
+.ep-amount__unit { color: var(--syn-text-muted); }
+.ep-due.is-bare { padding-left: var(--syn-space-8); }
+
+/* The resolve circle: a dashed Silver Chalice ring; on hover the check shows. Resolved: Mantis with a white check. */
+.ep-resolve-check, .ep-resolved-check { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: var(--syn-radius-full); }
+.ep-resolve-check { padding: 0; border: 1px dashed var(--syn-color-secondary-silver-chalince); background: none; color: transparent; cursor: pointer; transition: color var(--syn-duration-fast), border-color var(--syn-duration-fast); }
+.ep-resolve-check:hover, .ep-resolve-check:focus-visible { border-style: solid; border-color: var(--syn-color-success-mantis); color: var(--syn-color-success-mantis); }
+.ep-resolve-check:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.ep-resolved-check { background: var(--syn-color-success-mantis); color: var(--syn-color-white-white); }
+
+/* Drawers: the field cards 24px apart, 32 / 16 from the edges (Figma "Status Line"). */
+.ep-form { display: flex; flex-direction: column; gap: var(--syn-space-24); padding: var(--syn-space-24) var(--syn-space-16) var(--syn-space-12) var(--syn-grid-margin); }
+.ep-form-section__muted { color: var(--syn-text-muted); }
+.ep-count .syn-field__box { border-radius: var(--syn-radius-xs); }
+.ep-count-unit { color: var(--syn-text-muted); font: 500 12px/normal var(--syn-font-family-body); }
+.ep-rule-remove { display: inline-flex; padding: 2px; border: 0; border-radius: var(--syn-radius-xs); background: none; color: var(--syn-text-muted); cursor: pointer; }
+.ep-rule-remove:hover { color: var(--syn-text-primary); }
+.ep-rule-remove:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+/* "Add one time rule": a 36px dashed pill, Medium 14. */
+.ep-add-rule {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--syn-space-8);
+  height: 36px;
+  padding: 0 var(--syn-space-16);
+  border: 1px dashed var(--syn-color-secondary-silver-chalince);
+  border-radius: 36px;
+  background: var(--syn-surface-default);
+  color: var(--syn-text-primary);
+  font: 500 14px/normal var(--syn-font-family-body);
+  cursor: pointer;
+}
+.ep-add-rule:hover { border-color: var(--syn-border-strong); }
+.ep-add-rule:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+
+/* "For Working hours": a white tab (Title 6) over a Smoke box with Notify me before, Board and Board Status. */
+.ep-notify { display: flex; flex-direction: column; }
+.ep-notify__head { margin: 0; padding: var(--syn-space-8) var(--syn-space-12); border: 1px solid var(--syn-color-grey-cultured); border-radius: var(--syn-radius-widget) var(--syn-radius-widget) 0 0; background: var(--syn-surface-default); font: var(--syn-type-titles-title-6); }
+.ep-notify__body { display: flex; flex-direction: column; gap: var(--syn-space-16); padding: var(--syn-space-12); border: 2px solid var(--syn-color-grey-cultured); border-top: 0; border-radius: 0 0 var(--syn-radius-widget) var(--syn-radius-widget); background: var(--syn-color-light-smoke); }
+.ep-notify__pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--syn-space-16); }
+.ep-notify__field { display: flex; flex-direction: column; gap: var(--syn-space-8); min-width: 0; }
+.ep-notify__label { font: var(--syn-type-titles-title-6); }
+
+/* No Telematic Device banner (Figma 16330:7955). */
+.ep-notel { display: flex; flex-direction: column; gap: var(--syn-space-16); padding: var(--syn-space-16); border: 1px solid var(--syn-color-grey-cultured); border-radius: var(--syn-radius-widget); background: var(--syn-surface-default); }
+.ep-notel__top, .ep-notel__bottom { display: flex; gap: var(--syn-space-16); }
+.ep-notel__art { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: var(--syn-radius-element); background: var(--syn-color-grey-cultured); color: var(--syn-color-secondary-silver-chalince); }
+.ep-notel__text, .ep-notel__fact, .ep-notel__action { border: 1px solid var(--syn-color-grey-cultured); border-radius: var(--syn-radius-widget); }
+.ep-notel__text { display: flex; flex: 1; flex-direction: column; justify-content: center; gap: var(--syn-space-4); padding: var(--syn-space-8) var(--syn-space-12); }
+.ep-notel__title { margin: 0; font: var(--syn-type-titles-title-5); }
+.ep-notel__body { margin: 0; color: var(--syn-text-muted); font: var(--syn-type-text-caption-1); }
+.ep-notel__fact { display: flex; flex: 1; align-items: center; gap: var(--syn-space-8); margin: 0; padding: var(--syn-space-12); font: var(--syn-type-text-caption-1); }
+.ep-notel__fact .syn-icon { flex: none; }
+.ep-notel__action { display: flex; align-items: center; padding: var(--syn-space-8); }
+
+/* Resolve Maintenance (Figma 16267:83506): centred Body M 2 line, the Interval card, two full-width buttons. */
+.ep-resolve__body { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+.ep-resolve__text { max-width: 300px; margin: 0 auto; font: var(--syn-type-text-body-m-2); text-align: center; }
+.ep-resolve__actions { display: flex; flex-direction: column; gap: var(--syn-space-24); width: 100%; }
+.ep-resolve .syn-dialog__actions { padding: var(--syn-space-20) var(--syn-space-24) var(--syn-space-24) var(--syn-grid-margin); border-top: 1px solid var(--syn-color-grey-cultured); background: var(--syn-surface-default); }
+.ep-resolve .syn-dialog__actions > .ep-resolve__actions { flex: 1; }
+
+@media (max-width: 1100px) {
+  .ep-upkeep__inspections { grid-template-columns: minmax(0, 1fr); }
+  .ep-table-wrap { overflow-x: auto; }
+  .ep-past__table { min-width: 960px; }
+  .ep-maint__table { min-width: 720px; }
+}
+@media (max-width: 640px) {
+  .ep-choice__option { width: auto; flex: 1; }
+  .ep-choice { display: flex; }
+  .ep-notel__top, .ep-notel__bottom, .ep-notify__pair { flex-direction: column; grid-template-columns: 1fr; }
+  .ep-form { padding-left: var(--syn-space-16); }
+}

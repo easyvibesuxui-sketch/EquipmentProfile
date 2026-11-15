@@ -1,0 +1,40 @@
+/* Specifications tab (Figma 9275:39423). */
+.ep-specs { display: flex; flex-direction: column; gap: var(--syn-space-24); }
+.ep-specs-card.syn-card { gap: var(--syn-space-8); padding-bottom: var(--syn-space-16); }
+.ep-specs-card .syn-card__header { min-height: 24px; }
+.ep-specs__count { margin-left: 6px; color: var(--syn-text-muted); font: var(--syn-type-text-caption-1); }
+
+/* Four columns 12px apart, rows of 44 every 56; a row Title 5 label and value, the unit in Silver Chalice;
+   each other row Cultured. 8px inset in the card (Figma "Cards"). */
+.ep-specs__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--syn-space-12); margin: 0; padding: var(--syn-space-8); }
+.ep-spec { display: flex; align-items: center; gap: 10px; min-height: 44px; box-sizing: border-box; padding: var(--syn-space-16) var(--syn-space-8); border-radius: var(--syn-radius-element); background: var(--syn-surface-default); }
+.ep-spec:is(:nth-child(8n+5), :nth-child(8n+6), :nth-child(8n+7), :nth-child(8n+8)) { background: var(--syn-color-grey-cultured); }
+.ep-spec__label { flex: 1; min-width: 0; margin: 0; color: var(--syn-text-primary); font: var(--syn-type-titles-title-5); }
+.ep-spec__value { display: inline-flex; gap: 2px; margin: 0; color: var(--syn-text-primary); font: var(--syn-type-titles-title-5); white-space: nowrap; }
+.ep-spec__unit { color: var(--syn-text-muted); }
+
+/* Documents: cards of 436 x 213 in a column, 24px apart. */
+.ep-specs__docs { display: grid; grid-template-columns: minmax(0, 436px); gap: var(--syn-space-24); }
+.ep-docs.syn-card { height: 213px; box-sizing: border-box; }
+.ep-docs__slots { display: flex; flex: 1; flex-direction: column; gap: var(--syn-space-16); min-height: 0; }
+.ep-docs__slot { flex: 1; }
+.ep-docs__slots .ep-file { flex: 1; }
+.ep-docs__list { display: flex; flex-direction: column; gap: var(--syn-space-4); min-height: 0; margin: 0; padding: 0; overflow-y: auto; list-style: none; }
+.ep-docs__empty { margin: auto; color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+
+/* Fewer columns on smaller screens; the Cultured band follows the rows. */
+@media (max-width: 1280px) {
+  .ep-specs__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ep-spec:is(:nth-child(n)) { background: var(--syn-surface-default); }
+  .ep-spec:is(:nth-child(6n+4), :nth-child(6n+5), :nth-child(6n+6)) { background: var(--syn-color-grey-cultured); }
+}
+@media (max-width: 960px) {
+  .ep-specs__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ep-spec:is(:nth-child(n)) { background: var(--syn-surface-default); }
+  .ep-spec:is(:nth-child(4n+3), :nth-child(4n+4)) { background: var(--syn-color-grey-cultured); }
+}
+@media (max-width: 560px) {
+  .ep-specs__grid { grid-template-columns: minmax(0, 1fr); }
+  .ep-spec:is(:nth-child(n)) { background: var(--syn-surface-default); }
+  .ep-spec:nth-child(2n) { background: var(--syn-color-grey-cultured); }
+}

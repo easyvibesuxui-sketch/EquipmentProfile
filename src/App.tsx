@@ -5,6 +5,8 @@ import { ProfileHeader } from './profile/ProfileHeader';
 import { ProfileTabs } from './profile/ProfileTabs';
 import { OverviewTab } from './overview/OverviewTab';
 import { TelemetryTab } from './telemetry/TelemetryTab';
+import { SpecificationsTab } from './specifications/SpecificationsTab';
+import { UpkeepTab } from './upkeep/UpkeepTab';
 import { profileTabs } from './data/equipment';
 import {
   currentUser, defaultLayout, effectiveLayout, loadDraft, saveDraft, useViews, type Scope, type Views, type WidgetLayout,
@@ -123,7 +125,9 @@ export function App() {
               layout={draftLayout ?? effectiveLayout(views)} editing={editing} onChange={change}
               onEdit={() => { edit(); setManaging(true); }} onAddWidget={() => setManaging(true)}
             />
-          ) : tab === 'Telemetry' ? <TelemetryTab /> : <p className="ep-profile__placeholder">{tab} is not designed yet.</p>}
+          ) : tab === 'Telemetry' ? <TelemetryTab />
+            : tab === 'Specifications' ? <SpecificationsTab />
+              : tab === 'Upkeep' ? <UpkeepTab /> : <p className="ep-profile__placeholder">{tab} is not designed yet.</p>}
         </div>
         {editing && (
           <EditBar
