@@ -28,6 +28,8 @@
   flex-direction: column;
   width: var(--ep-sidebar-width);
   height: 100vh;
+  /* Phones: the visible height, without the area under the browser's bars. */
+  height: 100dvh;
   padding: 0 var(--syn-space-10) var(--syn-space-40);
   background: var(--syn-surface-inverse);
   color: var(--ep-nav-ink);

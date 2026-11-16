@@ -30,8 +30,14 @@
 @media (max-width: 639px) {
   .ep-header__col-main, .ep-header__col-device, .ep-col--half, .ep-col--wide, .ep-col--full { --span: 12 !important; }
   .ep-shell__main { padding: var(--syn-space-16); }
-  .ep-nav { width: 48px; padding: 0 var(--syn-space-2) var(--syn-space-24); }
+  .ep-nav { width: 48px; padding: 0 var(--syn-space-2) var(--syn-space-16); }
   .ep-nav__item { width: 44px; }
+  /* Tighter spacing so the whole menu, Settings included, fits a phone's height. */
+  .ep-nav__opener + .ep-nav__list { margin-top: var(--syn-space-16); }
+  .ep-nav__list, .ep-nav__list--end, .ep-nav__separator + .ep-nav__list { gap: var(--syn-space-8); }
+  .ep-nav__separator { margin-top: var(--syn-space-24); }
+  .ep-nav__separator + .ep-nav__list { margin-top: var(--syn-space-16); }
+  .ep-nav__list--end { padding-top: var(--syn-space-16); }
   .ep-topbar { padding: var(--syn-space-4) var(--syn-space-16); }
   .ep-topbar__brand { display: none; }
   .ep-topbar__actions { gap: var(--syn-space-12); }
@@ -72,3 +78,9 @@
   .ep-profile .syn-grid > .syn-grid__item { grid-column: 1 / -1; }
 }
 @media (max-width: 359px) { .ep-widget--split .syn-segmented__option { min-width: 88px; padding-inline: var(--syn-space-8); } }
+
+/* Short screens (a phone on its side): when the menu is taller than the screen it scrolls on its own. */
+@media (max-height: 720px) {
+  .ep-nav { overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; }
+  .ep-nav::-webkit-scrollbar { display: none; }
+}
