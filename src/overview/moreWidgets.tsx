@@ -12,16 +12,18 @@ import {
 
 
 /** An info card: its rows, and the chevron (shown on hover) that opens them in a drawer. */
-export function InfoCard({ title, rows, open, children, className, groups }: {
+export function InfoCard({ title, rows, open, children, className, groups, onOpen }: {
   title: string; rows: Array<[string, string | null]>; open: string; children?: ReactNode; className?: string; groups?: InfoGroup[];
+  /** Opens the card's own drawer (an edit drawer) instead of the read-only values. */
+  onOpen?: () => void;
 }) {
   const [shown, setShown] = useState(false);
   return (
     <>
-      <Card title={title} actions={<OpenLink label={open} onClick={() => setShown(true)} />} className={className ? `ep-widget ${className}` : 'ep-widget'}>
+      <Card title={title} actions={<OpenLink label={open} onClick={onOpen ?? (() => setShown(true))} />} className={className ? `ep-widget ${className}` : 'ep-widget'}>
         <div className="ep-info__body">{children ?? <InfoList rows={rows} />}</div>
       </Card>
-      <InfoDrawer open={shown} onClose={() => setShown(false)} title={title} groups={groups ?? [{ title, rows }]} />
+      {!onOpen && <InfoDrawer open={shown} onClose={() => setShown(false)} title={title} groups={groups ?? [{ title, rows }]} />}
     </>
   );
 }

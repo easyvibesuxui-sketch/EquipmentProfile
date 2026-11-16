@@ -1,0 +1,66 @@
+/* Specifications edit drawers (owner's screenshots): BGL information and Technical specifications. */
+.ep-specd__body { display: flex; flex-direction: column; gap: var(--syn-space-16); min-height: 100%; padding: var(--syn-space-16) var(--syn-space-16) var(--syn-space-12) var(--syn-space-16); box-sizing: border-box; }
+.ep-specd__caption { display: block; margin-bottom: var(--syn-space-8); color: var(--syn-text-muted); font: var(--syn-type-text-caption-2); }
+
+/* BGL: the year (radios in a row) beside the BGL number. */
+.ep-specd__bgl { display: grid; grid-template-columns: 1fr 1fr; gap: var(--syn-space-24); align-items: start; }
+.ep-specd__bgl .syn-field { max-width: 180px; }
+
+/* The Smoke well under the fields: BGL Specifications, or the parameter cards. */
+.ep-specd__well { position: relative; display: flex; flex: 1; flex-direction: column; gap: var(--syn-space-8); min-height: 330px; padding: var(--syn-space-8); border-radius: var(--syn-radius-element); background: var(--syn-color-light-smoke); }
+.ep-specd__well > .syn-empty { margin: auto; border-color: transparent; }
+.ep-specd__well-head { margin: 0; padding: var(--syn-space-4); font: var(--syn-type-titles-title-6); }
+.ep-specd__count { margin-left: 4px; color: var(--syn-text-muted); font: var(--syn-type-text-caption-2); }
+
+/* Dimensions: Weight with Kg / Ton, then Length, Width and Height. */
+.ep-specd__dims { display: flex; flex-direction: column; gap: var(--syn-space-12); }
+.ep-specd__dims .ep-specd__caption { margin-bottom: 0; }
+.ep-specd__weight { display: flex; align-items: center; gap: var(--syn-space-8); }
+.ep-specd__weight .ep-num { width: calc((100% - 2 * var(--syn-space-12)) / 3); }
+.ep-specd__units { display: inline-flex; gap: var(--syn-space-4); }
+.ep-specd__units button { min-width: 28px; height: 28px; padding: 0 var(--syn-space-6); border: 0; border-radius: var(--syn-radius-xs); background: none; color: var(--syn-text-primary); font: var(--syn-type-text-caption-1); cursor: pointer; }
+.ep-specd__units button[aria-checked='true'] { background: var(--syn-color-black-eerie-black); color: var(--syn-color-white-white); }
+.ep-specd__units button:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.ep-specd__lwh { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--syn-space-12); }
+
+/* Number field: the unit, then the up / down arrows stacked at the right. */
+.ep-num__unit { color: var(--syn-text-muted); font: var(--syn-type-text-body-s-2); }
+.ep-num__steps { display: inline-flex; flex: none; flex-direction: column; margin-left: var(--syn-space-4); }
+.ep-num__steps button { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 12px; padding: 0; border: 0; background: none; color: var(--syn-text-muted); cursor: pointer; }
+.ep-num__steps button:hover:not(:disabled) { color: var(--syn-text-primary); }
+.ep-num__steps button:disabled { opacity: 0.35; cursor: default; }
+
+/* Sync line: Last sync date, the LECTURA button, the Candy Apple add circle. */
+.ep-specd__sync { display: flex; align-items: center; justify-content: flex-end; gap: var(--syn-space-12); padding: var(--syn-space-4); }
+.ep-specd__synced { font: var(--syn-type-text-caption-1); }
+.ep-specd__lectura { display: inline-flex; align-items: center; gap: var(--syn-space-6); height: 24px; padding: 0 var(--syn-space-8); border: 1px solid var(--syn-color-grey-cultured); border-radius: var(--syn-radius-xs); background: var(--syn-surface-default); color: var(--syn-text-primary); cursor: pointer; }
+.ep-specd__lectura:hover:not(:disabled) { border-color: var(--syn-border-strong); }
+.ep-specd__lectura:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.ep-specd__lectura-name { color: #1d3d8f; font: 800 9px/1 var(--syn-font-family-body); letter-spacing: 0.06em; }
+.ep-specd__lectura.is-syncing .syn-icon { animation: ep-spin 0.9s linear infinite; }
+@keyframes ep-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .ep-specd__lectura.is-syncing .syn-icon { animation: none; } }
+
+/* Parameter cards: two columns; the name (Title 5), the value with arrows, its unit, the bin. A new one is ringed. */
+.ep-specd__params { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--syn-space-8); margin: 0; padding: 0; list-style: none; transition: filter var(--syn-duration-fast); }
+.ep-specd__params.is-behind { filter: blur(3px); opacity: 0.6; }
+.ep-specd__param { display: flex; flex-direction: column; gap: var(--syn-space-8); padding: var(--syn-space-12) var(--syn-space-8); border: 1px solid transparent; border-radius: var(--syn-radius-element); background: var(--syn-surface-default); }
+.ep-specd__param.is-fresh { border-color: rgb(255 25 0 / 0.25); animation: ep-fresh 2.4s ease-out forwards; }
+@keyframes ep-fresh { 70% { border-color: rgb(255 25 0 / 0.25); } 100% { border-color: transparent; } }
+.ep-specd__param-name { margin: 0; font: var(--syn-type-titles-title-5); }
+.ep-specd__param-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(72px, 0.6fr) auto; align-items: center; gap: var(--syn-space-12); }
+
+/* Add parameter: a white panel over the cards (which blur), Key / Value / Unit, Discard and Add. */
+.ep-specd__add { position: relative; z-index: 2; display: flex; flex-direction: column; gap: var(--syn-space-12); padding: var(--syn-space-12) var(--syn-space-8); border-radius: var(--syn-radius-element); background: var(--syn-surface-default); box-shadow: var(--syn-shadow-default); }
+.ep-specd__add-title { margin: 0; font: var(--syn-type-titles-title-5); }
+.ep-specd__add-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--syn-space-16); }
+.ep-specd__add-field { display: flex; flex-direction: column; gap: var(--syn-space-4); }
+.ep-specd__add-label { font: var(--syn-type-titles-title-6); }
+.ep-specd__add-actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--syn-space-32); }
+.ep-specd__add-actions .syn-button { min-width: 140px; }
+
+@media (max-width: 640px) {
+  .ep-specd__bgl, .ep-specd__lwh, .ep-specd__add-fields, .ep-specd__params { grid-template-columns: minmax(0, 1fr); }
+  .ep-specd__weight .ep-num { width: 100%; }
+  .ep-specd__sync { flex-wrap: wrap; }
+}
