@@ -58,7 +58,7 @@
 
 /* Tables (Figma "Table"): a 32px Smoke header (Regular 12), rows of 48 on a Smoke well, 2px apart, Body S 2. */
 .ep-past.syn-card, .ep-maint.syn-card { min-width: 0; }
-.ep-table-wrap { flex: 1; min-width: 0; border-radius: var(--syn-radius-element); background: var(--syn-color-light-smoke); }
+.ep-table-wrap { position: relative; flex: 1; min-width: 0; border-radius: var(--syn-radius-element); background: var(--syn-color-light-smoke); }
 .ep-table-wrap:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
 .ep-table { width: 100%; border-spacing: 0 2px; padding: 0 var(--syn-space-8) var(--syn-space-8); table-layout: fixed; color: var(--syn-text-primary); font: var(--syn-type-text-body-s-2); }
 .ep-table thead th {
@@ -176,7 +176,10 @@
   .ep-maint__table { min-width: 720px; }
 }
 @media (max-width: 640px) {
-  .ep-choice__option { width: auto; flex: 1; }
+  /* Phones: cards take their content's height; an empty Workshop needs no 450px. */
+  .ep-upkeep-card.syn-card { min-height: 0; }
+  .ep-upkeep__workshop .ep-upkeep__well { min-height: 200px; }
+  .ep-choice__option { width: auto; flex: 1; padding: 0 var(--syn-space-8); white-space: nowrap; }
   .ep-choice { display: flex; }
   .ep-notel__top, .ep-notel__bottom, .ep-notify__pair { flex-direction: column; grid-template-columns: 1fr; }
   .ep-form { padding-left: var(--syn-space-16); }
