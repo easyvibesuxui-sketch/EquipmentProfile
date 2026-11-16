@@ -104,10 +104,7 @@
 /* Maintenance: Upcoming / History (120 x 24, radius 8, Medium 10), then the table with a white header. */
 .ep-switcher.syn-segmented { align-self: flex-start; gap: var(--syn-space-4); padding: var(--syn-space-4); border-radius: var(--syn-radius-element); background: var(--syn-surface-default); }
 .ep-switcher .syn-segmented__option { width: 120px; min-width: 0; height: 24px; border-radius: var(--syn-radius-element); font: var(--syn-type-text-caption-1); }
-.ep-maint .ep-table-wrap { background: none; }
-.ep-maint__table { padding: 0; }
-.ep-maint__table thead th { height: 42px; background: var(--syn-surface-default); }
-.ep-maint__table tbody { background: var(--syn-color-light-smoke); }
+/* The table looks like Past Technical inspection's (owner's comment): Smoke well and header, rows 2px apart. */
 .ep-maint__name { display: inline-flex; align-items: center; gap: 6px; }
 .ep-maint__left { display: inline-flex; align-items: center; gap: 10px; }
 .ep-amount__unit { color: var(--syn-text-muted); }

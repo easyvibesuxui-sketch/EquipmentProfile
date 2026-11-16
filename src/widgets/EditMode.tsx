@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
 import { Button, Icon, Tooltip } from '@syn/design-system';
 import {
-  MAX_ROWS, MAX_SPAN, MIN_ROWS, MIN_SPAN, ROW_GAP, ROW_HEIGHT, fitOf, rowsOf, rowsToHeight, moveCard, removeCard, setHeight, setSpan, spanOf, stepCard, visibleCards,
+  MAX_ROWS, MAX_SPAN, ROW_GAP, ROW_HEIGHT, fitOf, minRowsOf, minSpanOf, rowsOf, rowsToHeight, moveCard, removeCard, setHeight, setSpan, spanOf, stepCard, visibleCards,
   type Scope, type WidgetLayout,
 } from './layout';
 import './EditMode.css';
@@ -245,8 +245,9 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
     if (!resize) return;
     const dx = changesWidth(resize.handle) ? e.clientX - resize.x : 0;
     const dy = changesHeight(resize.handle) ? e.clientY - resize.y : 0;
-    const span = Math.max(MIN_SPAN, Math.min(MAX_SPAN, Math.round((resize.width + dx + GAP) / (resize.col + GAP))));
-    const rows = Math.max(MIN_ROWS, Math.min(MAX_ROWS, Math.round((resize.height + dy + ROW_GAP) / ROW_STEP)));
+    // Never below the widget's Min Size (Manage Widgets preview).
+    const span = Math.max(minSpanOf(resize.card), Math.min(MAX_SPAN, Math.round((resize.width + dx + GAP) / (resize.col + GAP))));
+    const rows = Math.max(minRowsOf(resize.card), Math.min(MAX_ROWS, Math.round((resize.height + dy + ROW_GAP) / ROW_STEP)));
     setResize({ ...resize, dx, dy, span, rows });
   };
   const endResize = () => {
@@ -263,7 +264,10 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
     const height = rowsToHeight(resize.rows);
     // Wider than what is left of its row: the card wraps to the start of the next row on release.
     const wraps = resize.colStart + resize.span > MAX_SPAN;
-    const label = `${resize.span} / 12 columns · ${rowsText(resize.rows)}${wraps ? ' · moves to the next row' : ''}`;
+    // At the widget's Min Size, each dimension says so: it can go no smaller.
+    const minSpan = resize.span === minSpanOf(resize.card) ? ' (min)' : '';
+    const minRows = resize.rows === minRowsOf(resize.card) ? ' (min)' : '';
+    const label = `${resize.span} / 12 columns${minSpan} · ${rowsText(resize.rows)}${minRows}${wraps ? ' · moves to the next row' : ''}`;
     return { width, height, label, wraps };
   })();
 
@@ -273,10 +277,10 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
     if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); onChange(removeCard(layout, card)); setAnnounce(`${labelOf(card)} removed`); return; }
     if (e.shiftKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
       e.preventDefault();
-      const rows = Math.max(MIN_ROWS, Math.min(MAX_ROWS, rowsOf(layout, card) + (e.key === 'ArrowUp' ? -1 : 1)));
+      const rows = Math.max(minRowsOf(card), Math.min(MAX_ROWS, rowsOf(layout, card) + (e.key === 'ArrowUp' ? -1 : 1)));
       const next = setHeight(layout, card, rowsToHeight(rows));
       onChange(next);
-      setAnnounce(`${labelOf(card)}, ${rowsText(rows)} high`);
+      setAnnounce(`${labelOf(card)}, ${rowsText(rows)} high${rows === minRowsOf(card) ? ', the minimum' : ''}`);
       return;
     }
     if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
@@ -285,7 +289,7 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
     if (e.shiftKey) {
       const next = setSpan(layout, card, span + step);
       onChange(next);
-      setAnnounce(`${labelOf(card)}, ${spanOf(next, card)} of 12 columns`);
+      setAnnounce(`${labelOf(card)}, ${spanOf(next, card)} of 12 columns${spanOf(next, card) === minSpanOf(card) ? ', the minimum' : ''}`);
     } else {
       const next = stepCard(layout, card, step);
       onChange(next);
@@ -355,10 +359,10 @@ export function EditGrid({ layout, onChange, render, labelOf, onAdd }: GridProps
         const isResizing = resize?.card === card;
         const cls = ['ep-edit-item', 'syn-grid__item', 'ep-col', `ep-col--${fitOf(span)}`,
           dragging === card && 'is-dragging', isResizing && 'is-resizing'].filter(Boolean).join(' ');
-        // While resizing, the card follows the pointer (at least one column and one row).
+        // While resizing, the card follows the pointer but stops at its Min Size.
         const live = isResizing ? {
-          width: Math.max(resize.col, resize.width + resize.dx),
-          height: Math.max(ROW_HEIGHT, resize.height + resize.dy),
+          width: Math.max(minSpanOf(card) * resize.col + (minSpanOf(card) - 1) * GAP, resize.width + resize.dx),
+          height: Math.max(rowsToHeight(minRowsOf(card)), resize.height + resize.dy),
         } : undefined;
         return (
           <div

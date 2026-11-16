@@ -113,21 +113,28 @@ export function stepCard(layout: WidgetLayout, card: string, step: -1 | 1): Widg
 export const removeCard = (layout: WidgetLayout, card: string) =>
   setVisible(layout, card === CONNECTED ? layout.order.filter(isConnected) : [card], false);
 
-/** The card's width in columns: the Edit Mode width, else the registry default (Dependance: 3). */
+/** The widget's Min Size (registry): for the Dependance card, that of its rows (the connected entities). */
+const minSizeOf = (card: string) => (card === CONNECTED ? widgets.find((w) => w.category === 'connected') : widgetById.get(card))?.minSize;
+/** The narrowest a card may be, in columns: its Min Size boxes (a box is 3 columns), never under MIN_SPAN. */
+export const minSpanOf = (card: string) => Math.max(MIN_SPAN, (minSizeOf(card)?.boxes ?? 1) * 3);
+/** The lowest a card may be, in rows: its Min Size rows, never under MIN_ROWS. */
+export const minRowsOf = (card: string) => Math.max(MIN_ROWS, minSizeOf(card)?.rows ?? MIN_ROWS);
+
+/** The card's width in columns: the Edit Mode width, else the registry default (Dependance: 3); never below its minimum. */
 export const spanOf = (layout: WidgetLayout, card: string) =>
-  layout.spans[card] ?? (card === CONNECTED ? 3 : widgetById.get(card)?.size.span ?? MAX_SPAN);
+  Math.max(minSpanOf(card), layout.spans[card] ?? (card === CONNECTED ? 3 : widgetById.get(card)?.size.span ?? MAX_SPAN));
 
 export const setSpan = (layout: WidgetLayout, card: string, span: number): WidgetLayout => ({
   ...layout,
-  spans: { ...layout.spans, [card]: Math.max(MIN_SPAN, Math.min(MAX_SPAN, Math.round(span))) },
+  spans: { ...layout.spans, [card]: Math.max(minSpanOf(card), Math.min(MAX_SPAN, Math.round(span))) },
 });
 
 /** The rows a card takes when its height was never changed: its designed height on the row grid. */
 export const defaultRows = (card: string) => (card === CONNECTED ? 2 : widgetById.get(card)?.size.rows ?? 2);
-/** The rows a card takes on the grid: the height set in Edit Mode, else the designed one. */
+/** The rows a card takes on the grid: the height set in Edit Mode, else the designed one; never below its minimum. */
 export const rowsOf = (layout: WidgetLayout, card: string) => {
   const h = layout.heights[card];
-  return h ? heightToRows(h) : defaultRows(card);
+  return Math.max(minRowsOf(card), h ? heightToRows(h) : defaultRows(card));
 };
 
 /** The card's height in px, or undefined for its designed height. */
@@ -137,7 +144,7 @@ export const heightOf = (layout: WidgetLayout, card: string): number | undefined
 export function setHeight(layout: WidgetLayout, card: string, height: number | null): WidgetLayout {
   const heights = { ...layout.heights };
   if (height === null) delete heights[card];
-  else heights[card] = rowsToHeight(heightToRows(height));
+  else heights[card] = rowsToHeight(Math.max(minRowsOf(card), heightToRows(height)));
   return { ...layout, heights };
 }
 
