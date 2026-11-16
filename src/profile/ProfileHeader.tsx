@@ -83,6 +83,7 @@ export function ProfileHeader() {
               </div>
               <ActionMenu
                 label="Equipment actions"
+                compact
                 actions={[
                   { id: 'status', label: 'Update Status', icon: 'refresh-change' },
                   { id: 'archive', label: 'Archive equipment', icon: 'archive' },

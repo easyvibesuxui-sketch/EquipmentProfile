@@ -1,24 +1,61 @@
+import { useState, type ReactNode } from 'react';
 import { Card, FileItem, StatusBadge, type IconName } from '@syn/design-system';
 import { InfoList } from './widgets';
+import { InfoDrawer } from './InfoDrawer';
 import { OpenLink } from '../shared/OpenLink';
 import {
-  bglInformation, calculationType, documents, equipmentDetails, maintenance, technicalChecks, workshopOrders, type ScheduledItem,
+  bglInformation, calculationType, documents, equipmentDetails, maintenance, technicalChecks, workshopOrders,
+  type CalcRow, type InfoGroup, type ScheduledItem,
 } from '../data/equipment';
 
 /* Widgets that "Manage Widgets" can add to the Overview. They follow the existing 450px Overview cards. */
 
 
-function InfoCard({ title, rows, open }: { title: string; rows: Array<[string, string | null]>; open: string }) {
+/** An info card: its rows, and the chevron (shown on hover) that opens them in a drawer. */
+export function InfoCard({ title, rows, open, children, className, groups }: {
+  title: string; rows: Array<[string, string | null]>; open: string; children?: ReactNode; className?: string; groups?: InfoGroup[];
+}) {
+  const [shown, setShown] = useState(false);
   return (
-    <Card title={title} actions={<OpenLink label={open} />} className="ep-widget">
-      <div className="ep-info__body"><InfoList rows={rows} /></div>
-    </Card>
+    <>
+      <Card title={title} actions={<OpenLink label={open} onClick={() => setShown(true)} />} className={className ? `ep-widget ${className}` : 'ep-widget'}>
+        <div className="ep-info__body">{children ?? <InfoList rows={rows} />}</div>
+      </Card>
+      <InfoDrawer open={shown} onClose={() => setShown(false)} title={title} groups={groups ?? [{ title, rows }]} />
+    </>
   );
 }
 
 export const EquipmentDetailsWidget = () => <InfoCard title="Equipment Details" rows={equipmentDetails} open="Open equipment details" />;
-export const CalculationTypeWidget = () => <InfoCard title="Calculation type" rows={calculationType} open="Open calculation" />;
-export const BglWidget = () => <InfoCard title="BGL Information" rows={bglInformation} open="Open BGL information" />;
+export const BglWidget = () => <InfoCard title="BGL Information" rows={bglInformation} open="Open BGL information" className="ep-info-card--short" />;
+
+const calcText = (r: CalcRow) => (r.value === null ? null : r.unit ? `${r.value} ${r.unit}` : r.value);
+/** Calculation type (owner's screenshot): the labels in Eerie Black, each value with its unit in Silver Chalice,
+    and "Optional" over the optional rows. */
+export function CalculationTypeWidget() {
+  const row = (r: CalcRow) => (
+    <div key={r.label} className="ep-info__row">
+      <dt className="is-strong">{r.label}</dt>
+      <dd className={r.value === null ? 'is-empty' : undefined}>{r.value ?? '--'}{r.unit && <span className="ep-info__unit"> {r.unit}</span>}</dd>
+    </div>
+  );
+  return (
+    <InfoCard
+      title="Calculation type" open="Open calculation type"
+      rows={[...calculationType.rows, ...calculationType.optional].map((r) => [r.label, calcText(r)] as [string, string | null])}
+      groups={[
+        { title: 'Calculation type', rows: calculationType.rows.map((r) => [r.label, calcText(r)]) },
+        { title: 'Optional', rows: calculationType.optional.map((r) => [r.label, calcText(r)]) },
+      ]}
+    >
+      <dl className="ep-info">
+        {calculationType.rows.map(row)}
+        <div className="ep-info__row ep-info__heading" role="presentation"><dt>Optional</dt></div>
+        {calculationType.optional.map(row)}
+      </dl>
+    </InfoCard>
+  );
+}
 
 export function FilesWidget({ kind }: { kind: keyof typeof documents }) {
   const { title, files } = documents[kind];

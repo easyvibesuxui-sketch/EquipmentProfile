@@ -57,3 +57,11 @@
   white-space: nowrap;
 }
 .ep-menu__note .syn-icon { flex: none; }
+
+/* Compact (equipment header, owner's screenshot): a 200px panel; a long label wraps under itself with the icon at
+   its first line; the note is Caption (10px) over two lines. */
+.ep-menu--compact .ep-menu__panel { width: 200px; box-sizing: border-box; }
+.ep-menu--compact .ep-menu__item { align-items: flex-start; padding-right: var(--syn-space-24); font: var(--syn-type-text-body-s-2); white-space: normal; }
+.ep-menu--compact .ep-menu__item > span:last-child { padding-top: 1px; }
+.ep-menu--compact .ep-menu__note { align-items: flex-start; font: var(--syn-type-text-caption-2); white-space: normal; }
+.ep-menu--compact .ep-menu__note .syn-icon { margin-top: 1px; }

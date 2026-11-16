@@ -13,7 +13,7 @@ export interface MenuAction {
  * The "..." actions menu (WAI-ARIA menu button): Enter, Space or Down opens it, Up/Down/Home/End move,
  * Escape or a click outside closes it and returns focus to the button.
  */
-export function ActionMenu({ label, actions, note }: { label: string; actions: MenuAction[]; note?: ReactNode }) {
+export function ActionMenu({ label, actions, note, compact }: { label: string; actions: MenuAction[]; note?: ReactNode; compact?: boolean }) {
   const [open, setOpen] = useState(false);
   const baseId = `ep-menu-${useId()}`;
   const root = useRef<HTMLDivElement>(null);
@@ -49,7 +49,7 @@ export function ActionMenu({ label, actions, note }: { label: string; actions: M
   };
 
   return (
-    <div ref={root} className="ep-menu">
+    <div ref={root} className={compact ? 'ep-menu ep-menu--compact' : 'ep-menu'}>
       <IconButton
         ref={button}
         icon="dotshorizontal"

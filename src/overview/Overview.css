@@ -28,6 +28,11 @@
 .ep-info__row dt { color: var(--syn-text-muted); }
 .ep-info__row dd { margin: 0; text-align: right; overflow-wrap: break-word; /* the label wraps first; a code like a VIN breaks only if it cannot fit a line */ }
 .ep-info__row dd.is-empty { color: var(--syn-text-muted); }
+.ep-info__row dt.is-strong { color: var(--syn-text-primary); }
+.ep-info__unit { color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+.ep-info__heading dt { color: var(--syn-text-muted); }
+/* A short list (BGL Information) keeps its rows together at the top. */
+.ep-info-card--short .ep-info { flex: none; justify-content: flex-start; gap: var(--syn-space-16); }
 /* A 1/3 card near 1024px (content under 210px): each label sits over its value, so values keep one line. */
 .ep-info__body { container-type: inline-size; }
 @container (max-width: 209px) {

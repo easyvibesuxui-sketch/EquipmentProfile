@@ -1,8 +1,16 @@
 import { useState } from 'react';
 import { Card } from '@syn/design-system';
 import { FileRow, UploadField, type PickedFile } from '../shared/forms';
-import { otherDocuments, specList } from '../data/equipment';
+import { BglWidget, CalculationTypeWidget, EquipmentDetailsWidget, InfoCard } from '../overview/moreWidgets';
+import { identifications, otherDocuments, specList } from '../data/equipment';
 import './Specifications.css';
+
+/** Specific machine information as in the owner's screenshot: the identifiers, and Special Information (F/B/S). */
+const machineInfo: Array<[string, string | null]> = [
+  ['Inventory Number', identifications[0][1]],
+  ...identifications.slice(1, 4),
+  ['Special Information (F/B/S)', null],
+];
 
 /**
  * Specifications tab (Figma 9275:39423, in progress): every technical specification in four columns (each other
@@ -26,6 +34,14 @@ export function SpecificationsTab() {
           ))}
         </dl>
       </Card>
+
+      {/* Owner's screenshot: four info cards; the chevron at the top right shows on hover and opens the values. */}
+      <div className="ep-specs__cards">
+        <EquipmentDetailsWidget />
+        <InfoCard title="Specific machine information" rows={machineInfo} open="Open specific machine information" />
+        <CalculationTypeWidget />
+        <BglWidget />
+      </div>
 
       <div className="ep-specs__docs">
         <Card title="Technical documents" className="ep-specs-card ep-docs">

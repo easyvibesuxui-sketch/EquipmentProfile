@@ -298,30 +298,34 @@ export const location = {
   ],
 };
 
-/* Widgets that can be added from "Manage Widgets". Not in the Overview Figma yet: placeholder content. */
+/* Widgets that can be added from "Manage Widgets", and the Specifications tab cards (owner's screenshot): the fields
+   of the design, with this machine's values. */
 export const equipmentDetails: Array<[string, string | null]> = [
   ['Manufacturer', 'Caterpillar'],
   ['Model', 'ZX350LC-5N'],
-  ['Year of manufacture', '2013'],
+  ['Production year', '2013'],
   ['Category', 'Heavy Dozer'],
-  ['Operating weight', '34 500 kg'],
-  ['Purchase date', '12.03.2014'],
+  ['Title', '2013 Caterpillar ZX350LC-5N'],
+  ['Subtitle', null],
 ];
 
-export const calculationType: Array<[string, string | null]> = [
-  ['Calculation type', 'Internal rate'],
-  ['Billing unit', 'Day'],
-  ['Rate', '420,00 €'],
-  ['Cost centre', 'KST 4100'],
-  ['Valid from', '01.01.2026'],
-];
+/** How the machine is charged. A row's value and its unit (in Silver Chalice); "Optional" starts the optional part. */
+export interface CalcRow { label: string; value: string | null; unit?: string }
+export const calculationType: { rows: CalcRow[]; optional: CalcRow[] } = {
+  rows: [
+    { label: 'Operating hours', value: '52', unit: 'Euro' },
+    { label: 'Daily price', value: '420', unit: 'Euro' },
+    { label: 'Calculation basis', value: 'Operating hours' },
+  ],
+  optional: [
+    { label: 'if less than', value: '4', unit: 'h' },
+    { label: 'Charge with', value: '210', unit: 'Euro' },
+  ],
+};
 
 export const bglInformation: Array<[string, string | null]> = [
-  ['BGL number', 'D.1.12.0350'],
-  ['Characteristic size', '35 t'],
-  ['Average new value', '312 400 €'],
-  ['Depreciation and interest', '7 810 € / month'],
-  ['Repair costs', '4 060 € / month'],
+  ['BGL Number', 'D.1.12.0350'],
+  ['BGL Year', '2020'],
 ];
 
 export interface DocumentFile { name: string; meta: string; format: 'pdf' | 'doc' | 'xls' | 'jpg' }

@@ -13,6 +13,12 @@
 .ep-spec__value { display: inline-flex; gap: 2px; margin: 0; color: var(--syn-text-primary); font: var(--syn-type-titles-title-5); white-space: nowrap; }
 .ep-spec__unit { color: var(--syn-text-muted); }
 
+/* Info cards (owner's screenshot): four in a row, 24px apart, 450 high; no line under the list. */
+.ep-specs__cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--syn-space-24); }
+.ep-specs__cards .ep-info { padding-bottom: 0; border-bottom: 0; }
+@media (max-width: 1280px) { .ep-specs__cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .ep-specs__cards { grid-template-columns: minmax(0, 1fr); } }
+
 /* Documents: cards of 436 x 213 in a column, 24px apart. */
 .ep-specs__docs { display: grid; grid-template-columns: minmax(0, 436px); gap: var(--syn-space-24); }
 .ep-docs.syn-card { height: 213px; box-sizing: border-box; }
