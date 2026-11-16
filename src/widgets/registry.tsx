@@ -41,8 +41,41 @@ export interface WidgetDef {
   render?: () => ReactNode;
   /** Manage Widgets preview (Overview widgets, Figma 17386:59329): what the widget shows, and its minimum size. */
   description?: string;
-  minSize?: string;
+  /** The smallest the widget may be: boxes across (a box is 3 of the 12 columns) by rows of 213px. */
+  minSize: MinSize;
 }
+
+/** Figma "Min Size 2/1 box": boxes across / rows down. */
+export interface MinSize { boxes: 1 | 2 | 3 | 4; rows: number }
+export const minSizeLabel = (m: MinSize) => `${m.boxes}/${m.rows} box`;
+
+/**
+ * Minimum sizes. Info lists need two rows to show their lines; tables and the map need two boxes across to keep
+ * their columns; charts need two boxes across but read at one row; the hour-by-hour grid needs three boxes for
+ * its 24 hours. Each is at most the widget's own default size.
+ */
+const minSizes: Record<string, MinSize> = {
+  'technical-specifications': { boxes: 1, rows: 2 },
+  'current-location': { boxes: 2, rows: 1 },
+  'specific-machine-information': { boxes: 1, rows: 2 },
+  'checkins-charging': { boxes: 1, rows: 2 },
+  'recent-actions': { boxes: 1, rows: 2 },
+  'operating-hours': { boxes: 2, rows: 1 },
+  'operation-hours-by-hour': { boxes: 3, rows: 2 },
+  'distance-travelled': { boxes: 2, rows: 1 },
+  'equipment-details': { boxes: 1, rows: 2 },
+  'calculation-type': { boxes: 1, rows: 1 },
+  'bgl-information': { boxes: 1, rows: 1 },
+  'technical-documents': { boxes: 1, rows: 1 },
+  'other-documents': { boxes: 1, rows: 1 },
+  'technical-checks': { boxes: 1, rows: 2 },
+  workshop: { boxes: 1, rows: 2 },
+  maintenance: { boxes: 1, rows: 2 },
+  'telemetry-dashboard': { boxes: 3, rows: 1 },
+  telemetry: { boxes: 2, rows: 2 },
+};
+/** A connected entity is a row of the Dependance card: the card's own minimum. */
+const dependanceMin: MinSize = { boxes: 1, rows: 2 };
 
 const half3: WidgetSize = { span: 3, fit: 'half' };
 const full: WidgetSize = { span: 12, fit: 'full' };
@@ -57,11 +90,11 @@ const connectedOrder: ConnectedId[] = ['primary', 'linked', 'inventory', 'crew',
 const connectedOn = new Set<ConnectedId>(['primary', 'linked', 'inventory', 'crew', 'person']);
 
 /** Every widget the Overview can show, in the default order of the page. */
-export const widgets: WidgetDef[] = [
+const widgetList: Array<Omit<WidgetDef, 'minSize'>> = [
   { id: 'technical-specifications', category: 'specifications', label: 'Technical specifications', size: half3, defaultOn: true, description: 'Key technical data: displacement, lifting capacity and height, dimensions, speed and power.', render: () => <SpecificationsWidget /> },
-  { id: 'current-location', category: 'overview', label: 'Current location', size: { span: 6, fit: 'wide' }, defaultOn: true, description: 'Map with the last known position of the equipment.', minSize: '2/1 box', render: () => <LocationWidget /> },
+  { id: 'current-location', category: 'overview', label: 'Current location', size: { span: 6, fit: 'wide' }, defaultOn: true, description: 'Map with the last known position of the equipment.', render: () => <LocationWidget /> },
   { id: 'specific-machine-information', category: 'specifications', label: 'Specific machine information', size: half3, defaultOn: true, description: 'Identifiers of this machine: inventory number, UEID, serial number, number plate and VIN.', render: () => <IdentificationsWidget /> },
-  ...connectedOrder.map((id): WidgetDef => ({
+  ...connectedOrder.map((id): Omit<WidgetDef, 'minSize'> => ({
     id: `connected-${id}`, category: 'connected', label: connectedLabels[id], size: half3, defaultOn: connectedOn.has(id),
     description: `The ${connectedLabels[id].toLowerCase()} row of the Dependance card.`,
   })),
@@ -81,6 +114,8 @@ export const widgets: WidgetDef[] = [
   { id: 'telemetry-dashboard', category: 'telemetry', label: 'Telemetry dashboard', size: full, defaultOn: false, description: 'Live telemetry at a glance: speed, engine state and engine hours.', render: () => <div className="ep-telemetry"><TelemetryHero /></div> },
   { id: 'telemetry', category: 'telemetry', label: 'Telemetry', size: { span: 8, fit: 'wide' }, defaultOn: false, description: 'The tracker on this equipment and its latest data.', render: () => <div className="ep-telemetry"><TrackerWidget /></div> },
 ];
+
+export const widgets: WidgetDef[] = widgetList.map((w) => ({ ...w, minSize: w.category === 'connected' ? dependanceMin : minSizes[w.id] }));
 
 export const widgetById = new Map(widgets.map((w) => [w.id, w]));
 

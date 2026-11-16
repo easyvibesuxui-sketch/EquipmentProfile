@@ -45,9 +45,11 @@
   font: var(--syn-type-titles-title-6);
   transition: border-color var(--syn-duration-fast);
 }
-/* Figma "Status Line" states (17386:59329), Overview rows: Default has a Cultured border; Hover, On (Variant4)
-   and Selected (on and open) an Eerie Black one. The other groups' rows keep the Cultured border. */
-.ep-widgets-row.has-preview:hover, .ep-widgets-row.is-on, .ep-widgets-row.is-expanded { border-color: var(--syn-border-strong); }
+/* Figma "Status Line" states (17386:59329): Default and On have a Cultured border; Hover and Selected (on and
+   open) an Eerie Black one. */
+/* Owner's comment: Eerie Black only while the row is open (its preview showing below); switched on alone keeps the
+   Cultured edge. Hover still darkens it. */
+.ep-widgets-row.has-preview:hover, .ep-widgets-row.is-expanded { border-color: var(--syn-border-strong); }
 .ep-widgets-row.can-open .ep-widgets-row__line { cursor: pointer; }
 .ep-widgets-row__more[aria-disabled='true'] { cursor: default; }
 .ep-widgets-row__line { display: flex; align-items: center; gap: var(--syn-space-8); min-height: 22px; }

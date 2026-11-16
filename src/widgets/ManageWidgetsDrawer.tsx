@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
 import { Button, Icon, Switch, TextField } from '@syn/design-system';
 import { PanelDrawer } from '../shared/PanelDrawer';
-import { connectedIdOf, widgetById, widgetCategories, widgets, type WidgetCategory, type WidgetDef } from './registry';
+import { connectedIdOf, minSizeLabel, widgetById, widgetCategories, widgets, type WidgetCategory, type WidgetDef } from './registry';
 import { DependenceWidget } from '../overview/widgets';
 import { categoryIds, rowsToHeight, setVisible, type Scope, type WidgetLayout } from './layout';
 import './ManageWidgets.css';
@@ -230,7 +230,7 @@ export function ManageWidgetsDrawer({ open, scope, layout, org, canAddAny, onCha
                           </div>
                           <div className="ep-widgets-preview__foot">
                             <span>{w.description}</span>
-                            {w.minSize && <span className="ep-widgets-preview__min">Min Size {w.minSize}</span>}
+                            <span className="ep-widgets-preview__min">Min Size {minSizeLabel(w.minSize)}</span>
                           </div>
                         </div>
                       )}
