@@ -196,7 +196,40 @@
 /* Operation hours by hour */
 .ep-heat.syn-card { height: auto; padding: var(--syn-space-16); }
 .ep-week { display: inline-flex; align-items: center; gap: var(--syn-space-16); }
-.ep-week__label { padding: var(--syn-space-2) var(--syn-space-12); border: 1px solid var(--syn-border-default); border-radius: var(--syn-radius-element); font: var(--syn-type-titles-title-4); }
+.ep-week__label { margin: 0; padding: var(--syn-space-2) var(--syn-space-12); border: 1px solid var(--syn-border-default); border-radius: var(--syn-radius-element); background: var(--syn-surface-default); color: var(--syn-text-primary); font: var(--syn-type-titles-title-4); cursor: pointer; }
+.ep-week__label:hover, .ep-week__label[aria-expanded='true'] { border-color: var(--syn-border-strong); }
+.ep-week__label:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.ep-week__pick { position: relative; display: inline-flex; }
+/* Syn "KW chooser" (Select list): white, Cultured edge, radius 8, 2px inset and gaps; 48px rows, Medium 14 Jet
+   week with its days in Silver Chalice. Under the week, right-aligned. */
+.ep-kw {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + var(--syn-space-4));
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 362px;
+  max-width: calc(100vw - 32px);
+  max-height: 350px;
+  box-sizing: border-box;
+  padding: 2px;
+  overflow-y: auto;
+  border: 1px solid var(--syn-color-grey-cultured);
+  border-radius: var(--syn-radius-element);
+  background: var(--syn-surface-default);
+  box-shadow: var(--syn-shadow-float);
+  outline: none;
+  animation: ep-kw-in 140ms ease-out;
+}
+@keyframes ep-kw-in { from { opacity: 0; transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) { .ep-kw { animation: none; } }
+.ep-kw:focus-visible { box-shadow: var(--syn-shadow-float), 0 0 0 1px var(--syn-border-strong); }
+.ep-kw__item { display: flex; flex: none; align-items: center; gap: 4px; height: 48px; padding: 0 var(--syn-space-8); border-radius: var(--syn-radius-xs); color: var(--syn-color-secondary-jet); font: 500 14px/normal var(--syn-font-family-body); white-space: nowrap; cursor: pointer; }
+.ep-kw__item.is-active { background: var(--syn-surface-highlight); }
+.ep-kw__item[aria-selected='true'] { background: var(--syn-color-grey-cultured); color: var(--syn-text-primary); }
+.ep-kw__span { color: var(--syn-color-secondary-silver-chalince); }
 .ep-heat__grid { display: flex; flex-direction: column; overflow-x: auto; }
 .ep-heat__row { display: grid; grid-template-columns: 40px 1fr; min-width: 960px; }
 .ep-heat__row--head { grid-template-columns: 40px repeat(24, 1fr); padding: var(--syn-space-12) 0; }

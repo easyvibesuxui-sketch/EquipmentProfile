@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { Button, Card, IconButton, Segmented, Tag } from '@syn/design-system';
 import { distance, operatingHours, operationByHour, type HourRun } from '../data/equipment';
 import { DateRangePicker, MONTHS, addDays, daysBetween, formatDay, sameDay, type DateRange } from '../shared/DateRangePicker';
@@ -240,17 +240,120 @@ function runBlocks(runs: HourRun[]) {
     : Array.from({ length: r.to - r.from + 1 }, (_, k) => ({ from: r.from + k, to: r.from + k, planned: r.planned }))));
 }
 
+/** ISO 8601 week (KW) of a day: weeks start on Monday, week 1 holds the year's first Thursday. */
+function isoWeek(d: Date) {
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  t.setUTCDate(t.getUTCDate() + 4 - (t.getUTCDay() || 7));
+  const year = t.getUTCFullYear();
+  return { week: Math.ceil(((t.getTime() - Date.UTC(year, 0, 1)) / 86_400_000 + 1) / 7), year };
+}
+const mondayOf = (d: Date) => addDays(new Date(d.getFullYear(), d.getMonth(), d.getDate()), -((d.getDay() + 6) % 7));
+const pad2 = (n: number) => String(n).padStart(2, '0');
+/** "Aug 03 – Aug 09", as the Syn KW chooser writes a week. */
+const weekSpan = (monday: Date) => { const s = addDays(monday, 6); return `${MONTHS[monday.getMonth()]} ${pad2(monday.getDate())} – ${MONTHS[s.getMonth()]} ${pad2(s.getDate())}`; };
+/** The week Figma shows (KW32 2026, Aug 03 – Aug 09): its rows are the Figma data. */
+const FIGMA_MONDAY = new Date(2026, 7, 3);
+
+/** Sample hours for weeks other than the Figma one: the same each time for a day; nothing on days still to come. */
+function sampleDay(d: Date, today: Date): { month: string; day: string; weekday: string; runs: HourRun[]; upcoming?: boolean } {
+  const base = { month: MONTHS[d.getMonth()], day: pad2(d.getDate()), weekday: d.toLocaleDateString('en-GB', { weekday: 'short' }) };
+  if (d > today) return { ...base, runs: [] as HourRun[], upcoming: true };
+  let seed = d.getFullYear() * 400 + d.getMonth() * 32 + d.getDate();
+  const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+  const weekend = d.getDay() === 0 || d.getDay() === 6;
+  const runs: HourRun[] = [];
+  let at = 5 + Math.floor(rnd() * 4);
+  const count = weekend ? Math.floor(rnd() * 2) : 1 + Math.floor(rnd() * 3);
+  for (let i = 0; i < count && at < 22; i += 1) {
+    const len = 1 + Math.floor(rnd() * 5);
+    const to = Math.min(23, at + len - 1);
+    runs.push({ from: at, to, joined: len > 3 && rnd() > 0.5 });
+    at = to + 2 + Math.floor(rnd() * 3);
+  }
+  return { ...base, runs };
+}
+
+/**
+ * Syn "KW chooser" (Date Picker Calendar page, 6997:39085): a Select list of weeks, "KW 32" in Jet and its days
+ * in Silver Chalice, 48px rows. The weeks up to this one, the chosen week in view; arrows and Enter choose.
+ */
+function WeekChooser({ value, latest, onPick, onClose }: { value: Date; latest: Date; onPick: (monday: Date) => void; onClose: () => void }) {
+  const list = useRef<HTMLDivElement>(null);
+  const weeks = Array.from({ length: 52 }, (_, i) => addDays(latest, -7 * (51 - i)));
+  const [active, setActive] = useState(() => Math.max(0, weeks.findIndex((w) => sameDay(w, value))));
+  useEffect(() => {
+    list.current?.focus();
+    list.current?.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: 'center' });
+    const onDown = (e: globalThis.PointerEvent) => { if (!list.current?.parentElement?.contains(e.target as Node)) onClose(); };
+    document.addEventListener('pointerdown', onDown, true);
+    return () => document.removeEventListener('pointerdown', onDown, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => { list.current?.querySelector(`[data-i="${active}"]`)?.scrollIntoView({ block: 'nearest' }); }, [active]);
+  const onKey = (e: ReactKeyboardEvent) => {
+    const step = ({ ArrowDown: 1, ArrowUp: -1 } as Record<string, number>)[e.key];
+    if (step) { e.preventDefault(); setActive((a) => Math.max(0, Math.min(weeks.length - 1, a + step))); }
+    else if (e.key === 'Home') { e.preventDefault(); setActive(0); }
+    else if (e.key === 'End') { e.preventDefault(); setActive(weeks.length - 1); }
+    else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPick(weeks[active]); }
+    else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); onClose(); }
+    else if (e.key === 'Tab') onClose();
+  };
+  return (
+    <div
+      ref={list} className="ep-kw" role="listbox" tabIndex={-1} aria-label="Choose a week"
+      aria-activedescendant={`ep-kw-${active}`} onKeyDown={onKey}
+    >
+      {weeks.map((w, i) => {
+        const { week } = isoWeek(w);
+        return (
+          <div
+            key={w.toISOString()} id={`ep-kw-${i}`} data-i={i} role="option" aria-selected={sameDay(w, value)}
+            className={i === active ? 'ep-kw__item is-active' : 'ep-kw__item'}
+            onMouseEnter={() => setActive(i)} onClick={() => onPick(w)}
+          >
+            <span className="ep-kw__week">KW {week}</span> <span className="ep-kw__span">({weekSpan(w)})</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 /** Figma "Operation Hours by hour": one row a day, one column an hour, red blocks for the hours worked. */
 export function OperationByHourWidget() {
-  const { week, year, days } = operationByHour;
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const latest = mondayOf(today);
+  const [monday, setMonday] = useState(FIGMA_MONDAY);
+  const [choosing, setChoosing] = useState(false);
+  const labelRef = useRef<HTMLButtonElement>(null);
+  const { week: kw, year } = isoWeek(monday);
+  const week = `KW${kw}`;
+  const days = sameDay(monday, FIGMA_MONDAY) ? operationByHour.days : Array.from({ length: 7 }, (_, i) => sampleDay(addDays(monday, i), today));
+  const go = (m: Date) => { setMonday(m); setChoosing(false); };
   return (
     <Card
       title="Operation Hours by hour"
       actions={(
         <span className="ep-week">
-          <IconButton icon="back" label="Previous week" />
-          <span className="ep-week__label"><span className="syn-title-text">{week} <span className="is-muted">{year}</span></span></span>
-          <IconButton icon="next" label="Next week" />
+          <IconButton icon="back" label="Previous week" onClick={() => go(addDays(monday, -7))} />
+          <span className="ep-week__pick">
+            <button
+              ref={labelRef} type="button" className="ep-week__label" aria-haspopup="listbox" aria-expanded={choosing}
+              aria-label={`${week} ${year}, ${weekSpan(monday)}. Choose a week`} onClick={() => setChoosing((c) => !c)}
+            >
+              <span className="syn-title-text">{week} <span className="is-muted">{year}</span></span>
+            </button>
+            {choosing && (
+              <WeekChooser
+                value={monday} latest={latest}
+                onPick={(m) => { go(m); labelRef.current?.focus(); }}
+                onClose={() => { setChoosing(false); labelRef.current?.focus(); }}
+              />
+            )}
+          </span>
+          <IconButton icon="next" label="Next week" disabled={monday >= latest} onClick={() => go(addDays(monday, 7))} />
         </span>
       )}
       className="ep-widget ep-heat"
