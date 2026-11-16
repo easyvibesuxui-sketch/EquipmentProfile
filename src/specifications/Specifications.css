@@ -16,6 +16,13 @@
 /* Info cards (owner's screenshot): four in a row, 24px apart, 450 high; no line under the list. */
 .ep-specs__cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--syn-space-24); }
 .ep-specs__cards .ep-info { padding-bottom: 0; border-bottom: 0; }
+/* BGL Information (owner's screenshot): number and year with black values, then "BGL Specifications Count n" and
+   the lines, or "No BGL information yet". */
+.ep-bgl-card .ep-info__body { gap: var(--syn-space-12); }
+.ep-bgl-card__facts.ep-info { flex: none; justify-content: flex-start; gap: var(--syn-space-12); }
+.ep-bgl-card__head { display: flex; align-items: baseline; justify-content: space-between; margin: var(--syn-space-12) 0 0; font: var(--syn-type-titles-title-6); }
+.ep-bgl-card__list { flex: 1; min-height: 0; overflow-y: auto; }
+.ep-bgl-card__empty.syn-empty { flex: 1; border-color: transparent; }
 @media (max-width: 1280px) { .ep-specs__cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px) { .ep-specs__cards { grid-template-columns: minmax(0, 1fr); } }
 

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Button, EmptyState, Icon, IconButton, Radio, RadioGroup, Select, TextField } from '@syn/design-system';
 import { PanelDrawer } from '../shared/PanelDrawer';
+import { bglLookup, type BglSpec } from './infoData';
 import './SpecDrawers.css';
 
 /* Edit drawers of the Specifications cards (owner's screenshots): BGL information and Technical specifications.
@@ -47,12 +48,40 @@ function NumberField({ label, value, onChange, unit, hideLabel, className }: {
   );
 }
 
-export interface BglValue { year: string; number: string }
+export interface BglValue { year: string; number: string; specs: BglSpec[] }
 
-/** BGL information: the BGL year (2010, 2015, 2020), the BGL number, and the BGL specifications (none yet). */
+/** BGL lines: EDV-Kurzbezeichnung, Langtext (on Cultured) and Standard, each label beside its value. */
+export function BglSpecList({ specs, compact }: { specs: BglSpec[]; compact?: boolean }) {
+  return (
+    <ul className={compact ? 'ep-bgl-list is-compact' : 'ep-bgl-list'}>
+      {specs.map((s, i) => (
+        <li key={i} className="ep-bgl-list__row">
+          <span className="ep-bgl-list__cell"><span className="ep-bgl-list__key">EDV-Kurzbezeichnung</span><span className="ep-bgl-list__val">{s.short}</span></span>
+          <span className="ep-bgl-list__cell is-band"><span className="ep-bgl-list__key">Langtext</span><span className="ep-bgl-list__val">{s.long}</span></span>
+          <span className="ep-bgl-list__cell"><span className="ep-bgl-list__key">Standard</span><span className="ep-bgl-list__val" title={s.standard}>{s.standard}</span></span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/**
+ * BGL information: the BGL year (2010, 2015, 2020) and the BGL number; with both, the BGL specifications of that
+ * number load below (demo lookup). Update keeps them for the card.
+ */
 export function BglDrawer({ open, value, onClose, onUpdate }: { open: boolean; value: BglValue; onClose: () => void; onUpdate: (v: BglValue) => void }) {
   const [form, setForm] = useState(value);
   useEffect(() => { if (open) setForm(value); }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+  // A change of year or number looks the specifications up again (a short wait, as a server call would take).
+  const [loading, setLoading] = useState(false);
+  const first = useRef(true);
+  useEffect(() => {
+    if (!open) { first.current = true; return undefined; }
+    if (first.current) { first.current = false; return undefined; }
+    setLoading(true);
+    const t = window.setTimeout(() => { setForm((f) => ({ ...f, specs: bglLookup(f.number, f.year) })); setLoading(false); }, 400);
+    return () => window.clearTimeout(t);
+  }, [form.year, form.number, open]);
   return (
     <PanelDrawer
       open={open} onClose={onClose} title="BGL information" className="ep-specd"
@@ -71,9 +100,10 @@ export function BglDrawer({ open, value, onClose, onUpdate }: { open: boolean; v
             <TextField label="BGL-No" persistentLabel size="sm" value={form.number} onChange={(e) => { const number = e.currentTarget.value; setForm((f) => ({ ...f, number })); }} />
           </div>
         </div>
-        <section className="ep-specd__well" aria-label="BGL Specifications">
-          <p className="ep-specd__well-head"><span className="syn-title-text">BGL Specifications</span> <span className="ep-specd__count">Count 0</span></p>
-          <EmptyState icon="empty-state">No History yet</EmptyState>
+        <section className={form.specs.length ? 'ep-specd__well is-filled' : 'ep-specd__well'} aria-label="BGL Specifications" aria-busy={loading}>
+          <p className="ep-specd__well-head"><span className="syn-title-text">BGL Specifications</span> <span className="ep-specd__count">Count {form.specs.length}</span></p>
+          {loading ? <p className="ep-specd__loading" role="status">Loading BGL specifications…</p>
+            : form.specs.length ? <BglSpecList specs={form.specs} /> : <EmptyState icon="empty-state">No History yet</EmptyState>}
         </section>
       </div>
     </PanelDrawer>

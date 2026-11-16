@@ -64,3 +64,76 @@
   .ep-specd__weight .ep-num { width: 100%; }
   .ep-specd__sync { flex-wrap: wrap; }
 }
+
+/* Field grids of the info drawers: three columns (Equipment Details, Specific machine information) or two. */
+.ep-specd__three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--syn-space-24) var(--syn-space-24); }
+.ep-specd__two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--syn-space-24); }
+.ep-specd__span2 { grid-column: 1 / -1; }
+.ep-specd__span2 > .ep-specd__two { width: calc((100% - var(--syn-space-24)) * 2 / 3 + var(--syn-space-24) / 2); }
+.ep-specd__field { display: flex; flex-direction: column; gap: var(--syn-space-8); min-width: 0; }
+.ep-specd__field > .ep-specd__caption { margin-bottom: 0; }
+.ep-specd__rule { width: 100%; margin: var(--syn-space-4) 0; border: 0; border-top: 1px solid var(--syn-color-grey-cultured); }
+
+/* Listing preview: the picture placeholder, then Title, Category, Manufacturer ∘ Model, Year; unset ones underlined. */
+.ep-specd__preview { display: flex; gap: var(--syn-space-16); width: min(100%, 364px); padding: var(--syn-space-8); border: 1px solid var(--syn-color-grey-cultured); border-radius: var(--syn-radius-element); background: var(--syn-surface-default); }
+.ep-specd__preview-img { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 184px; height: 136px; border-radius: var(--syn-radius-xs); background: var(--syn-color-grey-cultured); color: var(--syn-color-secondary-silver-chalince); }
+.ep-specd__preview-text { display: flex; flex-direction: column; gap: var(--syn-space-16); min-width: 0; padding-top: var(--syn-space-4); color: var(--syn-color-secondary-silver-chalince); font: var(--syn-type-text-body-xs); }
+.ep-specd__preview-text > span, .ep-specd__preview-pair > span:not(.ep-specd__dot) { overflow: hidden; text-decoration: underline; text-underline-offset: 3px; text-overflow: ellipsis; white-space: nowrap; }
+.ep-specd__preview-text .is-set { color: var(--syn-text-primary); text-decoration: none; }
+.ep-specd__preview-title { font: var(--syn-type-titles-title-5); }
+.ep-specd__preview-pair { display: flex; align-items: center; gap: var(--syn-space-8); text-decoration: none !important; }
+.ep-specd__dot { width: 6px; height: 6px; flex: none; border: 1px solid currentColor; border-radius: 50%; }
+
+/* Production year: a 36px field with the calendar icon; a grid of twelve years. */
+.ep-year { position: relative; }
+.ep-year__field { display: flex; align-items: center; justify-content: space-between; gap: var(--syn-space-8); width: 100%; height: 36px; box-sizing: border-box; padding: 0 var(--syn-space-12) 0 var(--syn-space-8); border: 1px solid var(--syn-color-grey-cultured); border-radius: var(--syn-radius-element); background: var(--syn-surface-default); color: var(--syn-text-primary); text-align: left; cursor: pointer; }
+.ep-year__field:hover:not(:disabled), .ep-year__field[aria-expanded='true'] { border-color: var(--syn-border-strong); }
+.ep-year__field:disabled { cursor: not-allowed; color: var(--syn-text-disabled); }
+.ep-year__field:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.ep-year__text { display: flex; flex-direction: column; min-width: 0; }
+.ep-year__label { color: var(--syn-text-muted); font: var(--syn-type-text-caption-2); }
+.ep-year__value { font: var(--syn-type-text-body-xs-2); }
+.ep-year__panel { position: absolute; z-index: 5; top: calc(100% + 6px); right: 0; width: 280px; max-width: calc(100vw - 32px); box-sizing: border-box; padding: var(--syn-space-16); border-radius: var(--syn-radius-widget); background: var(--syn-surface-default); box-shadow: 0 8px 28px rgb(21 21 21 / 0.16); }
+.ep-year__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--syn-space-8); }
+.ep-year__opt { height: 36px; padding: 0; border: 1px solid transparent; border-radius: var(--syn-radius-full); background: none; color: var(--syn-text-primary); font: var(--syn-type-text-body-xs); cursor: pointer; }
+.ep-year__opt:hover { border-color: var(--syn-border-strong); }
+.ep-year__opt[aria-pressed='true'] { background: var(--syn-surface-inverse); color: var(--syn-color-white-white); }
+.ep-year__opt:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+
+/* Calculation type: white option cards, a 24px radio, the label, the price fields in Eur. */
+.ep-specd__calc { gap: var(--syn-space-24); }
+.ep-specd__opt { display: flex; align-items: center; gap: var(--syn-space-12); padding: var(--syn-space-8); border: 1px solid transparent; border-radius: var(--syn-radius-element); background: var(--syn-surface-default); }
+.ep-specd__opt.is-on { border-color: var(--syn-color-grey-cultured); }
+.ep-specd__opt > .ep-specd__price { flex: 1; min-width: 0; }
+.ep-specd__opt--wide .ep-specd__price { flex: 1; }
+.ep-specd__radio { position: relative; display: inline-flex; flex: none; align-items: center; gap: var(--syn-space-16); min-width: 140px; font: var(--syn-type-titles-title-6); cursor: pointer; }
+.ep-specd__radio input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.ep-specd__radio-dot { width: 24px; height: 24px; flex: none; box-sizing: border-box; border: 1.5px solid var(--syn-color-black-eerie-black); border-radius: 50%; }
+.ep-specd__radio input:checked + .ep-specd__radio-dot { border-width: 7px; }
+.ep-specd__radio input:focus-visible + .ep-specd__radio-dot { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.ep-specd__sub { flex: none; font: var(--syn-type-titles-title-6); }
+
+/* BGL lines: label beside value, three per row, the middle one on Cultured; 10px text. */
+.ep-specd__well.is-filled { background: var(--syn-surface-default); border: 1px solid var(--syn-color-grey-cultured); }
+.ep-specd__loading { margin: auto; color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+.ep-bgl-list { display: flex; flex-direction: column; gap: var(--syn-space-4); margin: 0; padding: 0; list-style: none; }
+.ep-bgl-list__row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--syn-space-8); }
+.ep-bgl-list__cell { display: flex; align-items: center; justify-content: space-between; gap: var(--syn-space-8); min-width: 0; padding: var(--syn-space-4) var(--syn-space-6); border-radius: var(--syn-radius-xs); font: var(--syn-type-text-caption-1); }
+.ep-bgl-list__cell.is-band { background: var(--syn-color-grey-cultured); }
+.ep-bgl-list__key { flex: none; }
+.ep-bgl-list__val { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
+.ep-bgl-list.is-compact .ep-bgl-list__row { grid-template-columns: minmax(0, 1fr); }
+.ep-bgl-list.is-compact .ep-bgl-list__cell:not(:first-child) { display: none; }
+
+@media (max-width: 640px) {
+  .ep-specd__three, .ep-specd__two, .ep-bgl-list__row { grid-template-columns: minmax(0, 1fr); }
+  .ep-specd__span2 > .ep-specd__two { width: 100%; }
+  .ep-specd__opt { flex-wrap: wrap; }
+  /* Phones: the option's name on its own line, each price field the full width. */
+  .ep-specd__opt .ep-specd__radio { flex-basis: 100%; min-width: 0; }
+  .ep-specd__opt .ep-specd__price { flex: 1 1 100%; min-width: 0; }
+  .ep-specd__preview { flex-direction: column; }
+  .ep-specd__preview-img { width: 100%; }
+}
+/* "Information is unknown" / "Same as Inventory No": Body XS on one line, as in the screenshots. */
+.ep-specd__field .syn-choice__label { font: var(--syn-type-text-body-xs-2); white-space: nowrap; }
