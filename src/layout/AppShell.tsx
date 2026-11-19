@@ -1,5 +1,5 @@
 import { useState, type CSSProperties, type ReactNode } from 'react';
-import { Button, Tooltip } from '@syn/design-system';
+import { Button, Icon, Tooltip, type IconName } from '@syn/design-system';
 import expandIcon from '../assets/icons/nav-expand.png';
 import plannerIcon from '../assets/icons/nav-planner.png';
 import rentalsIcon from '../assets/icons/nav-rentals.png';
@@ -20,7 +20,8 @@ export function MaskIcon({ src, size, className }: { src: string; size: number |
   return <span aria-hidden className={['ep-mask-icon', className].filter(Boolean).join(' ')} style={style} />;
 }
 
-interface NavItem { id: string; label: string; hint: string; icon: string }
+/** `icon` is a Figma PNG drawn as a mask; `synIcon` a Syn icon (the Werkstatt item, which has no PNG). */
+interface NavItem { id: string; label: string; hint: string; icon?: string; synIcon?: IconName }
 
 const mainNav: NavItem[] = [
   { id: 'planner', label: 'Planner', hint: 'Planner listing', icon: plannerIcon },
@@ -29,6 +30,7 @@ const mainNav: NavItem[] = [
   { id: 'warehouses', label: 'Warehouses', hint: 'Warehouse listing', icon: warehousesIcon },
   { id: 'equipment', label: 'Equipments', hint: 'Equipment Database', icon: equipmentIcon },
   { id: 'products', label: 'Products', hint: 'Products and services listing', icon: productsIcon },
+  { id: 'werkstatt', label: 'Werkstatt', hint: 'Workshop boards', synIcon: 'werkstatt' },
 ];
 const moneyNav: NavItem[] = [
   { id: 'invoicing', label: 'Invoicing', hint: 'All invoices', icon: invoicingIcon },
@@ -40,7 +42,7 @@ function NavButton({ item, current }: { item: NavItem; current: boolean }) {
     <li>
       <Tooltip placement="right" content={<span className="ep-nav__tooltip"><strong>{item.label}</strong>{item.hint}</span>}>
         <a href={`#${item.id}`} className="ep-nav__item" aria-label={item.label} aria-current={current ? 'page' : undefined}>
-          <MaskIcon src={item.icon} size={26} />
+          {item.synIcon ? <Icon name={item.synIcon} size={26} /> : item.icon && <MaskIcon src={item.icon} size={26} />}
         </a>
       </Tooltip>
     </li>

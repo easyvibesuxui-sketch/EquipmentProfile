@@ -1,0 +1,90 @@
+/* Ticket drawer (Figma "Edit Ticket" 17013:50919), after Syn's playground record drawer. */
+.td-id { display: inline-flex; align-items: center; gap: var(--syn-space-6); color: var(--syn-text-muted); font: var(--syn-type-text-body-xs-2); }
+.td-title { display: flex; flex: 1; align-items: flex-start; justify-content: space-between; gap: var(--syn-space-48); }
+.td-title > div { flex: 1; min-width: 0; }
+.td-title .syn-select { flex: none; width: 128px; }
+.td-title__text { position: relative; top: var(--syn-title-offset); margin: 0; color: var(--syn-text-primary); font: var(--syn-type-titles-title-4); }
+.td-title__lead { max-width: 1040px; margin: var(--syn-space-8) 0 0; color: var(--syn-text-muted); font: var(--syn-type-text-body-xs-2); }
+.td-end { align-items: flex-end; }
+.td-strong { position: relative; top: var(--syn-title-offset); font: var(--syn-type-titles-title-5); }
+.td-muted-title { position: relative; top: var(--syn-title-offset); color: var(--syn-text-muted); font: var(--syn-type-titles-title-5); }
+.td-add { color: var(--syn-color-primary-candy-apple); }
+.td-add--end { margin-left: auto; }
+
+/* Equipment card: 110px white box, Cultured border, 86px photo, facts split by Cultured lines. */
+.td-equipment { display: flex; flex-direction: column; gap: var(--syn-space-8); }
+.td-equipment__card {
+  display: flex;
+  align-items: center;
+  gap: var(--syn-space-16);
+  padding: var(--syn-space-12);
+  border: 1px solid var(--syn-border-default);
+  border-radius: var(--syn-radius-element);
+  background: var(--syn-color-white-white);
+}
+.td-equipment__photo { flex: none; width: 86px; height: 86px; border-radius: var(--syn-radius-element); object-fit: cover; }
+.td-equipment__main { display: flex; flex: 1; flex-direction: column; gap: var(--syn-space-16); min-width: 0; }
+.td-equipment__head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--syn-space-16); }
+.td-equipment__name { position: relative; top: var(--syn-title-offset); margin: 0; font: var(--syn-type-titles-title-4); }
+.td-equipment__kind { display: inline-flex; align-items: center; height: 20px; padding: 0 var(--syn-space-16); border-radius: var(--syn-radius-full); background: var(--syn-color-light-misty-rose); font: var(--syn-type-titles-title-6); }
+.td-equipment__facts { display: flex; align-items: flex-end; gap: var(--syn-space-16); }
+.td-equipment__facts dl { display: flex; flex: 1; flex-wrap: wrap; gap: var(--syn-space-12) 0; margin: 0; }
+.td-equipment__fact { display: flex; flex-direction: column; gap: var(--syn-space-8); padding: 0 var(--syn-space-16); border-right: 1px solid var(--syn-border-default); }
+.td-equipment__fact:first-child { padding-left: 0; }
+.td-equipment__fact dt { display: flex; align-items: center; gap: var(--syn-space-4); color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+.td-equipment__fact dd { margin: 0; font: var(--syn-type-text-body-xs-2); white-space: nowrap; }
+.td-equipment__status { display: inline-flex; align-items: center; gap: var(--syn-space-4); }
+
+.td-protocol-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--syn-space-16); padding: var(--syn-space-8) 0; }
+.td-protocol-title { position: relative; top: var(--syn-title-offset); margin: 0; color: var(--syn-text-primary); font: var(--syn-type-titles-title-3); }
+.td-tile-text { margin: var(--syn-space-12) 0 0; color: var(--syn-text-primary); font: var(--syn-type-text-body-xs-2); }
+.td-photos { display: flex; flex-wrap: wrap; gap: var(--syn-space-8); margin-top: var(--syn-space-12); }
+.td-tile-row .syn-property__value { display: grid; grid-template-columns: 1fr auto; align-items: center; }
+.td-tile-row .td-photos { grid-column: 2; grid-row: 1 / span 2; margin: -24px 0 0; align-self: start; }
+.td-attachments { background: var(--syn-surface-subtle); }
+.td-rating { display: inline-flex; align-items: center; gap: var(--syn-space-4); }
+.td-rating .syn-icon { color: var(--syn-color-secondary-amber); }
+.td-checklist { border: 1px solid var(--syn-border-default); box-shadow: none; }
+.td-checklist .syn-card__header { min-height: 40px; margin: 0 calc(var(--syn-space-12) * -1); padding: 0 var(--syn-space-12) var(--syn-space-12); border-bottom: 1px solid var(--syn-border-default); }
+
+/* Working Hours: rows on white, the add row with User and Spend Hours, Save (Amber) and Discard. */
+.td-hours__list { display: flex; flex-direction: column; gap: var(--syn-space-8); margin: 0; padding: 0; list-style: none; }
+.td-hours__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto;
+  align-items: center;
+  gap: var(--syn-space-24);
+  padding: var(--syn-space-12);
+  border-radius: var(--syn-radius-element);
+  background: var(--syn-color-white-white);
+}
+.td-hours__row .syn-property__value { font: var(--syn-type-text-body-s-2); }
+.td-hours__row.is-form { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; align-items: end; }
+.td-hours__field { display: flex; flex-direction: column; gap: var(--syn-space-8); max-width: 380px; }
+.td-hours__label { position: relative; top: var(--syn-title-offset); font: var(--syn-type-titles-title-5); }
+.td-hours__buttons { display: inline-flex; gap: var(--syn-space-12); }
+.td-hours__buttons .syn-button { min-width: 108px; }
+.td-total { margin: var(--syn-space-12) 0 0; color: var(--syn-text-muted); font: var(--syn-type-titles-title-6); text-align: right; }
+.td-total strong { color: var(--syn-status-info); font: var(--syn-type-titles-title-5); }
+
+.td-resources-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--syn-space-32); }
+.td-inline-prop { flex-direction: row; align-items: center; gap: var(--syn-space-12); }
+.td-inline-prop .syn-property__label { font: var(--syn-type-text-body-xs-2); }
+.td-cost { display: inline-flex; align-items: baseline; gap: var(--syn-space-8); color: var(--syn-text-muted); font: var(--syn-type-titles-title-6); }
+.td-cost strong { position: relative; top: var(--syn-title-offset); color: var(--syn-status-info); font: var(--syn-type-titles-title-5); }
+.td-add-file { border: 1px dashed var(--syn-border-muted); color: var(--syn-color-secondary-silver-chalince); }
+.td-activity { display: flex; flex-direction: column; gap: var(--syn-space-32); margin: var(--syn-space-32) var(--syn-space-16) 0 var(--syn-grid-margin); }
+.td-comments { display: flex; flex-direction: column; gap: var(--syn-space-32); }
+.td-reply { min-width: 108px; }
+.td-update { min-width: 168px; }
+
+@media (max-width: 639px) {
+  .td-title { flex-direction: column; gap: var(--syn-space-12); }
+  .td-end { align-items: flex-start; }
+  .td-activity { margin-left: var(--syn-space-16); }
+  .td-equipment__card { flex-direction: column; align-items: flex-start; }
+  .td-equipment__fact { padding: 0 var(--syn-space-12); }
+  .td-tile-row .syn-property__value { display: flex; }
+  .td-tile-row .td-photos { margin: var(--syn-space-12) 0 0; }
+  .td-hours__row, .td-hours__row.is-form { grid-template-columns: 1fr; gap: var(--syn-space-12); }
+}

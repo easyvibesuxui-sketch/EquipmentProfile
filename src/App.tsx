@@ -13,13 +13,38 @@ import {
 } from './widgets/layout';
 import { ManageWidgetsDrawer } from './widgets/ManageWidgetsDrawer';
 import { EditBanner, EditBar } from './widgets/EditMode';
+import { WerkstattPage } from './werkstatt/WerkstattPage';
 // Last, so the breakpoints win over the component stylesheets.
 import './styles/responsive.css';
 
 type Draft = { views: Views; scope: Scope };
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 
+/** `#werkstatt` opens the Werkstatt board (the sidebar item links there); `#werkstatt-empty` its "No Board Yet" state. */
+function useHashRoute() {
+  const read = () => (typeof window !== 'undefined' ? window.location.hash : '');
+  const [hash, setHash] = useState(read);
+  useEffect(() => {
+    const on = () => setHash(read());
+    window.addEventListener('hashchange', on);
+    return () => window.removeEventListener('hashchange', on);
+  }, []);
+  return hash;
+}
+
 export function App() {
+  const hash = useHashRoute();
+  if (hash.startsWith('#werkstatt')) {
+    return (
+      <AppShell module="Werkstatt" current="werkstatt">
+        <WerkstattPage key={hash} startEmpty={hash === '#werkstatt-empty'} />
+      </AppShell>
+    );
+  }
+  return <EquipmentProfile />;
+}
+
+function EquipmentProfile() {
   const [tab, setTab] = useState(profileTabs[0]);
   // The saved Overviews: the organization's (set by a manager) and the person's own, if any.
   const [views, setViews] = useViews();
