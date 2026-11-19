@@ -45,6 +45,8 @@ export interface Task {
   comments: number;
   createdBy: string;
   createdAt: string;
+  /** Sum of the ticket's Resources table, in Eur (List view "Recourse total"). */
+  resourceTotal?: number;
 }
 
 export interface Board { id: string; name: string; columns: Column[] }
@@ -101,7 +103,7 @@ const at = (days: number, h = 16, m = 45) => {
 const volvo = (photo: string) => ({ name: 'Volvo F509', number: '118874455', photo });
 const halensee = { name: 'Halensee Roadworks', city: 'Bremen', kind: 'project' as const };
 const lagerplatz = { name: 'Bremen Lagerplatz', city: 'Bremen', kind: 'warehouse' as const };
-const base = { ticket: 'DR-12457', attachments: 2, comments: 8, createdBy: 'Max Mustermann', createdAt: at(-14, 9, 30) };
+const base = { ticket: 'DR-12457', attachments: 2, comments: 8, createdBy: 'Max Mustermann', createdAt: at(-14, 9, 30), resourceTotal: 440 };
 
 export const initialTasks: Task[] = [
   { ...base, id: 't1', title: 'inventorysation', column: 'initial', done: false, hours: 8, priority: 'blocker' },

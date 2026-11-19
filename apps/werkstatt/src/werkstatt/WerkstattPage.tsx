@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type DragEvent } from 'react';
 import {
-  Button, EmptyState, Icon, IconButton, Notification, Segmented, Select, Table, TextField,
+  Button, Icon, IconButton, Notification, Segmented, Select, TextField,
 } from '@syn/design-system';
 import type { MenuAction } from '@sam/shared';
 import {
-  boards as allBoards, cardDate, incomingTask, initialArchive, initialTasks, personName, priorities,
+  boards as allBoards, incomingTask, initialArchive, initialTasks, personName, priorities,
   type ArchivedItem, type Board, type Priority, type Task,
 } from '../data/werkstatt';
-import { Assignee, ConditionChip, PriorityChip, TaskCard } from './TaskCard';
+import { TaskCard } from './TaskCard';
 import { ArchivePanel } from './ArchivePanel';
 import { activeFilters, FiltersDialog, noFilters, type BoardFilters } from './FiltersDialog';
 import { MenuButton } from './MenuButton';
+import { ListView } from './ListView';
 import { TaskDrawer } from './TaskDrawer';
 import './Werkstatt.css';
 
@@ -103,7 +104,6 @@ export function WerkstattPage({ startEmpty }: { startEmpty?: boolean }) {
     board?.columns.forEach((c) => map.set(c.id, sortTasks(tasks.filter((t) => t.column === c.id && visible(t)), sort)));
     return map;
   }, [board, tasks, visible, sort]);
-  const shownCount = tasks.filter(visible).length;
   const filterCount = activeFilters(filters);
 
   const update = (id: string, patch: Partial<Task>) => setTasks((list) => list.map((t) => (t.id === id ? { ...t, ...patch } : t)));
@@ -320,25 +320,14 @@ export function WerkstattPage({ startEmpty }: { startEmpty?: boolean }) {
             })}
           </div>
         ) : (
-          <div className="wk-list">
-            <Table
-              caption={`${board.name} tasks`}
-              rows={board.columns.flatMap((c) => byColumn.get(c.id) ?? [])}
-              rowKey={(t) => t.id}
-              columns={[
-                { key: 'title', header: 'Task', render: (t) => <button type="button" className="wk-list__open" onClick={() => setOpenId(t.id)}>{t.title}</button> },
-                { key: 'ticket', header: 'Ticket' },
-                { key: 'status', header: 'Status', render: (t) => <span className="wk-list__status"><span className="wk-column__dot is-small" style={{ '--wk-dot': columnOf(t.column)?.color } as CSSProperties} aria-hidden />{columnOf(t.column)?.label}</span> },
-                { key: 'equipment', header: 'Equipment', render: (t) => t.equipment?.name ?? <span className="wk-muted">—</span> },
-                { key: 'due', header: 'Due date', render: (t) => (t.due ? cardDate(t.due) : <span className="wk-muted">—</span>) },
-                { key: 'location', header: 'Location', render: (t) => t.location?.name ?? <span className="wk-muted">—</span> },
-                { key: 'priority', header: 'Priority', render: (t) => (t.priority ? <PriorityChip value={t.priority} /> : <span className="wk-muted">—</span>) },
-                { key: 'condition', header: 'Condition', render: (t) => (t.condition ? <ConditionChip value={t.condition} /> : <span className="wk-muted">—</span>) },
-                { key: 'assignee', header: 'Assignee', render: (t) => <Assignee initials={t.assignee} /> },
-              ]}
-            />
-            {shownCount === 0 && <EmptyState icon="search">No task matches the filters</EmptyState>}
-          </div>
+          <ListView
+            columns={board.columns}
+            tasksFor={(id) => byColumn.get(id) ?? []}
+            totalFor={(id) => tasks.filter((t) => t.column === id).length}
+            actionsFor={actionsFor}
+            onOpen={setOpenId}
+            onToggleDone={(t) => update(t.id, { done: !t.done })}
+          />
         )}
       </div>
 

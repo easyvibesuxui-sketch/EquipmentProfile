@@ -338,12 +338,82 @@
 .wk-card__counts { display: inline-flex; justify-self: end; gap: var(--syn-space-16); color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
 .wk-card__counts > span { display: inline-flex; align-items: center; gap: var(--syn-space-6); }
 
-/* List view: the Syn table on white. */
-.wk-list { flex: 1; padding: var(--syn-space-12); border-radius: 0 0 var(--syn-radius-widget) var(--syn-radius-widget); background: var(--syn-color-grey-cultured); overflow-x: auto; }
-.wk-list__open { padding: 0; border: 0; background: none; color: var(--syn-text-primary); font: var(--syn-type-titles-title-5); text-align: left; cursor: pointer; }
-.wk-list__open:hover { text-decoration: underline; }
-.wk-list__open:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
-.wk-list__status { display: inline-flex; align-items: center; gap: var(--syn-space-8); white-space: nowrap; }
+/* List view (8757:19037): a white card per status, 12px apart; the open one holds its table on a Cultured well. */
+.wk-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--syn-space-12);
+  padding: var(--syn-space-4) var(--syn-space-8) 96px;
+  border-radius: 0 0 var(--syn-radius-widget) var(--syn-radius-widget);
+  background: var(--syn-color-grey-cultured);
+  min-width: 0;
+}
+.wk-group { border-radius: var(--syn-radius-element); background: var(--syn-color-white-white); box-shadow: var(--syn-shadow-default); }
+.wk-group__head { margin: 0; }
+.wk-group__toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--syn-space-12);
+  width: 100%;
+  min-height: 56px;
+  padding: var(--syn-space-16) var(--syn-space-8);
+  border: 0;
+  border-radius: var(--syn-radius-element);
+  background: none;
+  color: var(--syn-text-primary);
+  text-align: left;
+  cursor: pointer;
+}
+.wk-group__toggle:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: -2px; }
+/* Figma "Color Dot Big": 24px white ring with a Silver Chalice line around a 16px dot. */
+.wk-group__dot {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin: 4px;
+  border-radius: var(--syn-radius-full);
+  background: var(--wk-dot);
+  box-shadow: 0 0 0 4px var(--syn-color-white-white), 0 0 0 5px var(--syn-border-muted);
+}
+.wk-group__name { position: relative; top: var(--syn-title-offset); margin-left: -6px; font: var(--syn-type-titles-title-4); }
+.wk-group__name.is-initial { color: var(--syn-text-muted); }
+.wk-group__name.is-progress { color: var(--syn-color-secondary-amber); }
+.wk-group__count { color: var(--syn-text-secondary); font: var(--syn-type-text-body-s-2); }
+/* Figma "chevron in dropdown": 24px; open = Eerie Black circle with a white glyph. */
+.wk-group__chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-left: auto;
+  border-radius: var(--syn-radius-full);
+  color: var(--syn-text-primary);
+  transition: background-color var(--syn-duration-fast);
+}
+.wk-group__toggle:hover .wk-group__chevron { background: var(--syn-color-grey-cultured); }
+.wk-group.is-open .wk-group__chevron { background: var(--syn-surface-inverse); color: var(--syn-color-white-white); }
+.wk-group__body { padding: 0 var(--syn-space-8) var(--syn-space-12); }
+.wk-group__empty { margin: 0; padding: var(--syn-space-24); border-radius: var(--syn-radius-element); background: var(--syn-color-grey-cultured); color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); text-align: center; }
+.wk-group__scroll { position: relative; padding: 0 var(--syn-space-8) var(--syn-space-8); border-radius: var(--syn-radius-element); background: var(--syn-color-grey-cultured); overflow-x: auto; }
+/* Rows: 56px white bands, 2px apart, 8px corners; the header in Body XS Silver Chalice on the well. */
+.wk-table { width: 100%; min-width: 1500px; border-collapse: separate; border-spacing: 0 2px; font: var(--syn-type-text-body-xs); }
+.wk-table th { height: 28px; padding: var(--syn-space-4) var(--syn-space-8); color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); text-align: left; white-space: nowrap; }
+.wk-table td { height: 56px; padding: 0 var(--syn-space-8); background: var(--syn-color-white-white); color: var(--syn-text-primary); white-space: nowrap; }
+.wk-table td:first-child { border-radius: var(--syn-radius-element) 0 0 var(--syn-radius-element); }
+.wk-table td:last-child { border-radius: 0 var(--syn-radius-element) var(--syn-radius-element) 0; }
+.wk-table tbody tr { cursor: pointer; }
+.wk-table tbody tr:hover td { box-shadow: inset 0 1px 0 var(--syn-border-strong), inset 0 -1px 0 var(--syn-border-strong); }
+.wk-table tbody tr:hover td:first-child { box-shadow: inset 1px 1px 0 var(--syn-border-strong), inset 0 -1px 0 var(--syn-border-strong); }
+.wk-table tbody tr:hover td:last-child { box-shadow: inset -1px 1px 0 var(--syn-border-strong), inset 0 -1px 0 var(--syn-border-strong); }
+.wk-table tr.is-done td > * { opacity: 0.8; }
+.wk-table__check { width: 40px; }
+.wk-table__menu { width: 48px; text-align: right; }
+.wk-table__open { padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+.wk-table__open:hover { text-decoration: underline; }
+.wk-table__open:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.wk-table__tags { display: inline-flex; gap: var(--syn-space-4); vertical-align: middle; }
 
 /* Figma "Frame 25422": the Board / List switch floating at the bottom centre. */
 .wk-view-toggle {
@@ -487,3 +557,6 @@
   .wk-view-toggle { bottom: var(--syn-space-16); }
   .wk-toast { left: var(--syn-space-16); bottom: 88px; }
 }
+
+/* The wide list table scrolls inside its group, never the page: every flex parent may shrink below it. */
+.wk-page, .wk-board-frame, .wk-group, .wk-group__body { min-width: 0; }

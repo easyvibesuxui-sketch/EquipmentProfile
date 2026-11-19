@@ -15,8 +15,11 @@ The sidebar's Werkstatt item opens the workshop board (`npm run dev:werkstatt`, 
   a done column ticks the round checkbox. The "..." menu opens, moves to the next column or archives.
 - A card opens the ticket drawer ([Edit Ticket](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=17013-50919)),
   built after Syn's `playground/RecordDrawer.tsx` plus the equipment card and Working Hours; Status moves the card, Update keeps it.
-- [Board / List](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=7919-48115) floats at the bottom (Syn `Segmented`);
-  List is the Syn `Table` (not in Figma).
+- [Board / List](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=7919-48115) floats at the bottom (Syn `Segmented`).
+  List is the [List View](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=8757-19037): a collapsible group per
+  status (the first open), each a table of Ticket ID, Title, Equipment, Priority, Condition, Reported by, Assigned to, Created Date,
+  Due date, Tags and Recourse total, with the round checkbox and the "..." menu; a row opens the ticket. Search, filters and sort
+  apply to both views; on narrow screens the table scrolls inside its group.
 - A moment after opening, a colleague's ticket arrives and the toast (Syn `Notification`) says so, as in the frame.
 - `#empty` shows [No Board Yet](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=1459-10561); Create Board opens the board.
 
