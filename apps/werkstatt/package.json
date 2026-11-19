@@ -1,0 +1,19 @@
+{
+  "name": "@sam/werkstatt",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SAM Werkstatt (workshop) boards.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "build:single": "vite build --mode single",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@sam/shared": "*",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  }
+}

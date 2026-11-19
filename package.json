@@ -1,24 +1,22 @@
 {
-  "name": "equipment-profile",
+  "name": "sam-frontend",
   "version": "0.1.0",
   "private": true,
-  "description": "SAM Equipment Profile, built with the Syn design system.",
+  "description": "SAM front ends (Equipment Profile, Werkstatt) and their shared parts, built with the Syn design system.",
   "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc --noEmit && vite build",
-    "build:single": "vite build --mode single",
-    "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@fontsource/montserrat": "5.1.0",
-    "leaflet": "^1.9.4",
-    "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "dev": "npm run dev -w @sam/equipment-profile",
+    "dev:profile": "npm run dev -w @sam/equipment-profile",
+    "dev:werkstatt": "npm run dev -w @sam/werkstatt",
+    "build": "npm run build --workspaces --if-present",
+    "build:single": "npm run build:single --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
   },
   "devDependencies": {
-    "@types/leaflet": "^1.9.12",
     "@types/node": "^22.10.2",
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",

@@ -1,0 +1,73 @@
+/* The Figma frame is 1920 wide. Below that the 12-column spans regroup; GridItem sets --span inline,
+   so these overrides need !important. */
+/*
+ * Header (Figma "Frame 1"): one row down to 1024px, as in Figma. The Tracker and Tag cards keep Figma's two
+ * columns but at least 256px; the equipment card takes the rest, and its title, tags and facts wrap when it is
+ * narrower than Figma's (the row grows with it). From 1024 to 1439px the two cards show their details only.
+ */
+@media (min-width: 1024px) {
+  .ep-header.syn-grid { --ep-device-w: max(256px, calc((100% - 11 * 24px) / 6 + 24px)); grid-template-columns: minmax(0, 1fr) repeat(2, var(--ep-device-w)); }
+  .ep-header > .ep-header__col-main, .ep-header > .ep-header__col-device { grid-column: auto; }
+}
+/* Narrower than ~1760px the photo is 96px, giving the equipment card's facts room for one row. */
+@media (min-width: 1024px) and (max-width: 1759px) { .ep-header__photo { width: 96px; height: 96px; } }
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .ep-header.syn-grid { --ep-device-w: 168px; }
+  .ep-header__device-media { display: none; }
+  .ep-header__device-info { justify-content: flex-start; gap: var(--syn-space-10); }
+}
+@media (min-width: 1024px) and (max-width: 1279px) { .ep-header.syn-grid { --ep-device-w: 144px; } }
+
+@media (max-width: 1023px) {
+  .ep-header__col-main { --span: 12 !important; }
+  .ep-header__col-device { --span: 6 !important; }
+  .ep-col--half { --span: 6 !important; }
+  .ep-col--wide, .ep-col--full { --span: 12 !important; order: 1; }
+  /* The Overview is one dense grid: the half widgets close up around the wide ones without reordering. */
+  .ep-overview__grid .ep-col, .ep-edit-grid .ep-col { order: 0; }
+}
+
+@media (max-width: 639px) {
+  .ep-header__col-main, .ep-header__col-device, .ep-col--half, .ep-col--wide, .ep-col--full { --span: 12 !important; }
+
+  .ep-header__main { flex-direction: column; height: auto; }
+  .ep-header__photo { align-self: flex-start; width: 96px; height: 96px; }
+  .ep-header__title { white-space: normal; font: var(--syn-type-titles-title-2); }
+  .ep-header__tags { flex-wrap: wrap; padding-left: 0; border-left: 0; }
+  .ep-header__bottom { flex-direction: column; }
+  .ep-header__facts { gap: var(--syn-space-12); }
+  .ep-header__as4u { align-items: flex-start; }
+  .ep-header__device { height: auto; min-height: 157px; }
+  .ep-header__device-media { height: 133px; }
+
+  .ep-widget.syn-card { height: auto; min-height: 360px; }
+  .ep-map.syn-card { height: 360px; }
+  /* Phones keep the designed heights; Edit Mode heights are for the wide layout. */
+  .ep-sized { height: auto; }
+  .ep-sized .ep-widget.syn-card { height: auto; }
+  .ep-sized .ep-map.syn-card { height: 360px; }
+  /* Check ins / Charging: the 128px pills plus the open chevron are wider than a phone card. */
+  .ep-widget--split .syn-segmented__option { min-width: 104px; }
+  .ep-chart .syn-card__header { flex-wrap: wrap; }
+  .ep-chart .syn-card__actions { flex-wrap: wrap; gap: var(--syn-space-12); }
+  .ep-plot { overflow-x: auto; }
+  .ep-plot__area, .ep-plot__x { min-width: 640px; }
+  .ep-heat .syn-card__header { flex-wrap: wrap; }
+  .ep-chart__footer { flex-wrap: wrap; gap: var(--syn-space-12); }
+  .ep-history__title, .ep-history__line { white-space: normal; }
+  .ep-moves__date { white-space: normal; }
+}
+
+/* Phones: every card spans the row, so the app's grids are one column. Syn's 12 columns with 24px gutters need 264px,
+   more than a 320px phone gives the page. (App-level; Syn's Grid is unchanged.) */
+@media (max-width: 639px) {
+  .ep-profile .syn-grid { grid-template-columns: minmax(0, 1fr); }
+  .ep-profile .syn-grid > .syn-grid__item { grid-column: 1 / -1; }
+}
+@media (max-width: 359px) { .ep-widget--split .syn-segmented__option { min-width: 88px; padding-inline: var(--syn-space-8); } }
+
+/* Short screens (a phone on its side): when the menu is taller than the screen it scrolls on its own. */
+@media (max-height: 720px) {
+  .ep-nav { overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; }
+  .ep-nav::-webkit-scrollbar { display: none; }
+}
