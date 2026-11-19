@@ -14,8 +14,10 @@ function useEmptyDemo() {
   return empty;
 }
 
-export function App() {
-  const empty = useEmptyDemo();
+/** `empty` overrides the hash check (the preview build routes on its own hashes). */
+export function App({ empty: emptyProp }: { empty?: boolean } = {}) {
+  const emptyHash = useEmptyDemo();
+  const empty = emptyProp ?? emptyHash;
   return (
     <AppShell module="Werkstatt" current="werkstatt" links={appLinks}>
       <WerkstattPage key={String(empty)} startEmpty={empty} />

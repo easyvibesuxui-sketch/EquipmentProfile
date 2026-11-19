@@ -7,6 +7,7 @@ repository with several apps (npm workspaces):
 | --- | --- |
 | `apps/equipment-profile` | Equipment Profile (`@sam/equipment-profile`), see its [README](apps/equipment-profile/README.md) |
 | `apps/werkstatt` | Werkstatt boards (`@sam/werkstatt`), see its [README](apps/werkstatt/README.md) |
+| `apps/preview` | The review page: both apps in one HTML file, one per hash (`#profile`, `#werkstatt`, `#werkstatt-empty`), linked through the sidebar |
 | `packages/shared` | `@sam/shared`: the shell (sidebar and top bar), the "..." action menu, the drawer form parts, the date range picker, fonts and shell constants |
 | `vendor/syn-design-system` | Syn, as a git submodule |
 | `vite.shared.ts`, `tsconfig.base.json` | The Vite and TypeScript setup every app extends |
@@ -24,10 +25,12 @@ npm run build               # every app: typecheck + apps/*/dist
 npm run build:single        # one self-contained HTML file per app in apps/*/dist-single (used for review)
 ```
 
-One app alone: `npm run build -w @sam/werkstatt`. If you cloned without `--recurse-submodules`, run `git submodule update --init`.
+One app alone: `npm run build -w @sam/werkstatt`. The review page: `npm run build -w @sam/preview` writes
+`apps/preview/dist-single/index.html`, the file published as the review link. If you cloned without `--recurse-submodules`, run `git submodule update --init`.
 
 The sidebar links the apps: Planner opens the Equipment Profile, Werkstatt the board. In development they run on their
-own ports; a deployment sets `VITE_PROFILE_URL` and `VITE_WERKSTATT_URL` (`packages/shared/src/links.ts`).
+own ports; a deployment sets `VITE_PROFILE_URL` and `VITE_WERKSTATT_URL` (`packages/shared/src/links.ts`); the review page sets
+them to hashes in `apps/preview/.env`.
 
 ## Adding an app
 

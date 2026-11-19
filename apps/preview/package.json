@@ -1,0 +1,18 @@
+{
+  "name": "@sam/preview",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Review build: Equipment Profile and Werkstatt in one page, linked through the sidebar, built into one HTML file.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build --mode single",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@sam/shared": "*",
+    "leaflet": "^1.9.4",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  }
+}
