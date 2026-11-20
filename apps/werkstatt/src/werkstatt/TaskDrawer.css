@@ -167,7 +167,7 @@
 }
 .td-pick.has-value:hover .td-pick__clear, .td-pick.has-value:focus-within .td-pick__clear { display: inline-flex; }
 .td-pick.has-value:hover .td-pick__value > *, .td-pick.has-value:focus-within .td-pick__value > * { padding-right: 28px; }
-.td-pick:has(.wk-priority.is-blocker) .td-pick__clear { color: var(--syn-color-white-white); }
+.td-pick:has(.wk-priority.is-blocker) .td-pick__clear, .td-pick--on-color .td-pick__clear { color: var(--syn-color-white-white); }
 .td-pick:has(.wk-condition.is-destroyed) .td-pick__clear { color: var(--syn-color-pending-honey); }
 .td-pick__panel {
   position: absolute; top: calc(100% + var(--syn-space-4)); left: 0; z-index: 30; display: flex; flex-direction: column; gap: var(--syn-space-8);

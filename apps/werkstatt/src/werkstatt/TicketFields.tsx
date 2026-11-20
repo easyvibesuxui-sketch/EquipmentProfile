@@ -70,8 +70,8 @@ function Pick<T extends string>({ label, value, choices, onChange, render, empty
   );
 }
 
-/** Assignee (Figma 1024:12998): the blue name tag opens a small card with a "Choose" select of people. */
-function AssigneePick({ value, onChange, readOnly }: { value?: string; onChange: (v: string | undefined) => void; readOnly?: boolean }) {
+/** Opens a small card under its trigger; it closes on a click outside it (a Select's listbox counts as inside) or Escape. */
+function usePanel() {
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLSpanElement>(null);
   useEffect(() => {
@@ -81,10 +81,17 @@ function AssigneePick({ value, onChange, readOnly }: { value?: string; onChange:
     document.addEventListener('pointerdown', onDown, true);
     return () => document.removeEventListener('pointerdown', onDown, true);
   }, [open]);
+  const onKeyDown = (e: KeyboardEvent) => { if (e.key === 'Escape' && open) { e.stopPropagation(); e.preventDefault(); setOpen(false); } };
+  return { open, setOpen, root, onKeyDown };
+}
+
+/** Assignee (Figma 1024:12998): the blue name tag opens a small card with a "Choose" select of people. */
+function AssigneePick({ value, onChange, readOnly }: { value?: string; onChange: (v: string | undefined) => void; readOnly?: boolean }) {
+  const { open, setOpen, root, onKeyDown } = usePanel();
   const tag = value ? <Tag color="var(--syn-color-secondary-dodger-blue)" shape="rounded">{personName(value)}</Tag> : null;
   if (readOnly) return tag ?? <span className="wk-muted">—</span>;
   return (
-    <span ref={root} className={value ? 'td-pick has-value' : 'td-pick'} onKeyDown={(e) => { if (e.key === 'Escape' && open) { e.stopPropagation(); e.preventDefault(); setOpen(false); } }}>
+    <span ref={root} className={value ? 'td-pick td-pick--on-color has-value' : 'td-pick'} onKeyDown={onKeyDown}>
       <button type="button" className={value ? 'td-pick__value' : 'td-pick__empty'} aria-expanded={open} aria-label={value ? `Assignee: ${personName(value)}. Change` : 'Assignee: choose'} onClick={() => setOpen(!open)}>
         {tag ?? <><Icon name="person" size={14} />Assign</>}
       </button>
@@ -98,7 +105,21 @@ function AssigneePick({ value, onChange, readOnly }: { value?: string; onChange:
   );
 }
 
-/** Due date: the soft date chip (Eerie Black with Honey "(Overdue)" once past) opens a date and time field. */
+/** Add tag (Figma 1024:12998): the dashed "Add" opens the same small card with a "Choose" select of the free tags. */
+function TagAdd({ options, onAdd }: { options: Array<{ value: string; label: string }>; onAdd: (name: string) => void }) {
+  const { open, setOpen, root, onKeyDown } = usePanel();
+  return (
+    <span ref={root} className="td-pick td-end" onKeyDown={onKeyDown}>
+      <button type="button" className="td-pick__empty td-props__add-tag" aria-expanded={open} aria-label="Add tag" onClick={() => setOpen(!open)}>Add</button>
+      {open && (
+        <span className="td-pick__panel is-end" role="dialog" aria-label="Add tag">
+          <Select label="Tag" size="md" placeholder="Choose" value="" onChange={(v) => { if (v) onAdd(v); setOpen(false); }} options={options} />
+        </span>
+      )}
+    </span>
+  );
+}
+
 function DuePick({ task, onChange, readOnly }: { task: Task; onChange: (iso: string | undefined) => void; readOnly?: boolean }) {
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLSpanElement>(null);
@@ -232,9 +253,7 @@ function PropertiesRow({ task, set, ro, collaborators, tags }: {
           ))}
         </span>
         {!ro && freeTags.length > 0 && (
-          <MenuButton label="Add tag" className="td-pick__empty td-props__add-tag" choices={freeTags} value="" align="end" onChange={(v) => set({ tags: [...tags, v] })}>
-            Add
-          </MenuButton>
+          <TagAdd options={freeTags} onAdd={(v) => set({ tags: [...tags, v] })} />
         )}
       </div>
     </div>
