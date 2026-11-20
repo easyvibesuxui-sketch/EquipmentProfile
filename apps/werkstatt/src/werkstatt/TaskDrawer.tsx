@@ -1,11 +1,12 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   Button, Card, Checklist, ChecklistItem, ColorDot, Comment, CommentEditor, CommentReply, Drawer, DrawerRow, EmptyState,
   FileItem, Grid, GridItem, Icon, IconButton, ProgressBar, Property, Section, Segmented, Select, Table, Tag, TextField,
   Thumbnail, Value, type IconName,
 } from '@syn/design-system';
 import { ActionMenu } from '@sam/shared';
-import { people, personName, type Column, type Task } from '../data/werkstatt';
+import { people, personName, type Board, type Column, type Task } from '../data/werkstatt';
+import { MenuButton } from './MenuButton';
 import { TicketProps, TicketTitle } from './TicketFields';
 import photo1 from '../assets/werkstatt/damage-1.jpg';
 import photo2 from '../assets/werkstatt/damage-2.jpg';
@@ -151,7 +152,41 @@ export type DrawerMode = 'create' | 'edit' | 'archived';
  * the changes and Discard drops them. Create: the empty form, Submit adds the ticket. Archived: read only, with who
  * archived it and when; Restore puts it back on the board.
  */
-export function TaskDrawer({ task, mode = 'edit', archived, columns, onClose, onSave, onRestore }: {
+/**
+ * Figma "Move" (5318:31096): opens to the left of the "..." menu; Move to Board and Column / Status, then Move.
+ */
+function MovePanel({ task, boards, onMove, onClose }: {
+  task: Task; boards: Board[]; onMove: (board: string, column: string) => void; onClose: () => void;
+}) {
+  const [boardId, setBoardId] = useState(task.board ?? 'bremen');
+  const board = boards.find((b) => b.id === boardId) ?? boards[0];
+  const [column, setColumn] = useState(board.columns.some((c) => c.id === task.column) ? task.column : board.columns[0].id);
+  const root = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    root.current?.querySelector<HTMLElement>('button')?.focus();
+    const onDown = (e: PointerEvent) => { if (!root.current?.contains(e.target as Node) && !(e.target as HTMLElement).closest('[role="listbox"]')) onClose(); };
+    document.addEventListener('pointerdown', onDown, true);
+    return () => document.removeEventListener('pointerdown', onDown, true);
+  }, [onClose]);
+  return (
+    <div ref={root} className="td-move" role="dialog" aria-label={`Move ${task.title}`} onKeyDown={(e) => { if (e.key === 'Escape') { e.stopPropagation(); e.preventDefault(); onClose(); } }}>
+      <label className="td-move__field"><span className="td-move__label">Move to Board</span>
+        <Select label="Move to Board" size="md" value={boardId} onChange={(v) => { setBoardId(v); const b = boards.find((x) => x.id === v); if (b && !b.columns.some((c) => c.id === column)) setColumn(b.columns[0].id); }} options={boards.map((b) => ({ value: b.id, label: b.name }))} />
+      </label>
+      <label className="td-move__field"><span className="td-move__label">Column/ Status</span>
+        <Select label="Column / Status" size="md" value={column} onChange={setColumn} options={board.columns.map((c) => ({ value: c.id, label: c.label }))} />
+      </label>
+      <Button variant="accent" size="sm" className="td-move__go" onClick={() => onMove(boardId, column)}>Move</Button>
+    </div>
+  );
+}
+
+export function TaskDrawer({ task, mode = 'edit', archived, columns, onClose, onSave, onRestore, boards = [], onArchive, onDuplicate, onMove, onDelete }: {
+  boards?: Board[];
+  onArchive?: (t: Task) => void;
+  onDuplicate?: (t: Task) => void;
+  onMove?: (t: Task, board: string, column: string) => void;
+  onDelete?: (t: Task) => void;
   task: Task | null;
   mode?: DrawerMode;
   archived?: { by: string; at: string };
@@ -165,7 +200,8 @@ export function TaskDrawer({ task, mode = 'edit', archived, columns, onClose, on
   const [comment, setComment] = useState('');
   const [items, setItems] = useState([false, true, false]);
   const [tried, setTried] = useState(false);
-  useEffect(() => { if (task) { setDraft(task); setTried(false); } }, [task]);
+  const [moving, setMoving] = useState(false);
+  useEffect(() => { if (task) { setDraft(task); setTried(false); setMoving(false); } }, [task]);
   const t = draft ?? task;
   const done = items.filter(Boolean).length;
   if (!t) return <Drawer open={false} onClose={onClose} label="Ticket" />;
@@ -186,7 +222,20 @@ export function TaskDrawer({ task, mode = 'edit', archived, columns, onClose, on
       </>}
       headerActions={creating ? undefined : <>
         <IconButton icon="share" label="Share" size="sm" />
-        <IconButton icon="dotshorizontal" label="More actions" size="sm" />
+        <span className="td-more">
+          {/* Figma 966:5957 (archived 9478:9893): Archive or Restore, Duplicate, Move, Delete. */}
+          <ActionMenu
+            label="More actions"
+            actions={[
+              ro ? { id: 'restore', label: 'Restore', icon: 'refresh-change' as const, onSelect: () => onRestore?.() }
+                : { id: 'archive', label: 'Archive', icon: 'archive' as const, onSelect: () => onArchive?.(t) },
+              { id: 'duplicate', label: 'Duplicate', icon: 'copy', onSelect: () => onDuplicate?.(t) },
+              { id: 'move', label: 'Move', icon: 'arrow', onSelect: () => setMoving(true) },
+              { id: 'delete', label: 'Delete', icon: 'trash-bin', onSelect: () => onDelete?.(t) },
+            ]}
+          />
+          {moving && <MovePanel task={t} boards={boards} onClose={() => setMoving(false)} onMove={(b, c) => { setMoving(false); onMove?.(t, b, c); }} />}
+        </span>
       </>}
       footer={<>
         <Button variant="text" onClick={onClose}>{ro ? 'Close' : 'Discard'}</Button>
@@ -199,11 +248,21 @@ export function TaskDrawer({ task, mode = 'edit', archived, columns, onClose, on
       <DrawerRow>
         <div className="td-title">
           <TicketTitle task={t} mode={mode} archived={archived} onChange={setDraft} />
-          <Select
-            label="Status" size="xs" value={t.column} disabled={ro} className={`td-status is-${t.column}`}
-            onChange={(v) => setDraft({ ...t, column: v, done: columns.find((c) => c.id === v)?.done ?? t.done })}
-            options={columns.map((c) => ({ value: c.id, label: c.label }))}
-          />
+          {/* Figma 3140:10483: the statuses with their dots; Archived archives the ticket. */}
+          <MenuButton
+            label={`Status: ${ro ? 'Archived' : columns.find((c) => c.id === t.column)?.label}. Change`} className={`td-status is-${ro ? 'archived' : t.column}`}
+            align="end" check={false} className2="td-pick__menu"
+            choices={[...columns.map((c) => ({ value: c.id, label: c.label, dot: c.color })), ...(creating ? [] : [{ value: 'archived', label: 'Archived', dot: 'var(--syn-color-white-white)' }])]}
+            value={ro ? 'archived' : t.column}
+            onChange={(v) => {
+              if (ro) return;
+              if (v === 'archived') { onArchive?.(t); return; }
+              setDraft({ ...t, column: v, done: columns.find((c) => c.id === v)?.done ?? t.done });
+            }}
+          >
+            <span className="td-status__dot" style={{ background: ro ? 'var(--syn-color-white-white)' : columns.find((c) => c.id === t.column)?.color }} aria-hidden />
+            {ro ? 'Archived' : columns.find((c) => c.id === t.column)?.label}<Icon name="down" size={12} />
+          </MenuButton>
         </div>
         {tried && missing && <p className="td-error" role="alert">Give the ticket a name to submit it.</p>}
       </DrawerRow>

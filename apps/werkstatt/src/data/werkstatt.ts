@@ -42,6 +42,8 @@ export interface Task {
   /** Initials of the people working with the assignee (the card stacks them after the assignee). */
   collaborators?: string[];
   description?: string;
+  /** The board the ticket is on (Bremen when not set). */
+  board?: string;
   /** Initials of the assignee; none shows the dashed "assign" circle. */
   assignee?: string;
   attachments: number;

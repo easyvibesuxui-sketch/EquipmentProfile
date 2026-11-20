@@ -1,13 +1,13 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { Icon, type IconName } from '@syn/design-system';
 
-export interface MenuChoice { value: string; label: string; icon?: IconName; tone?: string }
+export interface MenuChoice { value: string; label: string; icon?: IconName; tone?: string; dot?: string }
 
 /**
  * A button that opens a list of choices (WAI-ARIA menu with menuitemradio): the board switcher and Sort by.
  * Enter, Space or Down opens it; Up/Down/Home/End move; Escape or a click outside closes it.
  */
-export function MenuButton({ label, choices, value, onChange, className, children, footer, align = 'start', check = true, className2 }: {
+export function MenuButton({ label, choices, value, onChange, className, children, footer, align = 'start', check = true, className2, radio = false }: {
   label: string;
   choices: MenuChoice[];
   value: string;
@@ -20,6 +20,8 @@ export function MenuButton({ label, choices, value, onChange, className, childre
   check?: boolean;
   /** Extra class on the menu panel. */
   className2?: string;
+  /** Figma Insurance case menu (986:14094): a radio circle before each choice. */
+  radio?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const id = `wk-menu-${useId()}`;
@@ -64,6 +66,8 @@ export function MenuButton({ label, choices, value, onChange, className, childre
               key={c.value} type="button" role="menuitemradio" aria-checked={c.value === value} tabIndex={-1}
               className="wk-menu__item" onClick={() => { onChange(c.value); close(); }}
             >
+              {radio && <span className="wk-menu__radio" aria-hidden />}
+              {c.dot && <span className="wk-menu__dot" style={{ background: c.dot }} aria-hidden />}
               {c.icon && <Icon name={c.icon} size={16} className={['wk-menu__icon', c.tone].filter(Boolean).join(' ')} />}
               <span className="wk-menu__label">{c.label}</span>
               {check && c.value === value && <Icon name="check" size={14} />}

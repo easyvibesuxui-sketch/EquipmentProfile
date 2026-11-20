@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
-import { Grid, GridItem, Icon, Property, Tag, TextArea, TextField, type IconName } from '@syn/design-system';
+import { Grid, GridItem, Icon, Property, Select, Tag, TextArea, TextField, type IconName } from '@syn/design-system';
 import { Calendar } from '@sam/shared';
 import {
   conditions, dottedDateTime, dueState, insuranceLabel, people, personName, priorities, tagCatalog, tagColor,
@@ -47,9 +47,9 @@ function InPlace({ value, label, multiline, required, onChange, readOnly, render
 }
 
 /** A value that opens a choice; X on hover (or focus) clears it; empty shows the dashed "Choose". */
-function Pick<T extends string>({ label, value, choices, onChange, render, emptyLabel = 'Choose', emptyIcon, readOnly, align }: {
+function Pick<T extends string>({ label, value, choices, onChange, render, emptyLabel = 'Choose', emptyIcon, readOnly, align, radio }: {
   label: string; value: T | undefined; choices: Array<{ value: T; label: string; icon?: IconName; tone?: string }>; onChange: (v: T | undefined) => void;
-  render: (v: T) => ReactNode; emptyLabel?: string; emptyIcon?: 'person'; readOnly?: boolean; align?: 'start' | 'end';
+  render: (v: T) => ReactNode; emptyLabel?: string; emptyIcon?: 'person'; readOnly?: boolean; align?: 'start' | 'end'; radio?: boolean;
 }) {
   if (readOnly) return value ? <>{render(value)}</> : <span className="wk-muted">—</span>;
   const current = choices.find((c) => c.value === value)?.label;
@@ -57,7 +57,7 @@ function Pick<T extends string>({ label, value, choices, onChange, render, empty
     <span className={value ? 'td-pick has-value' : 'td-pick'}>
       <MenuButton
         label={value ? `${label}: ${current}. Change` : `${label}: choose`} className={value ? 'td-pick__value' : 'td-pick__empty'}
-        choices={choices} value={value ?? ''} onChange={(v) => onChange(v as T)} align={align} check={false} className2="td-pick__menu"
+        choices={choices} value={value ?? ''} onChange={(v) => onChange(v as T)} align={align} check={false} radio={radio} className2="td-pick__menu"
       >
         {value ? render(value) : <>{emptyIcon && <Icon name={emptyIcon} size={14} />}{emptyLabel}</>}
       </MenuButton>
@@ -65,6 +65,34 @@ function Pick<T extends string>({ label, value, choices, onChange, render, empty
         <button type="button" className="td-pick__clear" aria-label={`Clear ${label}`} onClick={() => onChange(undefined)}>
           <Icon name="close" size={10} />
         </button>
+      )}
+    </span>
+  );
+}
+
+/** Assignee (Figma 1024:12998): the blue name tag opens a small card with a "Choose" select of people. */
+function AssigneePick({ value, onChange, readOnly }: { value?: string; onChange: (v: string | undefined) => void; readOnly?: boolean }) {
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (!open) return undefined;
+    requestAnimationFrame(() => root.current?.querySelector<HTMLElement>('.td-pick__panel [role="combobox"], .td-pick__panel button')?.focus());
+    const onDown = (e: PointerEvent) => { const el = e.target as HTMLElement; if (!root.current?.contains(el) && !el.closest('[role="listbox"]')) setOpen(false); };
+    document.addEventListener('pointerdown', onDown, true);
+    return () => document.removeEventListener('pointerdown', onDown, true);
+  }, [open]);
+  const tag = value ? <Tag color="var(--syn-color-secondary-dodger-blue)" shape="rounded">{personName(value)}</Tag> : null;
+  if (readOnly) return tag ?? <span className="wk-muted">—</span>;
+  return (
+    <span ref={root} className={value ? 'td-pick has-value' : 'td-pick'} onKeyDown={(e) => { if (e.key === 'Escape' && open) { e.stopPropagation(); e.preventDefault(); setOpen(false); } }}>
+      <button type="button" className={value ? 'td-pick__value' : 'td-pick__empty'} aria-expanded={open} aria-label={value ? `Assignee: ${personName(value)}. Change` : 'Assignee: choose'} onClick={() => setOpen(!open)}>
+        {tag ?? <><Icon name="person" size={14} />Assign</>}
+      </button>
+      {value && <button type="button" className="td-pick__clear" aria-label="Clear Assignee" onClick={() => onChange(undefined)}><Icon name="close" size={10} /></button>}
+      {open && (
+        <span className="td-pick__panel is-end" role="dialog" aria-label="Assignee">
+          <Select label="Assignee" size="md" placeholder="Choose" value={value ?? ''} onChange={(v) => { onChange(v); setOpen(false); }} options={personChoices} />
+        </span>
       )}
     </span>
   );
@@ -87,7 +115,7 @@ function DuePick({ task, onChange, readOnly }: { task: Task; onChange: (iso: str
     : null;
   if (readOnly) return chip ?? <span className="wk-muted">—</span>;
   return (
-    <span ref={root} className={task.due ? 'td-pick has-value' : 'td-pick'} onKeyDown={(e) => { if (e.key === 'Escape' && open) { e.stopPropagation(); setOpen(false); } }}>
+    <span ref={root} className={task.due ? 'td-pick has-value' : 'td-pick'} onKeyDown={(e) => { if (e.key === 'Escape' && open) { e.stopPropagation(); e.preventDefault(); setOpen(false); } }}>
       <button type="button" className={task.due ? 'td-pick__value' : 'td-pick__empty'} aria-expanded={open} aria-controls={open ? id : undefined}
         aria-label={task.due ? `Due date: ${dottedDateTime(task.due)}${overdue ? ', overdue' : ''}. Change` : 'Due date: choose'} onClick={() => setOpen(!open)}>
         {chip ?? 'Choose'}
@@ -117,7 +145,10 @@ const conditionChoices: Array<{ value: Condition; label: string; icon: IconName 
 const priorityChoices: Array<{ value: Priority; label: string; icon: IconName; tone: string }> = [...priorities].reverse().map((p) => ({
   ...p, icon: ({ low: 'down', medium: 'medium', high: 'up', blocker: 'critical' } as const)[p.value], tone: `is-${p.value}`,
 }));
-const insuranceChoices = (Object.keys(insuranceLabel) as Insurance[]).map((v) => ({ value: v, label: insuranceLabel[v] }));
+/** Figma 986:14094: Yes, No, Don’t know with radio circles (Don’t know is the cards' "Not relevant"). */
+const insuranceChoices: Array<{ value: Insurance; label: string }> = [
+  { value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }, { value: 'not-relevant', label: 'Don’t know' },
+];
 const personChoices = people.map((p) => ({ value: p.initials, label: p.name }));
 
 /** Name and description (create: the two required fields), and for an archived ticket who archived it and when. */
@@ -168,14 +199,13 @@ function PropertiesRow({ task, set, ro, collaborators, tags }: {
         <Grid gap={24} className="td-props__grid">
           <GridItem span={3} spanSm={6}><Property label="Condition" icon="maintenance"><Pick label="Condition" readOnly={ro} value={task.condition} choices={conditionChoices} onChange={(v) => set({ condition: v })} render={(v) => <ConditionChip value={v} />} /></Property></GridItem>
           <GridItem span={3} spanSm={6}><Property label="Priority" icon="up"><Pick label="Priority" readOnly={ro} value={task.priority} choices={priorityChoices} onChange={(v) => set({ priority: v })} render={(v) => <PriorityChip value={v} />} /></Property></GridItem>
-          <GridItem span={3} spanSm={6}><Property label="Insurance case" icon="insurance"><Pick label="Insurance case" readOnly={ro} value={task.insurance} choices={insuranceChoices} onChange={(v) => set({ insurance: v })} render={(v) => <strong className="td-strong">{insuranceLabel[v]}</strong>} /></Property></GridItem>
+          <GridItem span={3} spanSm={6}><Property label="Insurance case" icon="insurance"><Pick label="Insurance case" readOnly={ro} value={task.insurance} choices={insuranceChoices} radio onChange={(v) => set({ insurance: v })} render={(v) => <strong className="td-strong">{insuranceLabel[v]}</strong>} /></Property></GridItem>
           <GridItem span={3} spanSm={6}><Property label="Due date" icon="calendar"><DuePick task={task} readOnly={ro} onChange={(v) => set({ due: v })} /></Property></GridItem>
         </Grid>
         <Property label="Assignee" icon="person" className="td-end">
-          <Pick
-            label="Assignee" readOnly={ro} value={task.assignee} choices={personChoices} align="end" emptyLabel="Assign" emptyIcon="person"
+          <AssigneePick
+            readOnly={ro} value={task.assignee}
             onChange={(v) => set({ assignee: v, collaborators: collaborators.filter((c) => c !== v) })}
-            render={(v) => <Tag color="var(--syn-color-secondary-dodger-blue)" shape="rounded">{personName(v)}</Tag>}
           />
         </Property>
       </div>

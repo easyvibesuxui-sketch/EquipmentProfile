@@ -209,3 +209,32 @@
 /* Due date opens the Syn calendar straight away. */
 .td-pick__calendar { position: absolute; top: 100%; left: 0; z-index: 30; }
 .td-pick__calendar .ep-date__panel { top: 4px; }
+
+/* Insurance menu (986:14094): a radio circle before each choice, filled for the chosen one. */
+.wk-menu__radio { flex: none; width: 18px; height: 18px; border: 1.5px solid var(--syn-border-strong); border-radius: var(--syn-radius-full); box-sizing: border-box; }
+.wk-menu__item[aria-checked='true'] .wk-menu__radio { box-shadow: inset 0 0 0 3px var(--syn-color-white-white); background: var(--syn-border-strong); }
+/* Status menu (3140:10483): the status dot before each choice; the trigger a pill with its dot. */
+.wk-menu__dot { flex: none; width: 12px; height: 12px; border-radius: var(--syn-radius-full); box-shadow: 0 0 0 1px var(--syn-color-grey-cultured); }
+.td-status {
+  display: inline-flex; align-items: center; gap: var(--syn-space-6); height: 24px; padding: 0 var(--syn-space-12);
+  border: 1px solid var(--syn-border-default); border-radius: var(--syn-radius-full); background: var(--syn-color-white-white);
+  color: var(--syn-text-primary); font: var(--syn-type-text-body-xs); white-space: nowrap; cursor: pointer;
+}
+.td-status:hover, .td-status[aria-expanded='true'] { border-color: var(--syn-border-strong); }
+.td-status:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.td-status.is-progress { border-color: var(--syn-color-secondary-amber); background: var(--syn-color-secondary-amber); color: var(--syn-color-white-white); }
+.td-status__dot { width: 10px; height: 10px; border-radius: var(--syn-radius-full); box-shadow: 0 0 0 1px var(--syn-color-grey-cultured); }
+.td-status.is-progress .td-status__dot { box-shadow: 0 0 0 1px var(--syn-color-white-white); }
+.td-pick__panel.is-end { right: 0; left: auto; }
+/* More actions and Move (966:5957, 5318:31096): Move opens to the left of the menu. */
+.td-more { position: relative; display: inline-flex; }
+.td-more .ep-menu .syn-icon-button { border: 0; background: transparent; color: var(--syn-color-secondary-silver-chalince); }
+.td-move {
+  position: absolute; top: calc(100% + var(--syn-space-8)); right: calc(100% + var(--syn-space-8)); z-index: 40;
+  display: flex; flex-direction: column; gap: var(--syn-space-16); width: 296px; padding: var(--syn-space-16);
+  box-sizing: border-box; border-radius: var(--syn-radius-widget); background: var(--syn-color-white-white); box-shadow: var(--syn-shadow-float);
+}
+.td-move__field { display: flex; flex-direction: column; gap: var(--syn-space-8); }
+.td-move__label { position: relative; top: var(--syn-title-offset); font: var(--syn-type-titles-title-5); }
+.td-move__go { align-self: flex-start; min-width: 100px; }
+@media (max-width: 639px) { .td-move { position: fixed; top: 72px; right: 16px; left: 16px; width: auto; } }

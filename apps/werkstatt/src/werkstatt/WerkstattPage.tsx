@@ -101,7 +101,8 @@ export function WerkstattPage({ startEmpty }: { startEmpty?: boolean }) {
     return () => window.clearTimeout(t);
   }, [toast]);
 
-  const visible = useCallback((t: Task) => matches(t, filters, search, priority), [filters, search, priority]);
+  const visible = useCallback((t: Task) => (t.board ?? 'bremen') === board?.id && matches(t, filters, search, priority), [filters, search, priority, board]);
+  const onBoard = (t: Task) => (t.board ?? 'bremen') === board?.id;
   const byColumn = useMemo(() => {
     const map = new Map<string, Task[]>();
     board?.columns.forEach((c) => map.set(c.id, sortTasks(tasks.filter((t) => t.column === c.id && visible(t)), sort)));
@@ -156,7 +157,7 @@ export function WerkstattPage({ startEmpty }: { startEmpty?: boolean }) {
   const addTask = (column?: string) => {
     setOpenIdState(null);
     setDrawerMode('create');
-    setNewTask(blankTask(`t-${Date.now()}`, `DR-${12458 + tasks.length + archive.length}`, column ?? board?.columns[0].id ?? 'initial'));
+    setNewTask({ ...blankTask(`t-${Date.now()}`, `DR-${12458 + tasks.length + archive.length}`, column ?? board?.columns[0].id ?? 'initial'), board: board?.id });
   };
   const submitTask = (task: Task) => {
     setTasks((list) => [task, ...list]);
@@ -283,7 +284,7 @@ export function WerkstattPage({ startEmpty }: { startEmpty?: boolean }) {
           <div className="wk-columns" style={{ '--wk-columns': board.columns.length } as CSSProperties}>
             {board.columns.map((col) => {
               const list = byColumn.get(col.id) ?? [];
-              const total = tasks.filter((t) => t.column === col.id).length;
+              const total = tasks.filter((t) => onBoard(t) && t.column === col.id).length;
               return (
                 <section key={col.id} className="wk-column" aria-labelledby={`wk-col-${col.id}`}>
                   <header className="wk-column__label">
@@ -325,7 +326,7 @@ export function WerkstattPage({ startEmpty }: { startEmpty?: boolean }) {
           <ListView
             columns={board.columns}
             tasksFor={(id) => byColumn.get(id) ?? []}
-            totalFor={(id) => tasks.filter((t) => t.column === id).length}
+            totalFor={(id) => tasks.filter((t) => onBoard(t) && t.column === id).length}
             actionsFor={actionsFor}
             onOpen={setOpenId}
             onToggleDone={(t) => update(t.id, { done: !t.done })}
@@ -362,7 +363,7 @@ export function WerkstattPage({ startEmpty }: { startEmpty?: boolean }) {
 
       <FiltersDialog
         open={filtersOpen} value={filters}
-        count={(f) => tasks.filter((t) => matches(t, f, search, priority)).length}
+        count={(f) => tasks.filter((t) => onBoard(t) && matches(t, f, search, priority)).length}
         onApply={(f) => { setFilters(f); setFiltersOpen(false); }}
         onClose={() => setFiltersOpen(false)}
       />
@@ -371,6 +372,22 @@ export function WerkstattPage({ startEmpty }: { startEmpty?: boolean }) {
         archived={archivedOpen ? { by: archivedOpen.by, at: archivedOpen.at } : undefined}
         onClose={() => setOpenId(null)}
         onRestore={() => { if (openId) restore(openId); setOpenId(null); }}
+        boards={boards}
+        onArchive={(t) => { archiveTask(t); setOpenId(null); }}
+        onDuplicate={(t) => {
+          const copy: Task = { ...t, id: `t-${Date.now()}`, ticket: `DR-${12458 + tasks.length + archive.length}`, createdAt: new Date().toISOString(), board: t.board ?? board.id };
+          setTasks((list) => [copy, ...list]); setAnnounce(`${t.title} duplicated`); setOpenId(copy.id);
+        }}
+        onMove={(t, boardTo, column) => {
+          const moved = { ...t, board: boardTo, column, done: allBoards.find((b) => b.id === boardTo)?.columns.find((c) => c.id === column)?.done ?? t.done };
+          if (drawerMode === 'archived') { setArchive((a) => a.filter((x) => x.task.id !== t.id)); setTasks((list) => [...list, moved]); }
+          else setTasks((list) => list.map((x) => (x.id === t.id ? moved : x)));
+          setAnnounce(`${t.title} moved to ${allBoards.find((b) => b.id === boardTo)?.name}, ${column}`); setOpenId(null);
+        }}
+        onDelete={(t) => {
+          if (drawerMode === 'archived') deleteArchived(t.id); else setTasks((list) => list.filter((x) => x.id !== t.id));
+          setAnnounce(`${t.title} deleted`); setOpenId(null);
+        }}
         onSave={(t) => {
           if (drawerMode === 'create') submitTask(t);
           else setTasks((list) => list.map((x) => (x.id === t.id ? t : x)));

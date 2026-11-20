@@ -226,8 +226,6 @@
 .wk-card:hover { filter: drop-shadow(1px 3px 3px rgba(21, 21, 21, 0.16)); }
 .wk-card:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
 .wk-card.is-dragging { opacity: 0.4; }
-/* A done card fades to 80%, as in Figma. */
-.wk-card.is-done > * { opacity: 0.8; }
 .wk-card__name {
   display: flex;
   align-items: center;
@@ -415,7 +413,6 @@
 .wk-table tbody tr:hover td { box-shadow: inset 0 1px 0 var(--syn-border-strong), inset 0 -1px 0 var(--syn-border-strong); }
 .wk-table tbody tr:hover td:first-child { box-shadow: inset 1px 1px 0 var(--syn-border-strong), inset 0 -1px 0 var(--syn-border-strong); }
 .wk-table tbody tr:hover td:last-child { box-shadow: inset -1px 1px 0 var(--syn-border-strong), inset 0 -1px 0 var(--syn-border-strong); }
-.wk-table tr.is-done td > * { opacity: 0.8; }
 .wk-table__check { width: 40px; }
 .wk-table__menu { width: 48px; text-align: right; }
 .wk-table__open { padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
