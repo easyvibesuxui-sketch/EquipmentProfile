@@ -179,7 +179,7 @@
 @media (max-width: 640px) {
   /* Phones: cards take their content's height; an empty Workshop needs no 450px. */
   .ep-upkeep-card.syn-card { min-height: 0; }
-  .ep-switcher.syn-segmented { align-self: stretch; }
+  .ep-switcher.syn-segmented { align-self: stretch; width: auto; }
   .ep-switcher .syn-segmented__option { flex: 1; width: auto; }
   .ep-upkeep__workshop .ep-upkeep__well { min-height: 200px; }
   .ep-choice__option { width: auto; flex: 1; padding: 0 var(--syn-space-8); white-space: nowrap; }
