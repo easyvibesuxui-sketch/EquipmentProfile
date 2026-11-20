@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
-  Button, Card, Checklist, ChecklistItem, ColorDot, Comment, CommentEditor, CommentReply, Drawer, DrawerRow, EmptyState,
-  FileItem, Grid, GridItem, Icon, IconButton, ProgressBar, Property, Section, Segmented, Select, Table, Tag, TextField,
+  Button, Card, ColorDot, Comment, CommentEditor, CommentReply, Drawer, DrawerRow, EmptyState,
+  FileItem, Grid, GridItem, Icon, IconButton, Property, Section, Segmented, Select, Table, Tag, TextField,
   Thumbnail, Value, type IconName,
 } from '@syn/design-system';
 import { ActionMenu } from '@sam/shared';
 import { people, personName, type Board, type Column, type Task } from '../data/werkstatt';
 import { MenuButton } from './MenuButton';
 import { TicketProps, TicketTitle } from './TicketFields';
+import { TicketChecklist } from './TicketChecklist';
 import photo1 from '../assets/werkstatt/damage-1.jpg';
 import photo2 from '../assets/werkstatt/damage-2.jpg';
 import photo3 from '../assets/werkstatt/damage-3.jpg';
@@ -198,12 +199,10 @@ export function TaskDrawer({ task, mode = 'edit', archived, columns, onClose, on
   const [draft, setDraft] = useState<Task | null>(task);
   const [view, setView] = useState('comments');
   const [comment, setComment] = useState('');
-  const [items, setItems] = useState([false, true, false]);
   const [tried, setTried] = useState(false);
   const [moving, setMoving] = useState(false);
   useEffect(() => { if (task) { setDraft(task); setTried(false); setMoving(false); } }, [task]);
   const t = draft ?? task;
-  const done = items.filter(Boolean).length;
   if (!t) return <Drawer open={false} onClose={onClose} label="Ticket" />;
   const creating = mode === 'create';
   const ro = mode === 'archived';
@@ -277,10 +276,7 @@ export function TaskDrawer({ task, mode = 'edit', archived, columns, onClose, on
       </Section>
       <Section title="Custom fields" collapsible><p className="td-nothing">Nothing yet</p></Section>
       <Section title="Checklist" collapsible>
-        <div className="td-empty-list">
-          <span>No List added</span>
-          <Button variant="secondary" size="sm" iconStart="plus" className="td-add-new">Add New</Button>
-        </div>
+        <TicketChecklist initial={[]} />
       </Section>
       <Section title="Recources" collapsible actions={<IconButton icon="plus-in-circle" label="Add resource" className="td-add" />}>
         <div className="td-resources-head">
@@ -349,22 +345,11 @@ export function TaskDrawer({ task, mode = 'edit', archived, columns, onClose, on
 
       <Section title="Checklist" collapsible actions={<IconButton icon="plus-in-circle" label="Add checklist" className="td-add" />}>
         <Card title="Roofing material assessment" actions={<More label="Checklist actions" />} className="td-checklist">
-          <ProgressBar label={`${done}/${items.length}`} value={(done / items.length) * 100} title="Checklist progress" />
-          <Checklist>
-            {items.map((checked, i) => (
-              <ChecklistItem
-                key={i}
-                checked={checked}
-                onCheckedChange={(v) => setItems(items.map((x, j) => (j === i ? v : x)))}
-                actions={<More label="Task actions" />}
-                assignee={<Tag variant="soft" muted icon="person">Project Manager</Tag>}
-                due={<Tag variant="soft" icon="calendar">Next Month</Tag>}
-                extra={i === 2 ? crew.map(([n, c], k) => <Tag key={`${n}-${k}`} color={c} shape="rounded">{n}</Tag>) : undefined}
-              >
-                Conducting a roofing material assessment involves evaluating the condition and suitability of various materials. It is essential for making informed decisions on repairs or replacements, maintaining safety and functionality.
-              </ChecklistItem>
-            ))}
-          </Checklist>
+          <TicketChecklist initial={[
+            { id: 'c1', text: 'A checklist is an organized list of tasks, steps, or items you need to do, verify, or remember. It acts as an easy-to-read guide to make sure you complete a job perfectly and do not forget any important', done: false },
+            { id: 'c2', text: 'Conducting a roofing material assessment involves evaluating the condition and suitability of various materials. It is essential for making informed decisions on repairs or replacements, maintaining safety and functionality.', done: true, due: '01.01.2048' },
+            { id: 'c3', text: 'Conducting a roofing material assessment involves evaluating the condition and suitability of various materials.', done: false, due: '01.01.2048', people: crew },
+          ]} />
         </Card>
       </Section>
 

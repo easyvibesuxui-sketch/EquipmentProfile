@@ -247,3 +247,14 @@
   .td-id { white-space: nowrap; }
   .td-drawer .syn-drawer__header-actions { gap: 0; }
 }
+
+/* Checklist rows (13018:12956): white, an Eerie Black border on hover; the text edits in place. Could move to Syn's ChecklistItem. */
+.td-check { display: flex; flex-direction: column; gap: var(--syn-space-12); }
+.td-check__title { margin: 0; font: var(--syn-type-titles-title-5); }
+.td-check__empty { margin: 0; color: var(--syn-text-muted); font: var(--syn-type-text-caption-2); text-align: center; }
+.td-check__add { display: flex; justify-content: center; }
+.td-check .syn-checklist-item { background: var(--syn-color-white-white); }
+.td-check .syn-checklist-item:hover { border-color: var(--syn-border-strong); }
+.td-check .syn-checklist-item:not(.is-editing) .syn-choice__label { cursor: text; }
+.td-check .syn-checklist-item.is-editing .syn-checklist-item__editor textarea { border: 1.5px solid var(--syn-border-strong); }
+.td-check__date { margin-left: var(--syn-space-8); color: var(--syn-text-primary); }
