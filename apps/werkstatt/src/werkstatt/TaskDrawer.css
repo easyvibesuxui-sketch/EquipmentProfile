@@ -197,3 +197,15 @@
 }
 .td-props-row { padding: var(--syn-space-16) var(--syn-space-16) 0 var(--syn-grid-margin); border-bottom: 1px solid var(--syn-border-default); }
 @media (max-width: 639px) { .td-props-row { padding-left: var(--syn-space-16); } }
+
+/* Condition and Priority menus (986:13778, 986:13905): 232px, a glyph before each choice, Regular 16. */
+.wk-menu__panel.td-pick__menu { width: 232px; min-width: 0; padding: var(--syn-space-8) var(--syn-space-4); border: 0; border-radius: var(--syn-radius-element); }
+.td-pick__menu .wk-menu__item { gap: var(--syn-space-8); min-height: 40px; font: var(--syn-type-text-body-m-2); }
+.td-pick__menu .wk-menu__item[aria-checked='true'] { font: var(--syn-type-text-body-m); }
+.td-pick__menu .wk-menu__icon { color: var(--syn-text-primary); }
+.td-pick__menu .wk-menu__icon.is-low { color: var(--syn-color-secondary-dodger-blue); }
+.td-pick__menu .wk-menu__icon.is-medium { color: var(--syn-color-secondary-xanthous); }
+.td-pick__menu .wk-menu__icon.is-high, .td-pick__menu .wk-menu__icon.is-blocker { color: var(--syn-action-brand); }
+/* Due date opens the Syn calendar straight away. */
+.td-pick__calendar { position: absolute; top: 100%; left: 0; z-index: 30; }
+.td-pick__calendar .ep-date__panel { top: 4px; }

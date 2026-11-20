@@ -1,8 +1,9 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
-import { Button, Grid, GridItem, Icon, Property, Tag, TextArea, TextField } from '@syn/design-system';
+import { Grid, GridItem, Icon, Property, Tag, TextArea, TextField, type IconName } from '@syn/design-system';
+import { Calendar } from '@sam/shared';
 import {
   conditions, dottedDateTime, dueState, insuranceLabel, people, personName, priorities, tagCatalog, tagColor,
-  type Insurance, type Task,
+  type Condition, type Insurance, type Priority, type Task,
 } from '../data/werkstatt';
 import { ConditionChip, PriorityChip } from './TaskCard';
 import { MenuButton } from './MenuButton';
@@ -47,7 +48,7 @@ function InPlace({ value, label, multiline, required, onChange, readOnly, render
 
 /** A value that opens a choice; X on hover (or focus) clears it; empty shows the dashed "Choose". */
 function Pick<T extends string>({ label, value, choices, onChange, render, emptyLabel = 'Choose', emptyIcon, readOnly, align }: {
-  label: string; value: T | undefined; choices: Array<{ value: T; label: string }>; onChange: (v: T | undefined) => void;
+  label: string; value: T | undefined; choices: Array<{ value: T; label: string; icon?: IconName; tone?: string }>; onChange: (v: T | undefined) => void;
   render: (v: T) => ReactNode; emptyLabel?: string; emptyIcon?: 'person'; readOnly?: boolean; align?: 'start' | 'end';
 }) {
   if (readOnly) return value ? <>{render(value)}</> : <span className="wk-muted">—</span>;
@@ -56,7 +57,7 @@ function Pick<T extends string>({ label, value, choices, onChange, render, empty
     <span className={value ? 'td-pick has-value' : 'td-pick'}>
       <MenuButton
         label={value ? `${label}: ${current}. Change` : `${label}: choose`} className={value ? 'td-pick__value' : 'td-pick__empty'}
-        choices={choices} value={value ?? ''} onChange={(v) => onChange(v as T)} align={align}
+        choices={choices} value={value ?? ''} onChange={(v) => onChange(v as T)} align={align} check={false} className2="td-pick__menu"
       >
         {value ? render(value) : <>{emptyIcon && <Icon name={emptyIcon} size={14} />}{emptyLabel}</>}
       </MenuButton>
@@ -75,13 +76,6 @@ function DuePick({ task, onChange, readOnly }: { task: Task; onChange: (iso: str
   const root = useRef<HTMLSpanElement>(null);
   const id = useId();
   const overdue = !task.done && dueState(task)?.tone === 'overdue';
-  const local = (iso?: string) => {
-    if (!iso) return '';
-    const d = new Date(iso); const p = (n: number) => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
-  };
-  const [text, setText] = useState(local(task.due));
-  useEffect(() => { if (open) { setText(local(task.due)); root.current?.querySelector('input')?.focus(); } }, [open, task.due]);
   useEffect(() => {
     if (!open) return undefined;
     const onDown = (e: PointerEvent) => { if (!root.current?.contains(e.target as Node)) setOpen(false); };
@@ -100,15 +94,29 @@ function DuePick({ task, onChange, readOnly }: { task: Task; onChange: (iso: str
       </button>
       {task.due && <button type="button" className="td-pick__clear" aria-label="Clear Due date" onClick={() => onChange(undefined)}><Icon name="close" size={10} /></button>}
       {open && (
-        <span id={id} role="dialog" aria-label="Due date" className="td-pick__panel">
-          <TextField label="Due date" size="sm" type="datetime-local" persistentLabel value={text} onChange={(e) => setText(e.target.value)} />
-          <Button size="sm" onClick={() => { if (text) onChange(new Date(text).toISOString()); setOpen(false); }}>Apply</Button>
+        <span id={id} className="td-pick__calendar">
+          <Calendar
+            label="Due date" className="ep-date__panel" value={task.due ? new Date(task.due) : null}
+            onPick={(d) => {
+              // The day from the calendar, the time kept from the old due date (or the end of the working day).
+              const prev = task.due ? new Date(task.due) : null;
+              d.setHours(prev ? prev.getHours() : 17, prev ? prev.getMinutes() : 0, 0, 0);
+              onChange(d.toISOString()); setOpen(false);
+            }}
+          />
         </span>
       )}
     </span>
   );
 }
 
+/** Figma 986:13778 and 986:13905: each choice with its glyph; priorities from Low to Blocker. */
+const conditionChoices: Array<{ value: Condition; label: string; icon: IconName }> = conditions.map((c) => ({
+  ...c, icon: ({ 'can-work': 'check-in-circle', 'cant-work': 'cant-work', destroyed: 'stop-in-circle' } as const)[c.value],
+}));
+const priorityChoices: Array<{ value: Priority; label: string; icon: IconName; tone: string }> = [...priorities].reverse().map((p) => ({
+  ...p, icon: ({ low: 'down', medium: 'medium', high: 'up', blocker: 'critical' } as const)[p.value], tone: `is-${p.value}`,
+}));
 const insuranceChoices = (Object.keys(insuranceLabel) as Insurance[]).map((v) => ({ value: v, label: insuranceLabel[v] }));
 const personChoices = people.map((p) => ({ value: p.initials, label: p.name }));
 
@@ -158,8 +166,8 @@ function PropertiesRow({ task, set, ro, collaborators, tags }: {
     <div className="td-props">
       <div className="td-props__row">
         <Grid gap={24} className="td-props__grid">
-          <GridItem span={3} spanSm={6}><Property label="Condition" icon="maintenance"><Pick label="Condition" readOnly={ro} value={task.condition} choices={conditions} onChange={(v) => set({ condition: v })} render={(v) => <ConditionChip value={v} />} /></Property></GridItem>
-          <GridItem span={3} spanSm={6}><Property label="Priority" icon="up"><Pick label="Priority" readOnly={ro} value={task.priority} choices={priorities} onChange={(v) => set({ priority: v })} render={(v) => <PriorityChip value={v} />} /></Property></GridItem>
+          <GridItem span={3} spanSm={6}><Property label="Condition" icon="maintenance"><Pick label="Condition" readOnly={ro} value={task.condition} choices={conditionChoices} onChange={(v) => set({ condition: v })} render={(v) => <ConditionChip value={v} />} /></Property></GridItem>
+          <GridItem span={3} spanSm={6}><Property label="Priority" icon="up"><Pick label="Priority" readOnly={ro} value={task.priority} choices={priorityChoices} onChange={(v) => set({ priority: v })} render={(v) => <PriorityChip value={v} />} /></Property></GridItem>
           <GridItem span={3} spanSm={6}><Property label="Insurance case" icon="insurance"><Pick label="Insurance case" readOnly={ro} value={task.insurance} choices={insuranceChoices} onChange={(v) => set({ insurance: v })} render={(v) => <strong className="td-strong">{insuranceLabel[v]}</strong>} /></Property></GridItem>
           <GridItem span={3} spanSm={6}><Property label="Due date" icon="calendar"><DuePick task={task} readOnly={ro} onChange={(v) => set({ due: v })} /></Property></GridItem>
         </Grid>

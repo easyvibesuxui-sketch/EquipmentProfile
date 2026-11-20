@@ -1,13 +1,13 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { Icon, type IconName } from '@syn/design-system';
 
-export interface MenuChoice { value: string; label: string; icon?: IconName }
+export interface MenuChoice { value: string; label: string; icon?: IconName; tone?: string }
 
 /**
  * A button that opens a list of choices (WAI-ARIA menu with menuitemradio): the board switcher and Sort by.
  * Enter, Space or Down opens it; Up/Down/Home/End move; Escape or a click outside closes it.
  */
-export function MenuButton({ label, choices, value, onChange, className, children, footer, align = 'start', check = true }: {
+export function MenuButton({ label, choices, value, onChange, className, children, footer, align = 'start', check = true, className2 }: {
   label: string;
   choices: MenuChoice[];
   value: string;
@@ -18,6 +18,8 @@ export function MenuButton({ label, choices, value, onChange, className, childre
   align?: 'start' | 'end';
   /** The chosen item shows a check (off for Sort by, which marks it by weight). */
   check?: boolean;
+  /** Extra class on the menu panel. */
+  className2?: string;
 }) {
   const [open, setOpen] = useState(false);
   const id = `wk-menu-${useId()}`;
@@ -56,13 +58,13 @@ export function MenuButton({ label, choices, value, onChange, className, childre
         {children}
       </button>
       {open && (
-        <div id={id} role="menu" aria-label={label} className={`wk-menu__panel is-${align}`} onKeyDown={onKey}>
+        <div id={id} role="menu" aria-label={label} className={['wk-menu__panel', `is-${align}`, className2].filter(Boolean).join(' ')} onKeyDown={onKey}>
           {choices.map((c) => (
             <button
               key={c.value} type="button" role="menuitemradio" aria-checked={c.value === value} tabIndex={-1}
               className="wk-menu__item" onClick={() => { onChange(c.value); close(); }}
             >
-              {c.icon && <Icon name={c.icon} size={16} className="wk-menu__icon" />}
+              {c.icon && <Icon name={c.icon} size={16} className={['wk-menu__icon', c.tone].filter(Boolean).join(' ')} />}
               <span className="wk-menu__label">{c.label}</span>
               {check && c.value === value && <Icon name="check" size={14} />}
             </button>

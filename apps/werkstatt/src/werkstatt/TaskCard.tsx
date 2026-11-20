@@ -6,7 +6,7 @@ import {
 } from '../data/werkstatt';
 
 const priorityIcon: Record<Priority, IconName> = { blocker: 'critical', high: 'up', medium: 'medium', low: 'down' };
-const conditionIcon: Partial<Record<Condition, IconName>> = { 'cant-work': 'cant-work', destroyed: 'warning' };
+const conditionIcon: Partial<Record<Condition, IconName>> = { 'cant-work': 'cant-work', destroyed: 'stop-in-circle' };
 
 /** Figma "Priority": 24px chip, 8px corners, Title 6. Blocker Candy Apple, High Misty Rose, Medium Cultured, Low outlined. */
 export function PriorityChip({ value }: { value: Priority }) {

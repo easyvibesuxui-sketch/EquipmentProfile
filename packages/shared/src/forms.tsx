@@ -76,30 +76,20 @@ const slashed = (iso: string) => { const d = dateOf(iso); return `${pad(d.getDat
 const WEEKDAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
 /**
- * Figma "Basic Month / Day / Year": a 36px field with "Select date" and the calendar icon. It opens a one-month
- * calendar under it, drawn like the range picker (Eerie Black chosen day, Candy Apple ring for today).
+ * The one-month calendar of the date fields (drawn like the Syn range picker: Eerie Black chosen day, Candy Apple ring
+ * for today). Arrow keys move the day, Enter or a click picks it. `className` places the panel.
  */
-export function DateField({ id, value, onChange, labelledBy }: { id: string; value: string; onChange: (iso: string) => void; labelledBy: string }) {
-  const [open, setOpen] = useState(false);
-  const root = useRef<HTMLDivElement>(null);
-  const start = value ? dateOf(value) : new Date();
+export function Calendar({ value, onPick, className = 'ep-date__panel', label = 'Choose a date' }: {
+  value: Date | null; onPick: (d: Date) => void; className?: string; label?: string;
+}) {
+  const start = value ?? new Date();
   const [month, setMonth] = useState(new Date(start.getFullYear(), start.getMonth(), 1));
   const [focusDay, setFocusDay] = useState(start);
+  const root = useRef<HTMLDivElement>(null);
   const today = new Date();
-
   useEffect(() => {
-    if (!open) return undefined;
-    const s = value ? dateOf(value) : new Date();
-    setMonth(new Date(s.getFullYear(), s.getMonth(), 1)); setFocusDay(s);
     requestAnimationFrame(() => root.current?.querySelector<HTMLButtonElement>('.ep-date__day[tabindex="0"]')?.focus());
-    const onDown = (e: PointerEvent) => { if (!root.current?.contains(e.target as Node)) setOpen(false); };
-    document.addEventListener('pointerdown', onDown, true);
-    return () => document.removeEventListener('pointerdown', onDown, true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
-
-  const close = () => { setOpen(false); root.current?.querySelector<HTMLButtonElement>('.ep-date__field')?.focus(); };
-  const pick = (d: Date) => { onChange(isoOf(d)); close(); };
+  }, []);
   const move = (d: Date) => {
     setFocusDay(d);
     if (d.getMonth() !== month.getMonth() || d.getFullYear() !== month.getFullYear()) setMonth(new Date(d.getFullYear(), d.getMonth(), 1));
@@ -111,8 +101,56 @@ export function DateField({ id, value, onChange, labelledBy }: { id: string; val
   };
   const first = new Date(month.getFullYear(), month.getMonth(), 1);
   const days = Array.from({ length: 42 }, (_, i) => addDays(first, i - first.getDay()));
-  const chosen = value ? dateOf(value) : null;
+  return (
+    <div ref={root} className={className} role="dialog" aria-label={label}>
+      <div className="ep-date__head">
+        <button type="button" className="ep-date__nav" aria-label="Previous month" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}><Icon name="back" size={16} /></button>
+        <span className="ep-date__title">{MONTHS[month.getMonth()]} {month.getFullYear()}</span>
+        <button type="button" className="ep-date__nav" aria-label="Next month" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}><Icon name="next" size={16} /></button>
+      </div>
+      <div role="grid" className="ep-date__grid" aria-label={`${MONTHS[month.getMonth()]} ${month.getFullYear()}`}>
+        <div role="row" className="ep-date__week">{WEEKDAYS.map((w) => <span key={w} role="columnheader" className="ep-date__wd">{w}</span>)}</div>
+        {Array.from({ length: 6 }, (_, w) => (
+          <div role="row" key={w} className="ep-date__week">
+            {days.slice(w * 7, w * 7 + 7).map((d) => (d.getMonth() !== month.getMonth()
+              ? <span key={d.toISOString()} role="gridcell" className="ep-date__out" aria-hidden>{d.getDate()}</span>
+              : (
+                <span key={d.toISOString()} role="gridcell">
+                  <button
+                    type="button" data-day={d.toDateString()}
+                    className={['ep-date__day', sameDay(d, today) && 'is-today', value && sameDay(d, value) && 'is-chosen'].filter(Boolean).join(' ')}
+                    tabIndex={sameDay(d, focusDay) ? 0 : -1}
+                    aria-pressed={!!value && sameDay(d, value)}
+                    aria-label={d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                    onClick={() => onPick(d)} onKeyDown={(e) => onDayKey(e, d)}
+                  >
+                    {d.getDate()}
+                  </button>
+                </span>
+              )))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
+/**
+ * Figma "Basic Month / Day / Year": a 36px field with "Select date" and the calendar icon. It opens the one-month
+ * Calendar under it.
+ */
+export function DateField({ id, value, onChange, labelledBy }: { id: string; value: string; onChange: (iso: string) => void; labelledBy: string }) {
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const onDown = (e: PointerEvent) => { if (!root.current?.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('pointerdown', onDown, true);
+    return () => document.removeEventListener('pointerdown', onDown, true);
+  }, [open]);
+
+  const close = () => { setOpen(false); root.current?.querySelector<HTMLButtonElement>('.ep-date__field')?.focus(); };
   return (
     <div
       ref={root}
@@ -127,38 +165,7 @@ export function DateField({ id, value, onChange, labelledBy }: { id: string; val
         <span>{value ? slashed(value) : 'Select date'}</span>
         <Icon name="calendar" size={16} />
       </button>
-      {open && (
-        <div className="ep-date__panel" role="dialog" aria-label="Choose a date">
-          <div className="ep-date__head">
-            <button type="button" className="ep-date__nav" aria-label="Previous month" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}><Icon name="back" size={16} /></button>
-            <span className="ep-date__title">{MONTHS[month.getMonth()]} {month.getFullYear()}</span>
-            <button type="button" className="ep-date__nav" aria-label="Next month" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}><Icon name="next" size={16} /></button>
-          </div>
-          <div role="grid" className="ep-date__grid" aria-label={`${MONTHS[month.getMonth()]} ${month.getFullYear()}`}>
-            <div role="row" className="ep-date__week">{WEEKDAYS.map((w) => <span key={w} role="columnheader" className="ep-date__wd">{w}</span>)}</div>
-            {Array.from({ length: 6 }, (_, w) => (
-              <div role="row" key={w} className="ep-date__week">
-                {days.slice(w * 7, w * 7 + 7).map((d) => (d.getMonth() !== month.getMonth()
-                  ? <span key={d.toISOString()} role="gridcell" className="ep-date__out" aria-hidden>{d.getDate()}</span>
-                  : (
-                    <span key={d.toISOString()} role="gridcell">
-                      <button
-                        type="button" data-day={d.toDateString()}
-                        className={['ep-date__day', sameDay(d, today) && 'is-today', chosen && sameDay(d, chosen) && 'is-chosen'].filter(Boolean).join(' ')}
-                        tabIndex={sameDay(d, focusDay) ? 0 : -1}
-                        aria-pressed={!!chosen && sameDay(d, chosen)}
-                        aria-label={d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-                        onClick={() => pick(d)} onKeyDown={(e) => onDayKey(e, d)}
-                      >
-                        {d.getDate()}
-                      </button>
-                    </span>
-                  )))}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {open && <Calendar value={value ? dateOf(value) : null} onPick={(d) => { onChange(isoOf(d)); close(); }} />}
     </div>
   );
 }
