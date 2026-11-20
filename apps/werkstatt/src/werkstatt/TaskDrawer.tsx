@@ -5,8 +5,8 @@ import {
   Thumbnail, Value, type IconName,
 } from '@syn/design-system';
 import { ActionMenu } from '@sam/shared';
-import { dottedDateTime, insuranceLabel, people, personName, type Column, type Task } from '../data/werkstatt';
-import { ConditionChip, PriorityChip } from './TaskCard';
+import { people, personName, type Column, type Task } from '../data/werkstatt';
+import { TicketProps, TicketTitle } from './TicketFields';
 import photo1 from '../assets/werkstatt/damage-1.jpg';
 import photo2 from '../assets/werkstatt/damage-2.jpg';
 import photo3 from '../assets/werkstatt/damage-3.jpg';
@@ -19,10 +19,6 @@ const photos = [photo1, photo2, photo3, photo4];
 const none = () => {};
 const lorem = 'A thorough damage investigation is essential for accurate claims processing. It generally outlines: Characteristics of the item';
 
-const tagColors: Array<[string, string]> = [
-  ['Caterpillar 6090', '#459af7'], ['Komatsu PC8000', '#591ea1'], ['Hitachi EX8000', '#f74583'],
-  ['P&H 4100XPC', '#41a619'], ['Liebherr R9800', '#d46c2b'],
-];
 const crew: Array<[string, string]> = [
   ['Max Mustermann', '#459af7'], ['Erika Mustermann', '#fe7d00'], ['John Doe', '#f4b642'], ['Jane Smith', '#a200ff'],
   ['Emily Davis', '#fe7d00'], ['Michael Johnson', '#a200ff'], ['Chris Lee', '#a200ff'], ['Sarah Brown', '#ff1900'],
@@ -44,6 +40,14 @@ function More({ label }: { label: string }) {
 
 /** Figma "Equipment Container" (17013:51030): the equipment the ticket is about, with its key facts in one line. */
 function EquipmentCard({ task }: { task: Task }) {
+  if (!task.equipment) {
+    return (
+      <div className="td-equipment">
+        <div className="td-inline"><span className="td-muted-title">Equipment</span><Tag variant="dashed" onClick={none}>Add</Tag></div>
+        <EmptyState icon="equipment">Nothing assigned</EmptyState>
+      </div>
+    );
+  }
   const facts: Array<{ icon: IconName; label: string; value: ReactNode }> = [
     { icon: 'info-circle', label: 'Status', value: <span className="td-equipment__status"><ColorDot color="var(--syn-color-success-mantis)" />Active</span> },
     { icon: 'id', label: 'IN', value: '1245IB88' },
@@ -128,83 +132,110 @@ function WorkingHours({ initial }: { initial: number }) {
   );
 }
 
+/** Figma "Mark complete" (946:15885): a dashed round box and the label; done, the Mantis "Completed" pill. */
+function CompleteToggle({ done, onToggle, disabled }: { done: boolean; onToggle: () => void; disabled?: boolean }) {
+  return (
+    <button type="button" className={done ? 'td-complete is-done' : 'td-complete'} aria-pressed={done} disabled={disabled} onClick={onToggle}>
+      {done ? <Icon name="dublecheck" size={14} /> : <span className="td-complete__box" aria-hidden />}
+      {done ? 'Completed' : 'Mark complete'}
+    </button>
+  );
+}
+
+export type DrawerMode = 'create' | 'edit' | 'archived';
+
 /**
- * The ticket drawer of the Werkstatt board, Figma "Edit Ticket" (17013:50919). It follows Syn's record drawer
- * reference (playground/RecordDrawer.tsx) and adds the equipment card and Working Hours from the Figma frame.
- * Status moves the card between the board's columns; Update keeps the change, Discard drops it.
+ * The ticket drawer of the Werkstatt board, Figma "Edit Ticket" (17013:50919), "Create ticket" (946:12390) and the
+ * archived ticket (8378:31073). It follows Syn's record drawer reference (playground/RecordDrawer.tsx) and adds the
+ * equipment card and Working Hours. Edit: every field of the head edits in place, Status moves the card, Update keeps
+ * the changes and Discard drops them. Create: the empty form, Submit adds the ticket. Archived: read only, with who
+ * archived it and when; Restore puts it back on the board.
  */
-export function TaskDrawer({ task, columns, onClose, onSave }: {
+export function TaskDrawer({ task, mode = 'edit', archived, columns, onClose, onSave, onRestore }: {
   task: Task | null;
+  mode?: DrawerMode;
+  archived?: { by: string; at: string };
   columns: Column[];
   onClose: () => void;
   onSave: (t: Task) => void;
+  onRestore?: () => void;
 }) {
   const [draft, setDraft] = useState<Task | null>(task);
-  const [tags, setTags] = useState(tagColors);
-  const [collaborators, setCollaborators] = useState(['M.M', 'N.N', 'O.O', 'P.P', 'Q.Q'].map((name, id) => ({ id, name })));
   const [view, setView] = useState('comments');
   const [comment, setComment] = useState('');
   const [items, setItems] = useState([false, true, false]);
-  useEffect(() => { if (task) setDraft(task); }, [task]);
+  const [tried, setTried] = useState(false);
+  useEffect(() => { if (task) { setDraft(task); setTried(false); } }, [task]);
   const t = draft ?? task;
   const done = items.filter(Boolean).length;
   if (!t) return <Drawer open={false} onClose={onClose} label="Ticket" />;
-  const column = columns.find((c) => c.id === t.column);
+  const creating = mode === 'create';
+  const ro = mode === 'archived';
+  const missing = creating && !t.title.trim();
+  const submit = () => { setTried(true); if (!missing) onSave({ ...t, title: t.title.trim() }); };
 
   return (
     <Drawer
       open={!!task}
       onClose={onClose}
-      label={t.title}
-      className="td-drawer"
+      label={creating ? 'New ticket' : t.title}
+      className={ro ? 'td-drawer is-archived' : 'td-drawer'}
       headerStart={<>
-        {t.done
-          ? <Tag color="var(--syn-color-success-mantis)" icon="dublecheck">Completed</Tag>
-          : <Tag color={column?.id === 'progress' ? 'var(--syn-color-secondary-amber)' : 'var(--syn-color-secondary-silver-chalince)'}>{column?.label ?? 'Open'}</Tag>}
-        <span className="td-id"><Icon name="settings" size={16} />{t.ticket}</span>
+        <CompleteToggle done={t.done} disabled={ro} onToggle={() => setDraft({ ...t, done: !t.done })} />
+        {!creating && <span className="td-id"><Icon name="settings" size={16} />{t.ticket}</span>}
       </>}
-      headerActions={<>
+      headerActions={creating ? undefined : <>
         <IconButton icon="share" label="Share" size="sm" />
         <IconButton icon="dotshorizontal" label="More actions" size="sm" />
       </>}
       footer={<>
-        <Button variant="text" onClick={onClose}>Discard</Button>
-        <Button size="md" className="td-update" onClick={() => onSave(t)}>Update</Button>
+        <Button variant="text" onClick={onClose}>{ro ? 'Close' : 'Discard'}</Button>
+        {ro
+          ? <Button size="md" className="td-update" iconStart="refresh-change" onClick={onRestore}>Restore</Button>
+          : <Button size="md" className="td-update" onClick={creating ? submit : () => onSave(t)}>{creating ? 'Submit' : 'Update'}</Button>}
       </>}
     >
+      {ro && <Icon name="archive" size={96} className="td-watermark" />}
       <DrawerRow>
         <div className="td-title">
-          <div>
-            <h2 className="td-title__text">{t.title}</h2>
-            <p className="td-title__lead">{lorem} {lorem}</p>
-          </div>
+          <TicketTitle task={t} mode={mode} archived={archived} onChange={setDraft} />
           <Select
-            label="Status" size="xs" value={t.column}
+            label="Status" size="xs" value={t.column} disabled={ro} className={`td-status is-${t.column}`}
             onChange={(v) => setDraft({ ...t, column: v, done: columns.find((c) => c.id === v)?.done ?? t.done })}
             options={columns.map((c) => ({ value: c.id, label: c.label }))}
           />
         </div>
+        {tried && missing && <p className="td-error" role="alert">Give the ticket a name to submit it.</p>}
       </DrawerRow>
+      <div className="td-props-row"><TicketProps task={t} readOnly={ro} onChange={setDraft} /></div>
 
-      <DrawerRow end={<Property label="Assignee" icon="person" className="td-end">{t.assignee ? <Tag color="var(--syn-color-secondary-dodger-blue)" shape="rounded">{personName(t.assignee)}</Tag> : <Tag variant="dashed" onClick={() => setDraft({ ...t, assignee: 'M.M' })}>Assign</Tag>}</Property>}>
-        <Grid gap={24}>
-          <GridItem span={3} spanSm={6}><Property label="Condition" icon="maintenance">{t.condition ? <ConditionChip value={t.condition} /> : <span className="wk-muted">—</span>}</Property></GridItem>
-          <GridItem span={3} spanSm={6}><Property label="Priority" icon="up">{t.priority ? <PriorityChip value={t.priority} /> : <span className="wk-muted">—</span>}</Property></GridItem>
-          <GridItem span={3} spanSm={6}><Property label="Insurance case" icon="insurance"><strong className="td-strong">{t.insurance ? insuranceLabel[t.insurance] : '—'}</strong></Property></GridItem>
-          <GridItem span={3} spanSm={6}><Property label="Due date" icon="calendar">{t.due ? <Tag variant="soft">{dottedDateTime(t.due)}</Tag> : <span className="wk-muted">—</span>}</Property></GridItem>
-        </Grid>
-      </DrawerRow>
-
-      <DrawerRow label="Collaborators" icon="person" end={<IconButton icon="adduser" label="Add collaborator" size="xs" variant="outline" />}>
-        {collaborators.map((c) => (
-          <Tag key={c.id} removeIcon="x-in-circle" removeLabel={`Remove ${c.name}`} onRemove={() => setCollaborators(collaborators.filter((x) => x.id !== c.id))}>{c.name}</Tag>
-        ))}
-      </DrawerRow>
-
-      <DrawerRow label="Tags" icon="tag" end={<Tag variant="dashed" onClick={none}>Add</Tag>}>
-        {tags.map(([name, color]) => <Tag key={name} color={color} onRemove={() => setTags(tags.filter(([n]) => n !== name))}>{name}</Tag>)}
-      </DrawerRow>
-
+      {creating ? (
+        <>
+      <Section title="Details" collapsible>
+        <div className="td-inline"><span className="td-muted-title">Equipment</span><Tag variant="dashed" onClick={none}>Add</Tag></div>
+        <EmptyState icon="equipment">Nothing assigned</EmptyState>
+        <Card title="Template" className="td-empty-card"><p className="td-nothing">Nothing attached</p></Card>
+      </Section>
+      <Section title="Custom fields" collapsible><p className="td-nothing">Nothing yet</p></Section>
+      <Section title="Checklist" collapsible>
+        <div className="td-empty-list">
+          <span>No List added</span>
+          <Button variant="secondary" size="sm" iconStart="plus" className="td-add-new">Add New</Button>
+        </div>
+      </Section>
+      <Section title="Recources" collapsible actions={<IconButton icon="plus-in-circle" label="Add resource" className="td-add" />}>
+        <div className="td-resources-head">
+          <Property label="Reparation Start Date" icon="calendar" className="td-inline-prop"><Tag variant="soft">01.02.2026 14:48</Tag></Property>
+          <Property label="Reparation End Date" icon="calendar" className="td-inline-prop"><Tag variant="soft">01.02.2026 14:48</Tag></Property>
+        </div>
+        <div className="td-empty-table">
+          <div className="td-empty-table__head" aria-hidden>{['Date', 'Name', 'Amount', 'Unit Price', 'Total', 'File'].map((h) => <span key={h}>{h}</span>)}</div>
+          <p className="td-nothing">Nothing yet</p>
+        </div>
+      </Section>
+        </>
+      ) : (
+        <>
       <Section title="Details">
         <EquipmentCard task={t} />
         <Section title="Protocol" size="lg" collapsible>
@@ -278,7 +309,7 @@ export function TaskDrawer({ task, columns, onClose, onSave }: {
         </Card>
       </Section>
 
-      <WorkingHours initial={t.hours ?? 8} />
+      {!ro && <WorkingHours initial={t.hours ?? 8} />}
 
       <Section title="Resources" collapsible>
         <div className="td-resources-head">
@@ -336,6 +367,8 @@ export function TaskDrawer({ task, columns, onClose, onSave }: {
           <EmptyState icon="history">No activity yet</EmptyState>
         )}
       </div>
+        </>
+      )}
     </Drawer>
   );
 }

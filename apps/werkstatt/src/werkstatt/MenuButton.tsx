@@ -1,13 +1,13 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
-import { Icon } from '@syn/design-system';
+import { Icon, type IconName } from '@syn/design-system';
 
-export interface MenuChoice { value: string; label: string }
+export interface MenuChoice { value: string; label: string; icon?: IconName }
 
 /**
  * A button that opens a list of choices (WAI-ARIA menu with menuitemradio): the board switcher and Sort by.
  * Enter, Space or Down opens it; Up/Down/Home/End move; Escape or a click outside closes it.
  */
-export function MenuButton({ label, choices, value, onChange, className, children, footer, align = 'start' }: {
+export function MenuButton({ label, choices, value, onChange, className, children, footer, align = 'start', check = true }: {
   label: string;
   choices: MenuChoice[];
   value: string;
@@ -16,6 +16,8 @@ export function MenuButton({ label, choices, value, onChange, className, childre
   children: ReactNode;
   footer?: { label: string; icon: 'plus-in-circle'; onSelect: () => void };
   align?: 'start' | 'end';
+  /** The chosen item shows a check (off for Sort by, which marks it by weight). */
+  check?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const id = `wk-menu-${useId()}`;
@@ -60,8 +62,9 @@ export function MenuButton({ label, choices, value, onChange, className, childre
               key={c.value} type="button" role="menuitemradio" aria-checked={c.value === value} tabIndex={-1}
               className="wk-menu__item" onClick={() => { onChange(c.value); close(); }}
             >
-              <span>{c.label}</span>
-              {c.value === value && <Icon name="check" size={14} />}
+              {c.icon && <Icon name={c.icon} size={16} className="wk-menu__icon" />}
+              <span className="wk-menu__label">{c.label}</span>
+              {check && c.value === value && <Icon name="check" size={14} />}
             </button>
           ))}
           {footer && (

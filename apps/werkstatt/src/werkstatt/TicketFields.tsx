@@ -1,0 +1,204 @@
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { Button, Grid, GridItem, Icon, Property, Tag, TextArea, TextField } from '@syn/design-system';
+import {
+  conditions, dottedDateTime, dueState, insuranceLabel, people, personName, priorities, tagCatalog, tagColor,
+  type Insurance, type Task,
+} from '../data/werkstatt';
+import { ConditionChip, PriorityChip } from './TaskCard';
+import { MenuButton } from './MenuButton';
+
+/**
+ * The editable head of the ticket drawer: name (Figma 1270:10373) and description (4728:45878) edit in place;
+ * Condition (5318:21638), Priority (5318:21685), Insurance case (5318:21713), Due date (5318:21738), Assignee,
+ * Collaborators and Tags open a choice on click and show an X on hover that clears them back to "Choose".
+ */
+
+/** Hover shows Cultured; a click (or Enter) turns the text into its field; Enter or leaving the field keeps it, Escape drops it. */
+function InPlace({ value, label, multiline, required, onChange, readOnly, render }: {
+  value: string; label: string; multiline?: boolean; required?: boolean; readOnly?: boolean;
+  onChange: (v: string) => void; render: (v: string) => ReactNode;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [text, setText] = useState(value);
+  const box = useRef<HTMLDivElement>(null);
+  useEffect(() => { if (!editing) setText(value); }, [value, editing]);
+  useEffect(() => { if (editing) box.current?.querySelector<HTMLInputElement | HTMLTextAreaElement>('input, textarea')?.focus(); }, [editing]);
+  const commit = () => { const v = text.trim(); if (v || !required) onChange(v); setEditing(false); };
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') { e.stopPropagation(); e.preventDefault(); setText(value); setEditing(false); }
+    if (e.key === 'Enter' && (!multiline || e.metaKey || e.ctrlKey)) { e.preventDefault(); commit(); }
+  };
+  if (readOnly) return <>{render(value)}</>;
+  if (!editing) {
+    return (
+      <button type="button" className={multiline ? 'td-inplace is-multiline' : 'td-inplace'} aria-label={`${label}: ${value || 'empty'}. Edit`} onClick={() => setEditing(true)}>
+        {render(value)}
+      </button>
+    );
+  }
+  return (
+    <div ref={box} className="td-inplace__field" onKeyDown={onKey} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) commit(); }}>
+      {multiline
+        ? <TextArea label={label} hideLabel={false} size="md" value={text} onChange={(e) => setText(e.target.value)} />
+        : <TextField label={label} size="md" persistentLabel value={text} onChange={(e) => setText(e.target.value)} error={required && !text.trim() ? 'Give the ticket a name' : undefined} />}
+    </div>
+  );
+}
+
+/** A value that opens a choice; X on hover (or focus) clears it; empty shows the dashed "Choose". */
+function Pick<T extends string>({ label, value, choices, onChange, render, emptyLabel = 'Choose', emptyIcon, readOnly, align }: {
+  label: string; value: T | undefined; choices: Array<{ value: T; label: string }>; onChange: (v: T | undefined) => void;
+  render: (v: T) => ReactNode; emptyLabel?: string; emptyIcon?: 'person'; readOnly?: boolean; align?: 'start' | 'end';
+}) {
+  if (readOnly) return value ? <>{render(value)}</> : <span className="wk-muted">—</span>;
+  const current = choices.find((c) => c.value === value)?.label;
+  return (
+    <span className={value ? 'td-pick has-value' : 'td-pick'}>
+      <MenuButton
+        label={value ? `${label}: ${current}. Change` : `${label}: choose`} className={value ? 'td-pick__value' : 'td-pick__empty'}
+        choices={choices} value={value ?? ''} onChange={(v) => onChange(v as T)} align={align}
+      >
+        {value ? render(value) : <>{emptyIcon && <Icon name={emptyIcon} size={14} />}{emptyLabel}</>}
+      </MenuButton>
+      {value && (
+        <button type="button" className="td-pick__clear" aria-label={`Clear ${label}`} onClick={() => onChange(undefined)}>
+          <Icon name="close" size={10} />
+        </button>
+      )}
+    </span>
+  );
+}
+
+/** Due date: the soft date chip (Eerie Black with Honey "(Overdue)" once past) opens a date and time field. */
+function DuePick({ task, onChange, readOnly }: { task: Task; onChange: (iso: string | undefined) => void; readOnly?: boolean }) {
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLSpanElement>(null);
+  const id = useId();
+  const overdue = !task.done && dueState(task)?.tone === 'overdue';
+  const local = (iso?: string) => {
+    if (!iso) return '';
+    const d = new Date(iso); const p = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+  };
+  const [text, setText] = useState(local(task.due));
+  useEffect(() => { if (open) { setText(local(task.due)); root.current?.querySelector('input')?.focus(); } }, [open, task.due]);
+  useEffect(() => {
+    if (!open) return undefined;
+    const onDown = (e: PointerEvent) => { if (!root.current?.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('pointerdown', onDown, true);
+    return () => document.removeEventListener('pointerdown', onDown, true);
+  }, [open]);
+  const chip = task.due
+    ? <span className={overdue ? 'td-due is-overdue' : 'td-due'}>{dottedDateTime(task.due)}{overdue && <span className="td-due__note">(Overdue)</span>}</span>
+    : null;
+  if (readOnly) return chip ?? <span className="wk-muted">—</span>;
+  return (
+    <span ref={root} className={task.due ? 'td-pick has-value' : 'td-pick'} onKeyDown={(e) => { if (e.key === 'Escape' && open) { e.stopPropagation(); setOpen(false); } }}>
+      <button type="button" className={task.due ? 'td-pick__value' : 'td-pick__empty'} aria-expanded={open} aria-controls={open ? id : undefined}
+        aria-label={task.due ? `Due date: ${dottedDateTime(task.due)}${overdue ? ', overdue' : ''}. Change` : 'Due date: choose'} onClick={() => setOpen(!open)}>
+        {chip ?? 'Choose'}
+      </button>
+      {task.due && <button type="button" className="td-pick__clear" aria-label="Clear Due date" onClick={() => onChange(undefined)}><Icon name="close" size={10} /></button>}
+      {open && (
+        <span id={id} role="dialog" aria-label="Due date" className="td-pick__panel">
+          <TextField label="Due date" size="sm" type="datetime-local" persistentLabel value={text} onChange={(e) => setText(e.target.value)} />
+          <Button size="sm" onClick={() => { if (text) onChange(new Date(text).toISOString()); setOpen(false); }}>Apply</Button>
+        </span>
+      )}
+    </span>
+  );
+}
+
+const insuranceChoices = (Object.keys(insuranceLabel) as Insurance[]).map((v) => ({ value: v, label: insuranceLabel[v] }));
+const personChoices = people.map((p) => ({ value: p.initials, label: p.name }));
+
+/** Name and description (create: the two required fields), and for an archived ticket who archived it and when. */
+export function TicketTitle({ task, onChange, mode, archived }: {
+  task: Task;
+  onChange: (t: Task) => void;
+  mode: 'create' | 'edit' | 'archived';
+  archived?: { by: string; at: string };
+}) {
+  const set = (patch: Partial<Task>) => onChange({ ...task, ...patch });
+  const ro = mode === 'archived';
+  return (
+    <div className="td-title__main">
+      {mode === 'create' ? (
+        <div className="td-create">
+          <TextField label="Name *" size="md" persistentLabel placeholder="E.G. John Doe" value={task.title} onChange={(e) => set({ title: e.target.value })} autoFocus />
+          <TextArea label="Additional information *" hideLabel={false} size="md" value={task.description ?? ''} onChange={(e) => set({ description: e.target.value })} />
+        </div>
+      ) : (
+        <>
+          <InPlace value={task.title} label="Name" required readOnly={ro} onChange={(v) => set({ title: v })} render={(v) => <h2 className="td-title__text">{v}</h2>} />
+          <InPlace value={task.description ?? ''} label="Additional information" multiline readOnly={ro} onChange={(v) => set({ description: v })} render={(v) => <p className="td-title__lead">{v || 'Add a description'}</p>} />
+          {archived && (
+            <dl className="td-archived">
+              <div><dt>Archived by</dt><dd>{archived.by}</dd></div>
+              <div><dt>Archived Date</dt><dd>{archived.at}</dd></div>
+            </dl>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+/** Condition, Priority, Insurance case, Due date and Assignee, then the Collaborators and Tags lines. */
+export function TicketProps({ task, onChange, readOnly }: { task: Task; onChange: (t: Task) => void; readOnly?: boolean }) {
+  return <PropertiesRow task={task} set={(patch) => onChange({ ...task, ...patch })} ro={!!readOnly} collaborators={task.collaborators ?? []} tags={task.tags ?? []} />;
+}
+
+function PropertiesRow({ task, set, ro, collaborators, tags }: {
+  task: Task; set: (p: Partial<Task>) => void; ro: boolean; collaborators: string[]; tags: string[];
+}) {
+  const freePeople = personChoices.filter((p) => p.value !== task.assignee && !collaborators.includes(p.value));
+  const freeTags = tagCatalog.filter((t) => !tags.includes(t.name)).map((t) => ({ value: t.name, label: t.name }));
+  return (
+    <div className="td-props">
+      <div className="td-props__row">
+        <Grid gap={24} className="td-props__grid">
+          <GridItem span={3} spanSm={6}><Property label="Condition" icon="maintenance"><Pick label="Condition" readOnly={ro} value={task.condition} choices={conditions} onChange={(v) => set({ condition: v })} render={(v) => <ConditionChip value={v} />} /></Property></GridItem>
+          <GridItem span={3} spanSm={6}><Property label="Priority" icon="up"><Pick label="Priority" readOnly={ro} value={task.priority} choices={priorities} onChange={(v) => set({ priority: v })} render={(v) => <PriorityChip value={v} />} /></Property></GridItem>
+          <GridItem span={3} spanSm={6}><Property label="Insurance case" icon="insurance"><Pick label="Insurance case" readOnly={ro} value={task.insurance} choices={insuranceChoices} onChange={(v) => set({ insurance: v })} render={(v) => <strong className="td-strong">{insuranceLabel[v]}</strong>} /></Property></GridItem>
+          <GridItem span={3} spanSm={6}><Property label="Due date" icon="calendar"><DuePick task={task} readOnly={ro} onChange={(v) => set({ due: v })} /></Property></GridItem>
+        </Grid>
+        <Property label="Assignee" icon="person" className="td-end">
+          <Pick
+            label="Assignee" readOnly={ro} value={task.assignee} choices={personChoices} align="end" emptyLabel="Assign" emptyIcon="person"
+            onChange={(v) => set({ assignee: v, collaborators: collaborators.filter((c) => c !== v) })}
+            render={(v) => <Tag color="var(--syn-color-secondary-dodger-blue)" shape="rounded">{personName(v)}</Tag>}
+          />
+        </Property>
+      </div>
+      <div className="td-props__line">
+        <span className="td-props__label"><Icon name="person" size={16} />Collaborators</span>
+        <span className="td-props__values">
+          {collaborators.map((c) => (
+            ro ? <Tag key={c}>{c}</Tag>
+              : <Tag key={c} removeIcon="x-in-circle" removeLabel={`Remove ${personName(c)}`} onRemove={() => set({ collaborators: collaborators.filter((x) => x !== c) })}>{c}</Tag>
+          ))}
+        </span>
+        {!ro && freePeople.length > 0 && (
+          <MenuButton label="Add collaborator" className="td-props__add-person" choices={freePeople} value="" align="end" onChange={(v) => set({ collaborators: [...collaborators, v] })}>
+            <Icon name="adduser" size={16} />
+          </MenuButton>
+        )}
+      </div>
+      <div className="td-props__line">
+        <span className="td-props__label"><Icon name="tag" size={16} />Tags</span>
+        <span className="td-props__values">
+          {tags.map((name) => (
+            ro ? <Tag key={name} color={tagColor(name)}>{name}</Tag>
+              : <Tag key={name} color={tagColor(name)} onRemove={() => set({ tags: tags.filter((x) => x !== name) })} removeLabel={`Remove ${name}`}>{name}</Tag>
+          ))}
+        </span>
+        {!ro && freeTags.length > 0 && (
+          <MenuButton label="Add tag" className="td-pick__empty td-props__add-tag" choices={freeTags} value="" align="end" onChange={(v) => set({ tags: [...tags, v] })}>
+            Add
+          </MenuButton>
+        )}
+      </div>
+    </div>
+  );
+}

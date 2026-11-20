@@ -2,7 +2,7 @@ import type { DragEvent, KeyboardEvent } from 'react';
 import { Icon, type IconName } from '@syn/design-system';
 import { ActionMenu, type MenuAction } from '@sam/shared';
 import {
-  cardDate, conditions, dueState, insuranceLabel, personName, priorities, type Condition, type Priority, type Task,
+  cardDate, conditions, dueState, insuranceLabel, personName, priorities, tagColor, type Condition, type Priority, type Task,
 } from '../data/werkstatt';
 
 const priorityIcon: Record<Priority, IconName> = { blocker: 'critical', high: 'up', medium: 'medium', low: 'down' };
@@ -38,15 +38,28 @@ export function DoneCheck({ done, title, onToggle }: { done: boolean; title: str
       className={done ? 'wk-check is-done' : 'wk-check'}
       onClick={(e) => { e.stopPropagation(); onToggle(); }}
     >
-      {done && <Icon name="check" size={12} />}
+      {done && <Icon name="dublecheck" size={14} />}
     </button>
   );
 }
 
-export function Assignee({ initials }: { initials?: string }) {
-  return initials
-    ? <span className="wk-assignee" title={personName(initials)}><span className="syn-text-crisp">{initials}</span><span className="wk-sr">Assigned to {personName(initials)}</span></span>
-    : <span className="wk-assignee is-empty"><Icon name="person" size={14} /><span className="wk-sr">Not assigned</span></span>;
+/**
+ * Figma "Assign user" (943:1044): the dashed circle when nobody is assigned, the Misty Rose initials of the assignee,
+ * and the collaborators stacked after it (Cultured, overlapping by 8px; "+N" past three).
+ */
+export function Assignee({ initials, others = [] }: { initials?: string; others?: string[] }) {
+  if (!initials && !others.length) {
+    return <span className="wk-assignee is-empty"><Icon name="person" size={14} /><span className="wk-sr">Not assigned</span></span>;
+  }
+  const people = [initials, ...others].filter(Boolean) as string[];
+  const shown = people.slice(0, 3);
+  return (
+    <span className="wk-assignees" title={people.map(personName).join(', ')}>
+      {shown.map((p, i) => <span key={p} className={i === 0 && initials ? 'wk-assignee' : 'wk-assignee is-other'} aria-hidden><span className="syn-text-crisp">{p}</span></span>)}
+      {people.length > 3 && <span className="wk-assignee is-other" aria-hidden>+{people.length - 3}</span>}
+      <span className="wk-sr">{initials ? `Assigned to ${personName(initials)}` : 'Not assigned'}{others.length ? `, with ${others.map(personName).join(', ')}` : ''}</span>
+    </span>
+  );
 }
 
 interface Props {
@@ -93,13 +106,18 @@ export function TaskCard({ task, actions, onOpen, onToggleDone, dragging, onDrag
       </header>
 
       <div className="wk-card__body">
-        {task.equipment && (
+        {task.equipment ? (
           <div className="wk-card__equipment">
             <img src={task.equipment.photo} alt="" className="wk-card__photo" />
             <div className="wk-card__equipment-text">
               <span className="wk-card__equipment-name syn-title-text">{task.equipment.name}</span>
               <span className="wk-muted">({task.equipment.number})</span>
             </div>
+          </div>
+        ) : (
+          <div className="wk-card__equipment is-none">
+            <span className="wk-card__photo is-none" aria-hidden><Icon name="equipment" size={20} /></span>
+            <span className="wk-card__equipment-name syn-title-text wk-muted">Nothing Assigned</span>
           </div>
         )}
         {due && task.due && (
@@ -139,13 +157,13 @@ export function TaskCard({ task, actions, onOpen, onToggleDone, dragging, onDrag
         )}
         {task.tags && task.tags.length > 0 && (
           <ul className="wk-card__tags" aria-label="Tags">
-            {task.tags.map((c, i) => <li key={`${c}-${i}`} style={{ color: c }}><Icon name="tagbookmark-filled" size={20} /></li>)}
+            {task.tags.map((name) => <li key={name} style={{ color: tagColor(name) }} title={name}><Icon name="tagbookmark-filled" size={20} /><span className="wk-sr">{name}</span></li>)}
           </ul>
         )}
       </div>
 
       <footer className="wk-card__footer">
-        <Assignee initials={task.assignee} />
+        <Assignee initials={task.assignee} others={task.collaborators} />
         <span className="wk-card__ticket"><Icon name="settings" size={16} />{task.ticket}</span>
         <span className="wk-card__counts">
           <span><Icon name="attach" size={16} />{task.attachments}<span className="wk-sr"> attachments</span></span>

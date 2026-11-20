@@ -2,10 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, 
 import {
   Button, Icon, IconButton, Notification, Segmented, Select, TextField,
 } from '@syn/design-system';
-import type { MenuAction } from '@sam/shared';
+import { notifications, type MenuAction } from '@sam/shared';
 import {
   boards as allBoards, incomingTask, initialArchive, initialTasks, personName, priorities,
-  type ArchivedItem, type Board, type Priority, type Task,
+  blankTask, type ArchivedItem, type Board, type Task,
 } from '../data/werkstatt';
 import { TaskCard } from './TaskCard';
 import { ArchivePanel } from './ArchivePanel';
@@ -15,14 +15,12 @@ import { ListView } from './ListView';
 import { TaskDrawer } from './TaskDrawer';
 import './Werkstatt.css';
 
-type Sort = 'manual' | 'due' | 'priority' | 'title';
-const sorts: Array<{ value: Sort; label: string }> = [
-  { value: 'manual', label: 'Manual order' },
-  { value: 'due', label: 'Due date' },
-  { value: 'priority', label: 'Priority' },
-  { value: 'title', label: 'Name' },
+/** Figma "Sort by" (963:11801): Creation date or Due date; until one is chosen the cards keep their manual order. */
+type Sort = 'manual' | 'created' | 'due';
+const sorts: Array<{ value: Sort; label: string; icon: 'sort' }> = [
+  { value: 'created', label: 'Creation date', icon: 'sort' },
+  { value: 'due', label: 'Due date', icon: 'sort' },
 ];
-const priorityRank: Record<Priority, number> = { blocker: 0, high: 1, medium: 2, low: 3 };
 
 function matches(t: Task, f: BoardFilters, search: string, priority: string) {
   const q = search.trim().toLowerCase();
@@ -45,8 +43,7 @@ function sortTasks(list: Task[], sort: Sort) {
   if (sort === 'manual') return list;
   const copy = [...list];
   if (sort === 'due') copy.sort((a, b) => (a.due ? Date.parse(a.due) : Infinity) - (b.due ? Date.parse(b.due) : Infinity));
-  if (sort === 'priority') copy.sort((a, b) => (a.priority ? priorityRank[a.priority] : 9) - (b.priority ? priorityRank[b.priority] : 9));
-  if (sort === 'title') copy.sort((a, b) => a.title.localeCompare(b.title));
+  if (sort === 'created') copy.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
   return copy;
 }
 
@@ -77,7 +74,12 @@ export function WerkstattPage({ startEmpty }: { startEmpty?: boolean }) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const archiveButton = useRef<HTMLButtonElement>(null);
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [openId, setOpenIdState] = useState<string | null>(null);
+  // The drawer: an open ticket of the board, an archived one (read only) or a new one being created.
+  const [drawerMode, setDrawerMode] = useState<'edit' | 'archived' | 'create'>('edit');
+  const [newTask, setNewTask] = useState<Task | null>(null);
+  const setOpenId = (id: string | null) => { setDrawerMode('edit'); setNewTask(null); setOpenIdState(id); };
+  const today = () => new Date().toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
   const [toast, setToast] = useState<{ title: string; by: string; at: string; ticket: string } | null>(null);
   const [dragId, setDragId] = useState<string | null>(null);
   const [dropAt, setDropAt] = useState<{ column: string; index: number } | null>(null);
@@ -89,6 +91,7 @@ export function WerkstattPage({ startEmpty }: { startEmpty?: boolean }) {
     const t = window.setTimeout(() => {
       setTasks((list) => (list.some((x) => x.id === incomingTask.id) ? list : [incomingTask, ...list]));
       setToast({ title: incomingTask.title, by: incomingTask.createdBy, at: incomingTask.createdAt, ticket: incomingTask.ticket });
+      notifications.add({ verb: 'Added', title: incomingTask.title, board: board.name, ticket: incomingTask.ticket, by: incomingTask.createdBy, at: incomingTask.createdAt });
     }, 1500);
     return () => window.clearTimeout(t);
   }, [board]);
@@ -136,32 +139,30 @@ export function WerkstattPage({ startEmpty }: { startEmpty?: boolean }) {
   };
   const archiveTask = (task: Task) => {
     setTasks((list) => list.filter((t) => t.id !== task.id));
-    setArchive((a) => [{
-      id: `a-${task.id}`, title: task.title, ticket: task.ticket, equipment: task.equipment?.name ?? '—',
-      date: new Date().toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }), by: personName('M.M'),
-      state: task.done ? 'done' : 'pending',
-    }, ...a]);
+    setArchive((a) => [{ task, by: personName('M.M'), at: today() }, ...a]);
     setAnnounce(`${task.title} archived`);
   };
   const restore = (id: string) => {
-    const item = archive.find((a) => a.id === id);
+    const item = archive.find((a) => a.task.id === id);
     if (!item) return;
-    setArchive((a) => a.filter((x) => x.id !== id));
-    const original = initialTasks.find((t) => `a-${t.id}` === id);
-    setTasks((list) => [...list, original ?? {
-      id: `r-${id}`, title: item.title, ticket: item.ticket, column: board?.columns[0].id ?? 'initial', done: item.state === 'done',
-      attachments: 0, comments: 0, createdBy: item.by, createdAt: new Date().toISOString(),
-    }]);
-    setAnnounce(`${item.title} restored`);
+    setArchive((a) => a.filter((x) => x.task.id !== id));
+    const column = board?.columns.some((c) => c.id === item.task.column) ? item.task.column : board?.columns[0].id ?? 'initial';
+    setTasks((list) => [...list, { ...item.task, column }]);
+    setAnnounce(`${item.task.title} restored`);
   };
-  const addTask = () => {
-    const id = `t-${Date.now()}`;
-    const task: Task = {
-      id, title: 'New task', ticket: `DR-${12458 + tasks.length}`, column: board?.columns[0].id ?? 'initial', done: false,
-      attachments: 0, comments: 0, createdBy: personName('M.M'), createdAt: new Date().toISOString(),
-    };
+  const deleteArchived = (id: string) => setArchive((a) => a.filter((x) => x.task.id !== id));
+  const openArchived = (id: string) => { setArchiveOpen(false); setNewTask(null); setDrawerMode('archived'); setOpenIdState(id); };
+  // Add Task (or a column's own "Add task") opens the empty ticket (Figma 946:12390); Submit puts it on the board.
+  const addTask = (column?: string) => {
+    setOpenIdState(null);
+    setDrawerMode('create');
+    setNewTask(blankTask(`t-${Date.now()}`, `DR-${12458 + tasks.length + archive.length}`, column ?? board?.columns[0].id ?? 'initial'));
+  };
+  const submitTask = (task: Task) => {
     setTasks((list) => [task, ...list]);
-    setOpenId(id);
+    setNewTask(null);
+    setToast({ title: task.title, by: task.createdBy, at: task.createdAt, ticket: task.ticket });
+    setAnnounce(`${task.title} added`);
   };
   const createBoard = () => { setBoards(allBoards); setBoardId(allBoards[0].id); };
 
@@ -188,7 +189,8 @@ export function WerkstattPage({ startEmpty }: { startEmpty?: boolean }) {
     setDragId(null); setDropAt(null);
   };
 
-  const openTask = tasks.find((t) => t.id === openId) ?? null;
+  const archivedOpen = drawerMode === 'archived' ? archive.find((a) => a.task.id === openId) : undefined;
+  const openTask = drawerMode === 'create' ? newTask : drawerMode === 'archived' ? archivedOpen?.task ?? null : tasks.find((t) => t.id === openId) ?? null;
 
   if (!board) {
     // Figma 1459:10561: the board, greyed under the page veil, with the message in the middle.
@@ -239,7 +241,7 @@ export function WerkstattPage({ startEmpty }: { startEmpty?: boolean }) {
           </MenuButton>
         </div>
         <div className="wk-head__actions">
-          <Button size="xs" iconStart="plus-in-circle" className="wk-head__add" onClick={addTask}>Add Task</Button>
+          <Button size="xs" iconStart="plus-in-circle" className="wk-head__add" onClick={() => addTask()}>Add Task</Button>
           <div className="wk-archive-anchor">
             <button
               ref={archiveButton} type="button" className="wk-head__archive" aria-label="Archived tasks" aria-expanded={archiveOpen}
@@ -250,7 +252,7 @@ export function WerkstattPage({ startEmpty }: { startEmpty?: boolean }) {
             {archiveOpen && (
               <ArchivePanel
                 items={archive} anchor={archiveButton.current}
-                onRestore={restore} onDelete={(id) => setArchive((a) => a.filter((x) => x.id !== id))}
+                onRestore={restore} onDelete={deleteArchived} onOpen={openArchived}
                 onClose={() => setArchiveOpen(false)}
               />
             )}
@@ -272,7 +274,7 @@ export function WerkstattPage({ startEmpty }: { startEmpty?: boolean }) {
               <Button variant="text" size="sm" iconStart="x-in-circle" className="wk-toolbar__reset" onClick={() => { setFilters(noFilters); setSearch(''); setPriority(''); }}>Reset filters</Button>
             )}
           </div>
-          <MenuButton label={`Sort by: ${sorts.find((s) => s.value === sort)?.label}`} className="wk-toolbar__sort" choices={sorts} value={sort} onChange={(v) => setSort(v as Sort)} align="end">
+          <MenuButton label={sort === 'manual' ? 'Sort by' : `Sort by: ${sorts.find((s) => s.value === sort)?.label}`} className="wk-toolbar__sort" choices={sorts} value={sort} onChange={(v) => setSort(v as Sort)} align="end" check={false}>
             <span>{sort === 'manual' ? 'Sort by' : sorts.find((s) => s.value === sort)?.label}</span><Icon name="down" size={14} />
           </MenuButton>
         </div>
@@ -327,6 +329,7 @@ export function WerkstattPage({ startEmpty }: { startEmpty?: boolean }) {
             actionsFor={actionsFor}
             onOpen={setOpenId}
             onToggleDone={(t) => update(t.id, { done: !t.done })}
+            archived={archive} onOpenArchived={openArchived} onRestore={restore} onAddTask={addTask}
           />
         )}
       </div>
@@ -364,9 +367,15 @@ export function WerkstattPage({ startEmpty }: { startEmpty?: boolean }) {
         onClose={() => setFiltersOpen(false)}
       />
       <TaskDrawer
-        task={openTask} columns={board.columns}
+        task={openTask} columns={board.columns} mode={drawerMode}
+        archived={archivedOpen ? { by: archivedOpen.by, at: archivedOpen.at } : undefined}
         onClose={() => setOpenId(null)}
-        onSave={(t) => { setTasks((list) => list.map((x) => (x.id === t.id ? t : x))); setOpenId(null); }}
+        onRestore={() => { if (openId) restore(openId); setOpenId(null); }}
+        onSave={(t) => {
+          if (drawerMode === 'create') submitTask(t);
+          else setTasks((list) => list.map((x) => (x.id === t.id ? t : x)));
+          setOpenId(null);
+        }}
       />
     </div>
   );

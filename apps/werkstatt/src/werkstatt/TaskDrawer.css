@@ -90,3 +90,116 @@
   .td-tile-row .td-photos { margin: var(--syn-space-12) 0 0; }
   .td-hours__row, .td-hours__row.is-form { grid-template-columns: 1fr; gap: var(--syn-space-12); }
 }
+
+/* Mark complete (946:15885): a dashed round box and the label; done, the Mantis "Completed" pill. */
+.td-complete {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--syn-space-6);
+  height: 28px;
+  padding: 0 var(--syn-space-12) 0 var(--syn-space-6);
+  border: 1px solid transparent;
+  border-radius: var(--syn-radius-full);
+  background: none;
+  color: var(--syn-text-primary);
+  font: var(--syn-type-text-body-xs);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.td-complete:hover:not(:disabled) { border-color: var(--syn-border-default); }
+.td-complete:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.td-complete:disabled { cursor: default; }
+.td-complete__box { width: 16px; height: 16px; border: 1px dashed var(--syn-border-strong); border-radius: var(--syn-radius-full); box-sizing: border-box; }
+.td-complete.is-done { background: var(--syn-color-success-mantis); color: var(--syn-color-white-white); }
+
+/* The head: name and description edit in place (1270:10373, 4728:45878). */
+.td-title__main { display: flex; flex: 1; flex-direction: column; gap: var(--syn-space-4); min-width: 0; }
+.td-inplace {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 calc(var(--syn-space-8) * -1);
+  padding: var(--syn-space-4) var(--syn-space-8);
+  border: 0;
+  border-radius: var(--syn-radius-element);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: text;
+}
+.td-inplace.is-multiline { width: auto; }
+.td-inplace:hover { background: var(--syn-color-grey-cultured); }
+.td-inplace:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 0; }
+.td-inplace .td-title__lead { margin: 0; }
+.td-inplace__field { max-width: 640px; }
+.td-inplace__field:has(textarea) { max-width: 1040px; }
+.td-create { display: flex; flex-direction: column; gap: var(--syn-space-12); max-width: 856px; }
+.td-error { margin: var(--syn-space-8) 0 0; color: var(--syn-text-error); font: var(--syn-type-text-body-xs-2); }
+.td-archived { display: flex; gap: var(--syn-space-32); margin: var(--syn-space-12) 0 0; }
+.td-archived dt { color: var(--syn-text-muted); font: var(--syn-type-text-caption-2); }
+.td-archived dd { margin: var(--syn-space-4) 0 0; font: var(--syn-type-text-body-xs); }
+.td-watermark { position: absolute; top: 72px; right: 220px; color: var(--syn-color-light-misty-rose); pointer-events: none; }
+.td-drawer .syn-drawer__body { position: relative; }
+
+/* Properties: Condition, Priority, Insurance, Due date and Assignee pick on click; X on hover clears (5318:21638…). */
+.td-props { display: flex; flex-direction: column; width: 100%; }
+.td-props__row { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--syn-space-24); padding-bottom: var(--syn-space-16); }
+.td-props__grid { flex: 1; max-width: 760px; }
+.td-props__line { display: flex; align-items: center; gap: var(--syn-space-16); min-height: 56px; border-top: 1px solid var(--syn-border-default); }
+.td-props__label { display: inline-flex; flex: none; align-items: center; gap: var(--syn-space-8); width: 120px; color: var(--syn-text-primary); font: var(--syn-type-text-body-xs-2); }
+.td-props__label .syn-icon { color: var(--syn-text-muted); }
+.td-props__values { display: flex; flex: 1; flex-wrap: wrap; gap: var(--syn-space-8); min-width: 0; }
+.td-props__add-person {
+  display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0;
+  border: 1px dashed var(--syn-border-muted); border-radius: var(--syn-radius-full); background: var(--syn-color-white-white); color: var(--syn-text-muted); cursor: pointer;
+}
+.td-props__add-person:hover { border-color: var(--syn-border-strong); color: var(--syn-text-primary); }
+.td-pick { position: relative; display: inline-flex; align-items: center; }
+.td-pick__value, .td-pick__empty { display: inline-flex; align-items: center; gap: var(--syn-space-4); padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+.td-pick__value:focus-visible, .td-pick__empty:focus-visible, .td-props__add-person:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; border-radius: var(--syn-radius-element); }
+.td-pick__empty {
+  height: 24px; min-width: 82px; justify-content: center; padding: 0 var(--syn-space-12);
+  border: 1px dashed var(--syn-border-muted); border-radius: var(--syn-radius-element); color: var(--syn-text-muted); font: var(--syn-type-text-body-xs-2);
+}
+.td-pick__empty:hover { border-color: var(--syn-border-strong); color: var(--syn-text-primary); }
+.td-pick__clear {
+  position: absolute; top: 50%; right: 6px; display: none; align-items: center; justify-content: center; width: 16px; height: 16px;
+  padding: 0; border: 0; border-radius: var(--syn-radius-full); background: none; color: inherit; transform: translateY(-50%); cursor: pointer;
+}
+.td-pick.has-value:hover .td-pick__clear, .td-pick.has-value:focus-within .td-pick__clear { display: inline-flex; }
+.td-pick.has-value:hover .td-pick__value > *, .td-pick.has-value:focus-within .td-pick__value > * { padding-right: 28px; }
+.td-pick:has(.wk-priority.is-blocker) .td-pick__clear { color: var(--syn-color-white-white); }
+.td-pick:has(.wk-condition.is-destroyed) .td-pick__clear { color: var(--syn-color-pending-honey); }
+.td-pick__panel {
+  position: absolute; top: calc(100% + var(--syn-space-4)); left: 0; z-index: 30; display: flex; flex-direction: column; gap: var(--syn-space-8);
+  width: 240px; padding: var(--syn-space-12); border: 1px solid var(--syn-border-default); border-radius: var(--syn-radius-element);
+  background: var(--syn-color-white-white); box-shadow: var(--syn-shadow-float);
+}
+.td-end .td-pick__panel, .td-end .wk-menu__panel { right: 0; left: auto; }
+.td-due { display: inline-flex; align-items: center; gap: var(--syn-space-4); height: 24px; padding: 0 var(--syn-space-12); border: 1px solid var(--syn-border-default); border-radius: var(--syn-radius-full); font: var(--syn-type-text-body-xs-2); }
+.td-due.is-overdue { border-color: var(--syn-surface-inverse); background: var(--syn-surface-inverse); color: var(--syn-color-white-white); }
+.td-due__note { color: var(--syn-color-pending-honey); }
+.td-pick:has(.td-due.is-overdue) .td-pick__clear { color: var(--syn-color-white-white); }
+
+/* Create ticket (946:12390): empty sections. */
+.td-inline { display: flex; align-items: center; gap: var(--syn-space-12); }
+.td-nothing { margin: 0; padding: var(--syn-space-16); color: var(--syn-text-muted); font: var(--syn-type-titles-title-5); text-align: center; }
+.td-empty-card .syn-card__body { padding: 0; }
+.td-empty-list { display: flex; flex-direction: column; align-items: center; gap: var(--syn-space-12); padding: var(--syn-space-12); color: var(--syn-text-muted); font: var(--syn-type-text-caption-2); }
+.td-add-new { min-width: 130px; border-style: dashed; border-color: var(--syn-border-muted); }
+.td-empty-table { margin-top: var(--syn-space-16); border-radius: var(--syn-radius-widget); background: var(--syn-color-white-white); overflow-x: auto; }
+.td-empty-table__head { display: grid; grid-template-columns: repeat(6, minmax(80px, 1fr)); padding: var(--syn-space-4) var(--syn-space-12); color: var(--syn-text-muted); font: var(--syn-type-text-caption-2); }
+.td-status { flex: none; width: 128px; }
+@media (max-width: 639px) {
+  .td-props__row { flex-direction: column; }
+  .td-props__label { width: auto; }
+  .td-props__line { flex-wrap: wrap; padding: var(--syn-space-8) 0; }
+  .td-watermark { right: 24px; }
+}
+.td-props-row { padding: var(--syn-space-16) var(--syn-space-16) 0 var(--syn-grid-margin); border-bottom: 1px solid var(--syn-border-default); }
+@media (max-width: 639px) { .td-props-row { padding-left: var(--syn-space-16); } }
+
+/* Syn Table scrolls sideways but is not positioned, so its visually hidden "Actions" header escapes the scroll box and widens
+   the drawer on phones. Positioning it keeps it inside (could move to Syn). */
+.td-drawer .syn-table { position: relative; }

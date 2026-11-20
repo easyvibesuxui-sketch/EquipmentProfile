@@ -37,8 +37,11 @@ export interface Task {
   hours?: number;
   priority?: Priority;
   condition?: Condition;
-  /** Tag bookmarks, as colours. */
+  /** Tag names (see `tagCatalog` for their colours); the card shows one bookmark per tag. */
   tags?: string[];
+  /** Initials of the people working with the assignee (the card stacks them after the assignee). */
+  collaborators?: string[];
+  description?: string;
   /** Initials of the assignee; none shows the dashed "assign" circle. */
   assignee?: string;
   attachments: number;
@@ -64,19 +67,24 @@ export const conditions: Array<{ value: Condition; label: string }> = [
 ];
 export const insuranceLabel: Record<Insurance, string> = { yes: 'Yes', no: 'No', 'not-relevant': 'Not relevant' };
 
-/** Tag bookmark colours from the cards: violet, Dodger Blue, Xanthous. */
-export const tagColors = {
-  violet: '#a200ff',
-  blue: 'var(--syn-color-secondary-dodger-blue)',
-  yellow: 'var(--syn-color-secondary-xanthous)',
-};
-const allTags = [tagColors.violet, tagColors.blue, tagColors.yellow];
+/** The tags a ticket can carry, with their colours (cards show them as bookmarks, the drawer as named tags). */
+export const tagCatalog: Array<{ name: string; color: string }> = [
+  { name: 'Caterpillar 6090', color: '#a200ff' },
+  { name: 'Komatsu PC8000', color: 'var(--syn-color-secondary-dodger-blue)' },
+  { name: 'Hitachi EX8000', color: 'var(--syn-color-secondary-xanthous)' },
+  { name: 'P&H 4100XPC', color: '#41a619' },
+  { name: 'Liebherr R9800', color: '#d46c2b' },
+];
+export const tagColor = (name: string) => tagCatalog.find((t) => t.name === name)?.color ?? 'var(--syn-color-secondary-silver-chalince)';
+const allTags = ['Caterpillar 6090', 'Komatsu PC8000', 'Hitachi EX8000'];
 
 export const people = [
   { initials: 'M.M', name: 'Max Mustermann' },
   { initials: 'A.S', name: 'Anna Schmidt' },
   { initials: 'L.M', name: 'Lukas Müller' },
   { initials: 'J.D', name: 'Jane Doe' },
+  { initials: 'J.S', name: 'John Smith' },
+  { initials: 'E.J', name: 'Emma Johnson' },
 ];
 export const personName = (initials?: string) => people.find((p) => p.initials === initials)?.name ?? initials ?? '';
 
@@ -103,7 +111,8 @@ const at = (days: number, h = 16, m = 45) => {
 const volvo = (photo: string) => ({ name: 'Volvo F509', number: '118874455', photo });
 const halensee = { name: 'Halensee Roadworks', city: 'Bremen', kind: 'project' as const };
 const lagerplatz = { name: 'Bremen Lagerplatz', city: 'Bremen', kind: 'warehouse' as const };
-const base = { ticket: 'DR-12457', attachments: 2, comments: 8, createdBy: 'Max Mustermann', createdAt: at(-14, 9, 30), resourceTotal: 440 };
+const lorem = 'A thorough damage investigation is essential for accurate claims processing. It generally outlines: Characteristics of the item';
+const base = { description: `${lorem} ${lorem}`, ticket: 'DR-12457', attachments: 2, comments: 8, createdBy: 'Max Mustermann', createdAt: at(-14, 9, 30), resourceTotal: 440 };
 
 export const initialTasks: Task[] = [
   { ...base, id: 't1', title: 'inventorysation', column: 'initial', done: false, hours: 8, priority: 'blocker' },
@@ -125,7 +134,7 @@ export const initialTasks: Task[] = [
   },
   {
     ...base, id: 't6', title: 'Engine check', column: 'done', done: true, equipment: volvo(damage1), due: at(-13), tookDays: 13,
-    location: halensee, insurance: 'no', hours: 8, priority: 'medium', condition: 'can-work', tags: allTags, assignee: 'M.M',
+    location: halensee, insurance: 'no', hours: 8, priority: 'medium', condition: 'can-work', tags: allTags, assignee: 'M.M', collaborators: ['A.S', 'L.M'],
   },
   {
     ...base, id: 't7', title: 'Engine check', column: 'finished', done: true, equipment: volvo(damage2), due: at(-13), tookDays: 13,
@@ -139,21 +148,25 @@ export const incomingTask: Task = {
   location: lagerplatz, insurance: 'no', priority: 'medium', condition: 'can-work', createdBy: 'Anna Schmidt', createdAt: new Date().toISOString(),
 };
 
-export interface ArchivedItem {
-  id: string;
-  title: string;
-  ticket: string;
-  equipment: string;
-  date: string;
-  by: string;
-  state: 'done' | 'pending';
-}
+/** The empty ticket of "Create ticket" (946:12390). */
+export const blankTask = (id: string, ticket: string, column: string): Task => ({
+  id, title: '', description: '', ticket, column, done: false, attachments: 0, comments: 0,
+  createdBy: 'Max Mustermann', createdAt: new Date().toISOString(),
+});
+
+/** An archived ticket: the ticket as it was, who archived it and when (Figma 8378:31073). */
+export interface ArchivedItem { task: Task; by: string; at: string }
+
+const archivedTask = (id: string, title: string, ticket: string, equipment: string, done: boolean): Task => ({
+  ...base, id, title, ticket, column: done ? 'done' : 'progress', done, equipment: { name: equipment, number: '118874455', photo: damage1 },
+  due: at(-20), location: halensee, insurance: 'yes', priority: 'blocker', condition: 'cant-work', tags: allTags, assignee: 'M.M',
+});
 
 export const initialArchive: ArchivedItem[] = [
-  { id: 'a1', title: 'Tire Title Rotation', ticket: 'TR-67890', equipment: 'Honda Accord', date: '01.01.2029', by: 'Max Mustermann', state: 'done' },
-  { id: 'a2', title: 'Brake Pad Replacement', ticket: 'BP-12345', equipment: 'Toyota Camry', date: '02.15.2029', by: 'Jane Doe', state: 'pending' },
-  { id: 'a3', title: 'Oil Change', ticket: 'OC-98765', equipment: 'Ford Fusion', date: '03.10.2029', by: 'John Smith', state: 'done' },
-  { id: 'a4', title: 'Battery Check', ticket: 'BC-54321', equipment: 'Nissan Altima', date: '04.05.2029', by: 'Emma Johnson', state: 'done' },
+  { task: archivedTask('a1', 'Tire Title Rotation', 'TR-67890', 'Honda Accord', true), by: 'Max Mustermann', at: '01.01.2029' },
+  { task: archivedTask('a2', 'Brake Pad Replacement', 'BP-12345', 'Toyota Camry', false), by: 'Jane Doe', at: '02.15.2029' },
+  { task: archivedTask('a3', 'Oil Change', 'OC-98765', 'Ford Fusion', true), by: 'John Smith', at: '03.10.2029' },
+  { task: archivedTask('a4', 'Battery Check', 'BC-54321', 'Nissan Altima', true), by: 'Emma Johnson', at: '04.05.2029' },
 ];
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];

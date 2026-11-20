@@ -1,4 +1,6 @@
-import { useState, type CSSProperties, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
+import { MaskIcon } from './MaskIcon';
+import { NotificationsBell } from './NotificationsBell';
 import { Button, Icon, Tooltip, type IconName } from '@syn/design-system';
 import expandIcon from '../assets/icons/nav-expand.png';
 import plannerIcon from '../assets/icons/nav-planner.png';
@@ -10,15 +12,9 @@ import productsIcon from '../assets/icons/nav-products.png';
 import invoicingIcon from '../assets/icons/nav-invoicing.png';
 import reportsIcon from '../assets/icons/nav-reports.png';
 import settingsIcon from '../assets/icons/nav-settings.png';
-import bellIcon from '../assets/icons/bell.png';
 import './AppShell.css';
 
-/** An icon cropped from the Figma frame, drawn as a mask so it takes the text colour. */
-export function MaskIcon({ src, size, className }: { src: string; size: number | [number, number]; className?: string }) {
-  const [w, h] = Array.isArray(size) ? size : [size, size];
-  const style = { '--mask': `url("${src}")`, width: w, height: h } as CSSProperties;
-  return <span aria-hidden className={['ep-mask-icon', className].filter(Boolean).join(' ')} style={style} />;
-}
+export { MaskIcon } from './MaskIcon';
 
 /** `icon` is a Figma PNG drawn as a mask; `synIcon` a Syn icon (the Werkstatt item, which has no PNG). */
 interface NavItem { id: string; label: string; hint: string; icon?: string; synIcon?: IconName }
@@ -82,9 +78,7 @@ function TopBar({ module }: { module: string }) {
       <p className="ep-topbar__brand" aria-hidden>SAM</p>
       <div className="ep-topbar__actions">
         <Button variant="secondary" size="sm" iconStart="plus-in-circle" className="ep-topbar__create">Create</Button>
-        <button type="button" className="ep-topbar__bell" aria-label="Notifications">
-          <MaskIcon src={bellIcon} size={[16, 18]} />
-        </button>
+        <NotificationsBell />
         <button
           type="button"
           className="ep-topbar__profile"

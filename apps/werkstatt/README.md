@@ -27,3 +27,25 @@ Files: `src/werkstatt/` and `src/data/werkstatt.ts`; the shell, the "..." menu a
 icons are Syn's and the photos are Syn's playground damage photos (`src/assets/werkstatt/`). Copy to confirm: "Hight" is written
 "High", "(Due 2 day)" "(Due 2 days)", and Filters' second "Assigned" field was dropped.
 
+
+## Tickets (second Figma batch)
+
+- **Create ticket** ([946:12390](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=946-12390)): Add Task (or a list group's
+  "..." → Add task) opens the empty ticket: Name and Additional information, every property on "Choose", empty Details, Template,
+  Custom fields, Checklist ("Add New") and Recources. Submit needs a name, then adds the card, the toast and a bell notification.
+- **Mark complete** ([946:15885](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=946-15885)): the drawer header toggles
+  "Mark complete" / the Mantis "Completed" pill; the card checkbox ([908:11126](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=908-11126))
+  shows the double check. Both fit phones.
+- **Editable head**: the name ([1270:10373](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=1270-10373)) and the description
+  ([4728:45878](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=4728-45878)) show Cultured on hover and edit in place
+  (Enter or leaving keeps, Escape drops). Condition, Priority, Insurance case, Due date (5318:21638 / 21685 / 21713 / 21738), Assignee,
+  Collaborators and Tags open a choice on click and show an X on hover that clears them; a past due date turns Eerie Black with "(Overdue)".
+  Update keeps the changes, Discard drops them.
+- **Cards** ([943:2627](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=943-2627)): "Nothing Assigned" when no equipment;
+  assignee and collaborators stacked ([943:1044](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=943-1044)).
+- **Sort by** ([963:11801](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=963-11801)): Creation date or Due date.
+- **Archived**: a ticket of the Archived panel opens read only ([8378:31073](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=8378-31073)),
+  with Archived by / Archived Date and Restore; the list ends with the Archived line
+  ([7877:29034](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=7877-29034)); empty groups show "Nothing yet".
+- **Bell** (in `@sam/shared`, both apps): the Notifications panel (13147:57773, empty 13207:36438, kinds 17097:18601, 16686:65458,
+  15926:55884) with the on/off switch, unread Snow cards with a red dot, a click marks one read, "Mark all as read".

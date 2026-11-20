@@ -7,8 +7,9 @@ import type { ArchivedItem } from '../data/werkstatt';
  * A search over the archived tasks, each with Restore and Delete; "Nothing Archived yet" when the list is empty
  * or the search finds nothing.
  */
-export function ArchivePanel({ items, onRestore, onDelete, onClose, anchor }: {
+export function ArchivePanel({ items, onRestore, onDelete, onOpen, onClose, anchor }: {
   items: ArchivedItem[];
+  onOpen: (id: string) => void;
   onRestore: (id: string) => void;
   onDelete: (id: string) => void;
   onClose: () => void;
@@ -17,7 +18,7 @@ export function ArchivePanel({ items, onRestore, onDelete, onClose, anchor }: {
   const [query, setQuery] = useState('');
   const root = useRef<HTMLDivElement>(null);
   const q = query.trim().toLowerCase();
-  const shown = q ? items.filter((i) => [i.title, i.ticket, i.equipment, i.by].some((s) => s.toLowerCase().includes(q))) : items;
+  const shown = q ? items.filter((i) => [i.task.title, i.task.ticket, i.task.equipment?.name ?? '', i.by].some((s) => s.toLowerCase().includes(q))) : items;
 
   useEffect(() => {
     root.current?.querySelector('input')?.focus();
@@ -43,27 +44,27 @@ export function ArchivePanel({ items, onRestore, onDelete, onClose, anchor }: {
         </div>
       ) : (
         <ul className="wk-archive__list">
-          {shown.map((item) => (
-            <li key={item.id} className="wk-archive__item">
+          {shown.map(({ task, by, at }) => (
+            <li key={task.id} className="wk-archive__item">
               <Icon name="archive" size={64} className="wk-archive__watermark" />
               <div className="wk-archive__head">
-                <div>
-                  <p className="wk-archive__title syn-title-text">{item.title}</p>
-                  <p className="wk-archive__ticket">{item.ticket}</p>
-                </div>
+                <button type="button" className="wk-archive__open" onClick={() => onOpen(task.id)} aria-label={`Open ${task.title}, ${task.ticket}`}>
+                  <span className="wk-archive__title syn-title-text">{task.title}</span>
+                  <span className="wk-archive__ticket">{task.ticket}</span>
+                </button>
                 <span className="wk-archive__actions">
-                  <IconButton icon="refresh-change" label={`Restore ${item.title}`} variant="outline" tooltipPlacement="left" onClick={() => onRestore(item.id)} />
-                  <IconButton icon="trash-bin" label={`Delete ${item.title}`} variant="outline" tooltipPlacement="left" onClick={() => onDelete(item.id)} />
+                  <IconButton icon="refresh-change" label={`Restore ${task.title}`} variant="outline" tooltipPlacement="left" onClick={() => onRestore(task.id)} />
+                  <IconButton icon="trash-bin" label={`Delete ${task.title}`} variant="outline" tooltipPlacement="left" onClick={() => onDelete(task.id)} />
                 </span>
               </div>
               <div className="wk-archive__info">
                 <div>
-                  <p className="wk-archive__equipment syn-title-text">{item.equipment}</p>
-                  <p className="wk-archive__meta">{item.date} <span className="wk-muted">by</span> {item.by}</p>
+                  <p className="wk-archive__equipment syn-title-text">{task.equipment?.name ?? 'Nothing Assigned'}</p>
+                  <p className="wk-archive__meta">{at} <span className="wk-muted">by</span> {by}</p>
                 </div>
                 <span className="wk-archive__state">
-                  <ColorDot color={item.state === 'done' ? 'var(--syn-color-success-mantis)' : 'var(--syn-color-secondary-amber)'} />
-                  {item.state === 'done' ? 'Done' : 'Pending'}
+                  <ColorDot color={task.done ? 'var(--syn-color-success-mantis)' : 'var(--syn-color-secondary-amber)'} />
+                  {task.done ? 'Done' : 'Pending'}
                 </span>
               </div>
             </li>
