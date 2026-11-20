@@ -463,8 +463,8 @@
   padding: var(--syn-space-8);
   border-radius: var(--syn-radius-element);
   background: var(--syn-color-light-smoke);
-  overflow: hidden;
 }
+/* The Restore and Delete tooltips open to the left, inside the scrolling list (above, the list would clip them). */
 .wk-archive__watermark { position: absolute; top: 12px; left: 174px; color: var(--syn-color-light-misty-rose); pointer-events: none; }
 .wk-archive__head, .wk-archive__info { position: relative; display: flex; align-items: flex-start; justify-content: space-between; gap: var(--syn-space-8); }
 .wk-archive__info { align-items: flex-end; }

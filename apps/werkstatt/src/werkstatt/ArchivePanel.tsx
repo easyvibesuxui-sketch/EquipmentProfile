@@ -52,8 +52,8 @@ export function ArchivePanel({ items, onRestore, onDelete, onClose, anchor }: {
                   <p className="wk-archive__ticket">{item.ticket}</p>
                 </div>
                 <span className="wk-archive__actions">
-                  <IconButton icon="refresh-change" label={`Restore ${item.title}`} variant="outline" onClick={() => onRestore(item.id)} />
-                  <IconButton icon="trash-bin" label={`Delete ${item.title}`} variant="outline" onClick={() => onDelete(item.id)} />
+                  <IconButton icon="refresh-change" label={`Restore ${item.title}`} variant="outline" tooltipPlacement="left" onClick={() => onRestore(item.id)} />
+                  <IconButton icon="trash-bin" label={`Delete ${item.title}`} variant="outline" tooltipPlacement="left" onClick={() => onDelete(item.id)} />
                 </span>
               </div>
               <div className="wk-archive__info">
