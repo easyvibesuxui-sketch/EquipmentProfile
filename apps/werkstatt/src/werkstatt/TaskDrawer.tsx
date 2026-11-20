@@ -138,7 +138,7 @@ function CompleteToggle({ done, onToggle, disabled }: { done: boolean; onToggle:
   return (
     <button type="button" className={done ? 'td-complete is-done' : 'td-complete'} aria-pressed={done} disabled={disabled} onClick={onToggle}>
       {done ? <Icon name="dublecheck" size={14} /> : <span className="td-complete__box" aria-hidden />}
-      {done ? 'Completed' : 'Mark complete'}
+      <span className="td-complete__label">{done ? 'Completed' : 'Mark complete'}</span>
     </button>
   );
 }
@@ -217,6 +217,21 @@ export function TaskDrawer({ task, mode = 'edit', archived, columns, onClose, on
       label={creating ? 'New ticket' : t.title}
       className={ro ? 'td-drawer is-archived' : 'td-drawer'}
       headerStart={<>
+        {/* Figma 3140:10483: the statuses with their dots, always in the header's left corner; Archived archives the ticket. */}
+        <MenuButton
+          label={`Status: ${ro ? 'Archived' : columns.find((c) => c.id === t.column)?.label}. Change`} className={`td-status is-${ro ? 'archived' : t.column}`}
+          align="start" check={false} className2="td-pick__menu"
+          choices={[...columns.map((c) => ({ value: c.id, label: c.label, dot: c.color })), ...(creating ? [] : [{ value: 'archived', label: 'Archived', dot: 'var(--syn-color-white-white)' }])]}
+          value={ro ? 'archived' : t.column}
+          onChange={(v) => {
+            if (ro) return;
+            if (v === 'archived') { onArchive?.(t); return; }
+            setDraft({ ...t, column: v, done: columns.find((c) => c.id === v)?.done ?? t.done });
+          }}
+        >
+          <span className="td-status__dot" style={{ background: ro ? 'var(--syn-color-white-white)' : columns.find((c) => c.id === t.column)?.color }} aria-hidden />
+          {ro ? 'Archived' : columns.find((c) => c.id === t.column)?.label}<Icon name="down" size={12} />
+        </MenuButton>
         <CompleteToggle done={t.done} disabled={ro} onToggle={() => setDraft({ ...t, done: !t.done })} />
         {!creating && <span className="td-id"><Icon name="settings" size={16} />{t.ticket}</span>}
       </>}
@@ -248,21 +263,6 @@ export function TaskDrawer({ task, mode = 'edit', archived, columns, onClose, on
       <DrawerRow>
         <div className="td-title">
           <TicketTitle task={t} mode={mode} archived={archived} onChange={setDraft} />
-          {/* Figma 3140:10483: the statuses with their dots; Archived archives the ticket. */}
-          <MenuButton
-            label={`Status: ${ro ? 'Archived' : columns.find((c) => c.id === t.column)?.label}. Change`} className={`td-status is-${ro ? 'archived' : t.column}`}
-            align="end" check={false} className2="td-pick__menu"
-            choices={[...columns.map((c) => ({ value: c.id, label: c.label, dot: c.color })), ...(creating ? [] : [{ value: 'archived', label: 'Archived', dot: 'var(--syn-color-white-white)' }])]}
-            value={ro ? 'archived' : t.column}
-            onChange={(v) => {
-              if (ro) return;
-              if (v === 'archived') { onArchive?.(t); return; }
-              setDraft({ ...t, column: v, done: columns.find((c) => c.id === v)?.done ?? t.done });
-            }}
-          >
-            <span className="td-status__dot" style={{ background: ro ? 'var(--syn-color-white-white)' : columns.find((c) => c.id === t.column)?.color }} aria-hidden />
-            {ro ? 'Archived' : columns.find((c) => c.id === t.column)?.label}<Icon name="down" size={12} />
-          </MenuButton>
         </div>
         {tried && missing && <p className="td-error" role="alert">Give the ticket a name to submit it.</p>}
       </DrawerRow>

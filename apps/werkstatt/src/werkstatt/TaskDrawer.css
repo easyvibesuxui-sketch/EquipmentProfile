@@ -238,3 +238,12 @@
 .td-move__label { position: relative; top: var(--syn-title-offset); font: var(--syn-type-titles-title-5); }
 .td-move__go { align-self: flex-start; min-width: 100px; }
 @media (max-width: 639px) { .td-move { position: fixed; top: 72px; right: 16px; left: 16px; width: auto; } }
+
+/* Phones: the header keeps Status, the round Mark complete box (its label for screen readers) and the ticket id clear of the buttons. */
+@media (max-width: 639px) {
+  .td-drawer .syn-drawer__header-start { gap: var(--syn-space-8); }
+  .td-complete { padding: 0 var(--syn-space-4); }
+  .td-complete__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .td-id { white-space: nowrap; }
+  .td-drawer .syn-drawer__header-actions { gap: 0; }
+}
