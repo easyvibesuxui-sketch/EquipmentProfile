@@ -74,6 +74,8 @@
 .td-cost strong { position: relative; top: var(--syn-title-offset); color: var(--syn-status-info); font: var(--syn-type-titles-title-5); }
 .td-add-file { border: 1px dashed var(--syn-border-muted); color: var(--syn-color-secondary-silver-chalince); }
 .td-activity { display: flex; flex-direction: column; gap: var(--syn-space-32); margin: var(--syn-space-32) var(--syn-space-16) 0 var(--syn-grid-margin); }
+/* The switcher keeps its own width: the column would stretch its Cultured track across the drawer. */
+.td-activity > .syn-segmented { align-self: flex-start; }
 .td-comments { display: flex; flex-direction: column; gap: var(--syn-space-32); }
 .td-reply { min-width: 108px; }
 .td-update { min-width: 168px; }
