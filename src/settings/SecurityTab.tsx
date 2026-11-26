@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Switch } from '@syn/design-system';
+import { Notification, Switch } from '@syn/design-system';
 import { MaskIcon } from '../layout/AppShell';
 import illustration from '../assets/settings/login-security.svg';
 
@@ -80,13 +80,16 @@ function MethodGlyph({ id }: { id: LoginMethodId }) {
 export function SecurityTab() {
   const [enabled, setEnabled] = useState<Enabled>(load);
   const [announcement, setAnnouncement] = useState('');
+  // The method the admin just tried to turn off while it was the only one on (Figma: the "All off" warning).
+  const [blocked, setBlocked] = useState<LoginMethod | null>(null);
   useEffect(() => {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(enabled)); } catch { /* storage unavailable */ }
   }, [enabled]);
 
   const onCount = Object.values(enabled).filter(Boolean).length;
   const toggle = (m: LoginMethod, on: boolean) => {
-    if (!on && onCount <= 1) return;
+    if (!on && onCount <= 1) { setBlocked(m); return; }
+    setBlocked(null);
     setEnabled((e) => ({ ...e, [m.id]: on }));
     setAnnouncement(`${m.name} sign-in turned ${on ? 'on' : 'off'}.`);
   };
@@ -101,6 +104,11 @@ export function SecurityTab() {
         <h2 className="ep-security__title">Log in options</h2>
         <p className="ep-security__count">{onCount} of {loginMethods.length} methods on</p>
       </header>
+      {blocked && (
+        <Notification tone="warning" title="At least one sign-in method has to stay on" className="ep-security__warning" onClose={() => setBlocked(null)}>
+          {blocked.name} is the only method on. Without it nobody in your organization could sign in to SAM. Turn on another method first.
+        </Notification>
+      )}
       <ul className="ep-security__grid">
         {loginMethods.map((m) => {
           const on = enabled[m.id];

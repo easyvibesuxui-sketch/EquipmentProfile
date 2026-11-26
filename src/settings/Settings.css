@@ -119,6 +119,7 @@
   height: 158px !important;
   color: var(--syn-color-light-misty-rose);
 }
+.ep-security__warning.syn-notification { width: 100%; max-width: none; } /* full width above the cards, as in Figma */
 .ep-security__count { margin: calc(var(--syn-space-24) * -1) 0 0; color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
 .ep-security__intro { margin: 0; color: var(--syn-text-muted); font: var(--syn-type-text-body-s); }
 .ep-security__title { margin: 0; color: var(--syn-text-primary); font: var(--syn-type-titles-title-3); }
