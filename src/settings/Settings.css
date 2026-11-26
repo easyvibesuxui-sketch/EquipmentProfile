@@ -145,7 +145,8 @@
 }
 .ep-login-card__head { display: flex; align-items: center; justify-content: space-between; gap: var(--syn-space-12); min-height: 24px; }
 .ep-login-card__name { margin: 0; color: var(--syn-text-primary); font: var(--syn-type-titles-title-5); }
-.ep-login-card__body { display: flex; flex-direction: column; gap: var(--syn-space-24); margin: 0; padding-right: 96px; }
+/* Owner's comment: more air under the title row, so "How it works" starts lower (8px card gap + 24px = 32px). */
+.ep-login-card__body { display: flex; flex-direction: column; gap: var(--syn-space-24); margin: var(--syn-space-24) 0 0; padding-right: 96px; }
 .ep-login-card__field { display: flex; flex-direction: column; gap: var(--syn-space-8); }
 .ep-login-card__field dt { color: var(--syn-text-muted); font: var(--syn-type-titles-title-5); }
 .ep-login-card__field dd { margin: 0; color: var(--syn-text-primary); font: var(--syn-type-titles-title-4); }
