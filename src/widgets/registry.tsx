@@ -8,6 +8,8 @@ import {
   BglWidget, CalculationTypeWidget, EquipmentDetailsWidget, FilesWidget, MaintenanceWidget, TechnicalChecksWidget, WorkshopWidget,
 } from '../overview/moreWidgets';
 import { TelemetryHero, TrackerWidget } from '../telemetry/TelemetryTab';
+import { LottiePreview } from './previews/LottiePreview';
+import locationLottie from './previews/current-location.json';
 
 export type WidgetCategory = 'overview' | 'specifications' | 'documents' | 'connected' | 'telemetry';
 
@@ -43,6 +45,11 @@ export interface WidgetDef {
   description?: string;
   /** The smallest the widget may be: boxes across (a box is 3 of the 12 columns) by rows of 213px. */
   minSize: MinSize;
+  /**
+   * What Manage Widgets previews instead of the live widget: the same for every user (no one's own data). For now
+   * only Current location (a Lottie animation); the others preview the live widget.
+   */
+  preview?: () => ReactNode;
 }
 
 /** Figma "Min Size 2/1 box": boxes across / rows down. */
@@ -92,7 +99,7 @@ const connectedOn = new Set<ConnectedId>(['primary', 'linked', 'inventory', 'cre
 /** Every widget the Overview can show, in the default order of the page. */
 const widgetList: Array<Omit<WidgetDef, 'minSize'>> = [
   { id: 'technical-specifications', category: 'specifications', label: 'Technical specifications', size: half3, defaultOn: true, description: 'Key technical data: displacement, lifting capacity and height, dimensions, speed and power.', render: () => <SpecificationsWidget /> },
-  { id: 'current-location', category: 'overview', label: 'Current location', size: { span: 6, fit: 'wide' }, defaultOn: true, description: 'Map with the last known position of the equipment.', render: () => <LocationWidget /> },
+  { id: 'current-location', category: 'overview', label: 'Current location', size: { span: 6, fit: 'wide' }, defaultOn: true, description: 'Map with the last known position of the equipment.', render: () => <LocationWidget />, preview: () => <LottiePreview data={locationLottie} label="Animated example: a map where a pin drops on the equipment's position and pulses" /> },
   { id: 'specific-machine-information', category: 'specifications', label: 'Specific machine information', size: half3, defaultOn: true, description: 'Identifiers of this machine: inventory number, UEID, serial number, number plate and VIN.', render: () => <IdentificationsWidget /> },
   ...connectedOrder.map((id): Omit<WidgetDef, 'minSize'> => ({
     id: `connected-${id}`, category: 'connected', label: connectedLabels[id], size: half3, defaultOn: connectedOn.has(id),

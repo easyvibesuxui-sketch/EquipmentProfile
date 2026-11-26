@@ -223,9 +223,11 @@ export function ManageWidgetsDrawer({ open, scope, layout, org, canAddAny, onCha
                         <div className="ep-widgets-preview" id={previewId}>
                           <div className="ep-widgets-preview__stage">
                             <div className="ep-widgets-preview__card" {...{ inert: '' }}>
-                              <PreviewBody span={w.size.span} rows={w.size.rows ?? 2}>
-                                {w.render ? w.render() : <DependenceWidget rows={[connectedIdOf(id)]} />}
-                              </PreviewBody>
+                              {w.preview ? w.preview() : (
+                                <PreviewBody span={w.size.span} rows={w.size.rows ?? 2}>
+                                  {w.render ? w.render() : <DependenceWidget rows={[connectedIdOf(id)]} />}
+                                </PreviewBody>
+                              )}
                             </div>
                           </div>
                           <div className="ep-widgets-preview__foot">

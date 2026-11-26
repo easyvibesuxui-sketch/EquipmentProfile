@@ -168,3 +168,7 @@
 /* A widget the organization does not show, in the You view. */
 .ep-widgets-row__label { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--syn-space-4) var(--syn-space-8); }
 .ep-widgets-row__note { color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+
+/* A preview animation (Lottie) fills the 560 x 320 card. */
+.ep-widgets-preview__card .ep-lottie { width: 100%; height: 100%; overflow: hidden; border-radius: var(--syn-radius-widget); }
+.ep-widgets-preview__card .ep-lottie svg { display: block; }
