@@ -1,0 +1,190 @@
+/* Settings (Figma 17974:62558): a 320px white secondary navigation, then the content with the tab bar.
+   Values are the Figma ones; colours, spacing and type come from Syn tokens. */
+.ep-settings {
+  display: flex;
+  gap: var(--syn-space-2);
+  min-height: calc(100vh - 56px - var(--syn-space-16) - var(--syn-space-40));
+}
+
+/* Secondary navigation */
+.ep-settings-nav {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 320px;
+  padding: var(--syn-space-24) var(--syn-space-8);
+  border-radius: var(--syn-radius-widget) 0 0 var(--syn-radius-widget);
+  background: var(--syn-color-white-white);
+}
+.ep-settings-nav__list { display: flex; flex-direction: column; gap: var(--syn-space-2); margin: 0; padding: 0; list-style: none; }
+.ep-settings-nav__item {
+  display: flex;
+  align-items: center;
+  gap: var(--syn-space-6);
+  width: 100%;
+  padding: var(--syn-space-12) var(--syn-space-8);
+  border: 0;
+  border-left: 2px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--syn-text-primary);
+  font: var(--syn-type-titles-title-4);
+  text-align: left;
+  cursor: pointer;
+}
+.ep-settings-nav__item:hover { background: var(--syn-surface-muted); }
+.ep-settings-nav__item[aria-current='page'] { border-left-color: var(--syn-action-brand); background: rgba(255, 25, 0, 0.05); } /* Figma: Candy Apple at 5% */
+.ep-settings-nav__item:focus-visible { outline: 2px solid var(--syn-status-info); outline-offset: -2px; }
+.ep-settings-nav__icon { flex: none; color: var(--syn-text-muted); }
+.ep-settings-nav__label { flex: 1; min-width: 0; }
+.ep-settings-nav__beta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 16px;
+  border-radius: 20px;
+  background: rgba(69, 154, 247, 0.16); /* Figma: Dodger Blue at 16% */
+  color: var(--syn-color-secondary-dodger-blue);
+  font: var(--syn-type-text-caption-1);
+}
+
+/* Content: the tab bar on white, then the panel */
+.ep-settings__content {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  border: 2px solid var(--syn-color-white-white);
+  border-radius: 0 0 var(--syn-radius-widget) 0;
+}
+.ep-settings-tabs {
+  display: flex;
+  gap: var(--syn-space-4);
+  min-height: 44px;
+  padding: var(--syn-space-4) var(--syn-space-16);
+  border-radius: 0 var(--syn-radius-widget) 0 0;
+  background: var(--syn-color-white-white);
+  overflow-x: auto;
+}
+.ep-settings-tabs__tab {
+  flex: none;
+  width: 180px;
+  height: 36px;
+  padding: 0 var(--syn-space-16) 0 var(--syn-space-12);
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  color: var(--syn-text-disabled);
+  font: var(--syn-type-titles-title-5);
+  text-align: left;
+  cursor: pointer;
+}
+.ep-settings-tabs__tab:hover { color: var(--syn-text-primary); }
+.ep-settings-tabs__tab[aria-selected='true'] { border-bottom-color: var(--syn-action-brand); color: var(--syn-text-primary); }
+.ep-settings-tabs__tab:focus-visible { outline: 2px solid var(--syn-status-info); outline-offset: -2px; }
+.ep-settings__panel { display: flex; flex: 1; flex-direction: column; padding: var(--syn-space-12); }
+.ep-settings__placeholder { margin: 0; padding: var(--syn-space-16); border-radius: var(--syn-radius-widget); background: var(--syn-color-white-white); color: var(--syn-text-muted); font: var(--syn-type-text-body-s); flex: 1; }
+
+/* Security: the white sheet with the owner's illustration in the background */
+.ep-security {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--syn-space-32);
+  padding: var(--syn-space-16);
+  border-radius: var(--syn-radius-widget);
+  background: var(--syn-color-white-white);
+  overflow: hidden;
+}
+.ep-security__head {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  gap: var(--syn-space-32);
+  min-height: 120px;
+  padding-right: 200px;
+}
+/* The owner's illustration, drawn in Misty Rose behind the heading (its 436 x 405 shape, scaled down). */
+.ep-security__illustration.ep-mask-icon {
+  position: absolute;
+  top: calc(var(--syn-space-4) * -1);
+  right: var(--syn-space-16);
+  z-index: -1;
+  width: 170px !important;
+  height: 158px !important;
+  color: var(--syn-color-light-misty-rose);
+}
+.ep-security__count { margin: calc(var(--syn-space-24) * -1) 0 0; color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+.ep-security__intro { margin: 0; color: var(--syn-text-muted); font: var(--syn-type-text-body-s); }
+.ep-security__title { margin: 0; color: var(--syn-text-primary); font: var(--syn-type-titles-title-3); }
+.ep-security__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--syn-space-32);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* A sign-in method: Figma "Witget With Slot" (246px, 12px corners, the default shadow); the toggle sits in Slot2 */
+.ep-login-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--syn-space-8);
+  min-height: 246px;
+  padding: var(--syn-space-12) var(--syn-space-12) var(--syn-space-16);
+  border-radius: var(--syn-radius-widget);
+  background: var(--syn-color-white-white);
+  box-shadow: var(--syn-shadow-default);
+}
+.ep-login-card__head { display: flex; align-items: center; justify-content: space-between; gap: var(--syn-space-12); min-height: 24px; }
+.ep-login-card__name { margin: 0; color: var(--syn-text-primary); font: var(--syn-type-titles-title-5); }
+.ep-login-card__body { display: flex; flex-direction: column; gap: var(--syn-space-24); margin: 0; padding-right: 96px; }
+.ep-login-card__field { display: flex; flex-direction: column; gap: var(--syn-space-8); }
+.ep-login-card__field dt { color: var(--syn-text-muted); font: var(--syn-type-titles-title-5); }
+.ep-login-card__field dd { margin: 0; color: var(--syn-text-primary); font: var(--syn-type-titles-title-4); }
+.ep-login-card__hint { margin: 0; padding-right: 96px; color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
+.ep-login-card__icon {
+  position: absolute;
+  right: var(--syn-space-12);
+  bottom: var(--syn-space-16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 40px;
+  background: var(--syn-surface-muted);
+  color: var(--syn-text-disabled);
+  transition: background-color 0.2s, color 0.2s;
+}
+.ep-login-card.is-on .ep-login-card__icon { background: var(--syn-color-light-misty-rose); color: var(--syn-text-primary); }
+
+@media (max-width: 1199px) {
+  .ep-settings-nav { width: 240px; }
+}
+@media (max-width: 899px) {
+  .ep-settings { flex-direction: column; }
+  .ep-settings-nav { width: auto; border-radius: var(--syn-radius-widget) var(--syn-radius-widget) 0 0; padding: var(--syn-space-8); }
+  .ep-settings-nav__list { flex-direction: row; flex-wrap: wrap; }
+  .ep-settings-tabs { border-radius: 0; }
+  .ep-security__grid { grid-template-columns: minmax(0, 1fr); }
+  .ep-security__head { padding-right: 96px; }
+  .ep-security__illustration.ep-mask-icon { right: 0; width: 96px !important; height: 89px !important; }
+}
+@media (max-width: 599px) {
+  .ep-security__head { min-height: 0; padding-right: 0; }
+  .ep-security__illustration.ep-mask-icon { display: none; }
+  .ep-login-card { min-height: 0; padding-bottom: var(--syn-space-12); }
+  .ep-login-card__body { padding-right: 0; }
+  .ep-login-card__hint { padding-right: 56px; }
+  .ep-login-card__icon { position: static; align-self: flex-end; width: 48px; height: 48px; margin-top: calc(var(--syn-space-48) * -1); }
+  .ep-login-card__icon svg { width: 24px; height: 24px; }
+}
+@media (prefers-reduced-motion: reduce) { .ep-login-card__icon { transition: none; } }
