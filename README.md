@@ -20,8 +20,9 @@ applies at once (a screen-reader message confirms it). At least one method alway
 disabled with a note, so nobody is locked out. The choice is kept in this browser (`sam.settings.loginMethods`) until
 there is an API. The draft's sample values (email, password, two-factor) were replaced by what the method does and its
 status, since this page only switches methods. The owner's monitor-and-shield illustration sits behind the heading in
-Misty Rose (hidden on phones). The Figma icons could not be downloaded here, so the side menu uses Syn icons and the
-card shield is drawn in the app. Other sections and tabs show "not designed yet".
+Misty Rose (hidden on phones). The Figma icons could not be downloaded here, so the side menu uses Syn icons. Each card shows its method's own
+icon instead of the draft's shield (owner's comment): an envelope, an office building, and the Google and Microsoft
+logos, which turn grey while the method is off. Other sections and tabs show "not designed yet".
 
 ## Empty states
 

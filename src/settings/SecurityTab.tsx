@@ -28,11 +28,47 @@ function load(): Enabled {
   } catch { return defaults; }
 }
 
-/** Figma "shield" (32px) in the card's 80px Icon Area. Drawn here: Figma's asset could not be downloaded. */
-function ShieldGlyph() {
+/**
+ * Each method's own mark in the card's 80px Icon Area (the owner asked for icons that match the method):
+ * an envelope with password dots, an office building, and the Google and Microsoft logos.
+ * Line icons take the text colour; the logos keep their colours and turn grey while the method is off.
+ */
+function MethodGlyph({ id }: { id: LoginMethodId }) {
+  const common = { width: 32, height: 32, 'aria-hidden': true, focusable: false } as const;
+  if (id === 'password') {
+    return (
+      <svg {...common} viewBox="0 0 32 32" fill="none">
+        <rect x="3.5" y="7.5" width="25" height="17" rx="2.5" stroke="currentColor" strokeWidth="1.6" />
+        <path d="m4.5 9 11.5 8.5L27.5 9" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+        <circle cx="21" cy="27.5" r="1.3" fill="currentColor" /><circle cx="25" cy="27.5" r="1.3" fill="currentColor" /><circle cx="29" cy="27.5" r="1.3" fill="currentColor" />
+      </svg>
+    );
+  }
+  if (id === 'corporate') {
+    return (
+      <svg {...common} viewBox="0 0 32 32" fill="none">
+        <path d="M6 28V6.5A1.5 1.5 0 0 1 7.5 5h11A1.5 1.5 0 0 1 20 6.5V28M20 13h5.5a1.5 1.5 0 0 1 1.5 1.5V28M3.5 28h25" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M10 10h2M14 10h2M10 14.5h2M14 14.5h2M10 19h2M14 19h2M23 18h1M23 22h1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        <path d="M11.5 28v-4h3v4" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+  if (id === 'google') {
+    return (
+      <svg {...common} viewBox="0 0 48 48">
+        <path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.6C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.7-.4-3.9z" />
+        <path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.6C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" />
+        <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2A11.9 11.9 0 0 1 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z" />
+        <path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3a12 12 0 0 1-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.7-.4-3.9z" />
+      </svg>
+    );
+  }
   return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden focusable="false">
-      <path d="M16 4.5 6.5 8v7.2c0 5.9 4 10.6 9.5 12.3 5.5-1.7 9.5-6.4 9.5-12.3V8L16 4.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    <svg {...common} viewBox="0 0 32 32">
+      <rect x="3" y="3" width="12.5" height="12.5" fill="#F25022" />
+      <rect x="16.5" y="3" width="12.5" height="12.5" fill="#7FBA00" />
+      <rect x="3" y="16.5" width="12.5" height="12.5" fill="#00A4EF" />
+      <rect x="16.5" y="16.5" width="12.5" height="12.5" fill="#FFB900" />
     </svg>
   );
 }
@@ -92,7 +128,7 @@ export function SecurityTab() {
                 </div>
               </dl>
               {locked && <p id={hintId} className="ep-login-card__hint">At least one sign-in method has to stay on.</p>}
-              <span className="ep-login-card__icon"><ShieldGlyph /></span>
+              <span className={`ep-login-card__icon ep-login-card__icon--${m.id}`}><MethodGlyph id={m.id} /></span>
             </li>
           );
         })}
