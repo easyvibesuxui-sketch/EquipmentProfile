@@ -304,18 +304,25 @@ function WeekChooser({ value, latest, onPick, onClose }: { value: Date; latest: 
       ref={list} className="ep-kw" role="listbox" tabIndex={-1} aria-label="Choose a week"
       aria-activedescendant={`ep-kw-${active}`} onKeyDown={onKey}
     >
-      {weeks.map((w, i) => {
-        const { week } = isoWeek(w);
-        return (
-          <div
-            key={w.toISOString()} id={`ep-kw-${i}`} data-i={i} role="option" aria-selected={sameDay(w, value)}
-            className={i === active ? 'ep-kw__item is-active' : 'ep-kw__item'}
-            onMouseEnter={() => setActive(i)} onClick={() => onPick(w)}
-          >
-            <span className="ep-kw__week">KW {week}</span> <span className="ep-kw__span">({weekSpan(w)})</span>
-          </div>
-        );
-      })}
+      {/* Grouped by year (owner's comment): each ISO year's weeks under a sticky year heading. */}
+      {[...new Set(weeks.map((w) => isoWeek(w).year))].map((year) => (
+        <div key={year} role="group" aria-label={String(year)} className="ep-kw__group">
+          <div className="ep-kw__year" role="presentation">{year}</div>
+          {weeks.map((w, i) => {
+            const { week, year: y } = isoWeek(w);
+            if (y !== year) return null;
+            return (
+              <div
+                key={w.toISOString()} id={`ep-kw-${i}`} data-i={i} role="option" aria-selected={sameDay(w, value)}
+                className={i === active ? 'ep-kw__item is-active' : 'ep-kw__item'}
+                onMouseEnter={() => setActive(i)} onClick={() => onPick(w)}
+              >
+                <span className="ep-kw__week">KW {week}</span> <span className="ep-kw__span">({weekSpan(w)})</span>
+              </div>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }

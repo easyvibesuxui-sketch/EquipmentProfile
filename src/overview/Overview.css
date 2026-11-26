@@ -235,6 +235,9 @@
 .ep-kw__item.is-active { background: var(--syn-surface-highlight); }
 .ep-kw__item[aria-selected='true'] { background: var(--syn-color-grey-cultured); color: var(--syn-text-primary); }
 .ep-kw__span { color: var(--syn-color-secondary-silver-chalince); }
+/* Year groups: the year (Title 5) stays at the top of the list while its weeks scroll under it. */
+.ep-kw__group { display: flex; flex-direction: column; gap: 2px; }
+.ep-kw__year { position: sticky; top: -2px; z-index: 1; padding: var(--syn-space-8) var(--syn-space-8) var(--syn-space-4); background: var(--syn-surface-default); color: var(--syn-text-muted); font: var(--syn-type-titles-title-5); }
 .ep-heat__grid { display: flex; flex-direction: column; overflow-x: auto; }
 .ep-heat__row { display: grid; grid-template-columns: 40px 1fr; min-width: 960px; }
 .ep-heat__row--head { grid-template-columns: 40px repeat(24, 1fr); padding: var(--syn-space-12) 0; }
