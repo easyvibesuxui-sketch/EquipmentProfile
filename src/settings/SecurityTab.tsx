@@ -111,9 +111,8 @@ export function SecurityTab() {
               <div className="ep-login-card__head">
                 <h3 className="ep-login-card__name">{m.name}</h3>
                 <Switch
-                  label={`${m.name} sign-in`} size={24} indicator checked={on}
+                  label={`${m.name} sign-in`} size={24} checked={on}
                   aria-describedby={locked ? hintId : undefined}
-                  disabled={locked}
                   onChange={(e) => toggle(m, e.target.checked)}
                 />
               </div>

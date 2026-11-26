@@ -16,8 +16,9 @@ Open `#settings` (the gear at the bottom of the sidebar). Built from the draft
 [Settings / Security](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=17974-62558):
 Organization › **Security** lists the four "Log in options" (Email and password, Corporate account (SSO), Google,
 Microsoft). Each card has a Syn Switch in the card's top-right slot: the administrator turns a method on or off and it
-applies at once (a screen-reader message confirms it). At least one method always stays on: the last one's switch is
-disabled with a note, so nobody is locked out. The choice is kept in this browser (`sam.settings.loginMethods`) until
+applies at once (a screen-reader message confirms it). At least one method always stays on: the last one cannot be turned
+off and a note under it says why, so nobody is locked out. The switches are the plain Syn Switch (dark when on, grey
+when off), the same as everywhere in the app (owner's comment). The choice is kept in this browser (`sam.settings.loginMethods`) until
 there is an API. The draft's sample values (email, password, two-factor) were replaced by what the method does and its
 status, since this page only switches methods. The owner's monitor-and-shield illustration sits behind the heading in
 Misty Rose (hidden on phones). The Figma icons could not be downloaded here, so the side menu uses Syn icons. Each card shows its method's own
