@@ -17,3 +17,8 @@
 }
 
 html, body { margin: 0; background: var(--ep-page-bg); }
+
+/* Tooltips open below their button (owner's comment); at a right edge (card chevrons, the Edit widgets gear, bins)
+   the bubble is right-aligned to the button so it stays on the page. */
+.ep-tip-end .syn-tooltip__bubble--bottom { right: -6px; left: auto; max-width: none; white-space: nowrap; transform: none; }
+.ep-tip-end .syn-tooltip__bubble--bottom::after { right: 12px; left: auto; margin-left: 0; }

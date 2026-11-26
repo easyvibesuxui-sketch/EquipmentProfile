@@ -223,7 +223,7 @@ export function TechSpecsDrawer({ open, dims, params, onClose, onUpdate }: {
                 <div className="ep-specd__param-row">
                   <NumberField label={p.label} hideLabel value={p.value} onChange={(value) => setParam(p.id, { value })} />
                   <Select label={`${p.label} unit`} size="sm" options={unitOptions(p.unit)} value={p.unit} onChange={(unit) => setParam(p.id, { unit })} className="ep-specd__unit" />
-                  <IconButton icon="trash-bin" label={`Remove ${p.label}`} size="xs" tooltipPlacement="left" onClick={() => setList((l) => l.filter((x) => x.id !== p.id))} />
+                  <IconButton icon="trash-bin" label={`Remove ${p.label}`} size="xs" tooltipPlacement="bottom" className="ep-tip-end" onClick={() => setList((l) => l.filter((x) => x.id !== p.id))} />
                 </div>
               </li>
             ))}

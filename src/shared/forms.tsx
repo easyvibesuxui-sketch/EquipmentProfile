@@ -175,7 +175,7 @@ export function FileRow({ file, onRemove, className }: { file: PickedFile; onRem
         <span className="ep-file__name">{file.name}</span>
         <span className="ep-file__size">{file.size}</span>
       </span>
-      {onRemove && <IconButton icon="trash-bin" label={`Remove ${file.name}`} size="xs" tooltipPlacement="left" onClick={onRemove} className="ep-file__remove" />}
+      {onRemove && <IconButton icon="trash-bin" label={`Remove ${file.name}`} size="xs" tooltipPlacement="bottom" onClick={onRemove} className="ep-file__remove ep-tip-end" />}
     </div>
   );
 }
