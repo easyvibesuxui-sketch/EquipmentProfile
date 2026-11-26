@@ -13,13 +13,29 @@ import {
 } from './widgets/layout';
 import { ManageWidgetsDrawer } from './widgets/ManageWidgetsDrawer';
 import { EditBanner, EditBar } from './widgets/EditMode';
+import { SettingsPage } from './settings/SettingsPage';
 // Last, so the breakpoints win over the component stylesheets.
 import './styles/responsive.css';
 
 type Draft = { views: Views; scope: Scope };
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 
+/** `#settings` opens Settings (the sidebar's gear); any other sidebar link comes back to the equipment profile. */
+function useSettingsOpen() {
+  // A review copy can open on Settings without the hash (window.__SAM_START, set in its HTML).
+  const start = (window as { __SAM_START?: string }).__SAM_START === 'settings';
+  const read = () => window.location.hash === '#settings' || (start && !window.location.hash);
+  const [open, setOpen] = useState(read);
+  useEffect(() => {
+    const onHash = () => setOpen(read());
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+  return open;
+}
+
 export function App() {
+  const settingsOpen = useSettingsOpen();
   const [tab, setTab] = useState(profileTabs[0]);
   // The saved Overviews: the organization's (set by a manager) and the person's own, if any.
   const [views, setViews] = useViews();
@@ -102,6 +118,10 @@ export function App() {
     lastChange.current = 0;
     changeViews(scope === 'org' ? { ...draft.views, org: defaultLayout() } : { ...draft.views, mine: null });
   };
+
+  if (settingsOpen) {
+    return <AppShell module="Settings" current="settings"><SettingsPage /></AppShell>;
+  }
 
   return (
     <AppShell module="Fleet" current="planner">
