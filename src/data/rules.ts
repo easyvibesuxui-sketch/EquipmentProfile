@@ -2,9 +2,16 @@
  * Charging rules (release policy) of Administration → Workflows → Rules (RAM Figma "Rules", "Create Rule Pick up",
  * "Create Rule Return"). A pick-up rule: when the equipment is picked up later than `time`, the pick-up day is not
  * charged. A return rule: when it is returned earlier than `time`, the return day is not charged.
+ * The Daily booking job: every day at `time`, a booking that ends today and is still In progress (green in the planner)
+ * gets its end date moved to tomorrow: it was not brought back today, so the rental runs one more day. Completed,
+ * Planned and Reserved bookings are left alone.
  * Mock data until the API exists.
  */
-export type RuleType = 'pickup' | 'return';
+export type ChargingType = 'pickup' | 'return';
+export type RuleType = ChargingType | 'daily';
+/** The two kinds the "Rule" button offers. */
+export type RuleKind = 'charging' | 'daily';
+export const kindOf = (t: RuleType): RuleKind => (t === 'daily' ? 'daily' : 'charging');
 
 export interface ChargingRule {
   id: string;
@@ -39,13 +46,42 @@ export const ruleTypes: Record<RuleType, {
     condition: 'Earlier than',
     hint: 'If equipment is returned earlier than this time, the return day is not charged.',
   },
+  daily: {
+    name: 'Daily booking job',
+    option: 'Daily booking job',
+    condition: 'In progress, ending today',
+    hint: 'The job runs once a day, at this time.',
+  },
 };
+
+/** RAM booking statuses (RESERVED, PLANNED, IN_PROGRESS, COMPLETED); the job changes In progress only. */
+export const bookingStatuses = [
+  { id: 'IN_PROGRESS', label: 'In progress' },
+  { id: 'COMPLETED', label: 'Completed' },
+  { id: 'PLANNED', label: 'Planned' },
+  { id: 'RESERVED', label: 'Reserved' },
+] as const;
+
+/** The two cards of the "Choose rule type" popup. */
+export const ruleKinds: Array<{ kind: RuleKind; title: string; description: string; icon: 'time' | 'calendar'; tone: 'sienna' | 'brand' }> = [
+  {
+    kind: 'charging', title: 'Charging rule', icon: 'time', tone: 'sienna',
+    description: 'Do not charge the pick-up day after a set time, or the return day before one.',
+  },
+  {
+    kind: 'daily', title: 'Daily booking job', icon: 'calendar', tone: 'brand',
+    description: 'Every day, move the end date of In progress bookings that end today to tomorrow.',
+  },
+];
 
 export const currentAdmin = 'Max Mustermann';
 
-/** The 15 rows of the Figma "Rules" frame: Pick-up and Return in turn, the 11th disabled. */
-export const sampleRules: ChargingRule[] = Array.from({ length: 15 }, (_, i) => {
-  const type: RuleType = i % 2 === 0 ? 'pickup' : 'return';
+/** The Daily booking job that already runs in RAM's admin, then the 15 rows of the Figma "Rules" frame (Pick-up and
+ * Return in turn, the 11th disabled). */
+export const dailyJob: ChargingRule = { id: 'daily', type: 'daily', time: '23:00', enabled: true, creator: currentAdmin, created: '2027-12-15' };
+
+const chargingSamples: ChargingRule[] = Array.from({ length: 15 }, (_, i) => {
+  const type: ChargingType = i % 2 === 0 ? 'pickup' : 'return';
   return {
     id: `r${i + 1}`,
     type,
@@ -55,6 +91,7 @@ export const sampleRules: ChargingRule[] = Array.from({ length: 15 }, (_, i) => 
     created: `2028-01-${String(i + 1).padStart(2, '0')}`,
   };
 });
+export const sampleRules: ChargingRule[] = [dailyJob, ...chargingSamples];
 
 /** Accepts "9", "930", "0930", "9:30", "09:30"; returns "09:30", or null when it is not a time of day. */
 export function parseTime(raw: string): string | null {

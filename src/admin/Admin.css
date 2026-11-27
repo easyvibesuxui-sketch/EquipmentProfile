@@ -214,3 +214,82 @@
   .ep-shell__main.ep-admin-main { padding-inline: var(--syn-space-16); }
   .ep-rule-form { padding-left: var(--syn-space-16); }
 }
+
+/* "Choose rule type" (laid out like SAM Figma "Choose alert type", 14085:94424) on the Syn Dialog: Title 3 header,
+   240px cards 10px apart, 32 / 32 / 48 padding. Two cards, so the popup is as wide as two. */
+.ep-kind-dialog.syn-dialog { max-width: 556px; }
+.ep-kind-dialog .syn-dialog__title { font: var(--syn-type-titles-title-3); }
+.ep-kind-dialog .syn-dialog__body { padding: var(--syn-space-32) var(--syn-space-32) var(--syn-space-48); }
+.ep-kind-dialog__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 240px)); gap: 10px; justify-content: center; width: 100%; }
+.ep-kind {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--syn-space-12);
+  min-height: 240px;
+  padding: var(--syn-space-16) var(--syn-space-12) var(--syn-space-24);
+  border: 1px solid var(--syn-border-default);
+  border-radius: var(--syn-radius-widget);
+  background: transparent;
+  color: var(--syn-text-primary);
+  text-align: center;
+  cursor: pointer;
+  transition: background var(--syn-duration-fast), border-color var(--syn-duration-fast);
+}
+.ep-kind:hover:not(:disabled) { border-color: var(--syn-border-strong); background: var(--syn-surface-default); }
+.ep-kind:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
+.ep-kind:disabled { cursor: not-allowed; }
+.ep-kind:disabled .ep-kind__icon { background: var(--syn-text-disabled); }
+.ep-kind:disabled .ep-kind__title { color: var(--syn-text-disabled); }
+.ep-kind__icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-block: var(--syn-space-4);
+  border-radius: var(--syn-radius-full);
+  color: var(--syn-color-white-white);
+}
+.ep-kind__icon.is-sienna { background: var(--syn-color-secondary-dark-sienna); }
+.ep-kind__icon.is-brand { background: var(--syn-action-brand); }
+.ep-kind__title { display: flex; align-items: center; min-height: 40px; font: var(--syn-type-titles-title-3); }
+.ep-kind__text { color: var(--syn-text-muted); font: var(--syn-type-text-body-s); line-height: 1.4; }
+@media (max-width: 560px) {
+  .ep-kind-dialog__grid { grid-template-columns: minmax(0, 1fr); }
+  .ep-kind { min-height: 0; }
+  .ep-kind-dialog .syn-dialog__body { padding: var(--syn-space-16); }
+}
+
+/* Daily booking job: what it does, as three labelled rows of chips. */
+.ep-job { display: flex; flex-direction: column; gap: var(--syn-space-12); width: 100%; }
+.ep-job__steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--syn-space-8);
+  max-width: 480px;
+  margin: 0;
+  padding: var(--syn-space-12);
+  border: 1px solid var(--syn-border-default);
+  border-radius: var(--syn-radius-element);
+  background: var(--syn-surface-default);
+  list-style: none;
+}
+.ep-job__step { display: grid; grid-template-columns: 112px minmax(0, 1fr); align-items: center; gap: var(--syn-space-12); }
+.ep-job__step + .ep-job__step { padding-top: var(--syn-space-8); border-top: 1px solid var(--syn-border-default); }
+.ep-job__label { position: relative; top: var(--syn-title-offset); font: var(--syn-type-titles-title-5); }
+.ep-job__chips { display: flex; flex-wrap: wrap; gap: var(--syn-space-6); }
+.ep-job__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--syn-space-6);
+  height: var(--syn-size-control-xs);
+  padding: 0 var(--syn-space-10);
+  border: 1px solid var(--syn-border-muted);
+  border-radius: var(--syn-radius-full);
+  background: var(--syn-surface-default);
+  font: var(--syn-type-text-body-xs);
+  white-space: nowrap;
+}
+.ep-job__chip.is-action { border-color: var(--syn-border-strong); background: var(--syn-surface-inverse); color: var(--syn-color-white-white); }
+.ep-job__chip.is-muted { border-color: var(--syn-border-default); background: var(--syn-surface-muted); color: var(--syn-text-muted); }
+@media (max-width: 480px) { .ep-job__step { grid-template-columns: minmax(0, 1fr); gap: var(--syn-space-6); } }

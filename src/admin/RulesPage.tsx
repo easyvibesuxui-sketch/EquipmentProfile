@@ -2,8 +2,9 @@ import { useMemo, useState } from 'react';
 import { Button, ColorDot, Icon, TextField } from '@syn/design-system';
 import { ActionMenu } from '../shared/ActionMenu';
 import { dotted } from '../shared/forms';
-import { currentAdmin, ruleTypes, sampleRules, type ChargingRule } from '../data/rules';
+import { currentAdmin, kindOf, ruleTypes, sampleRules, type ChargingRule, type RuleKind } from '../data/rules';
 import { RuleDrawer, type RuleForm } from './RuleDrawer';
+import { RuleTypeDialog } from './RuleTypeDialog';
 
 const todayIso = () => {
   const d = new Date();
@@ -11,7 +12,9 @@ const todayIso = () => {
 };
 let nextId = 100;
 
-const condition = (r: ChargingRule) => `${ruleTypes[r.type].condition} ${r.time}`;
+const condition = (r: ChargingRule) => (r.type === 'daily'
+  ? `${ruleTypes.daily.condition}, daily ${r.time}`
+  : `${ruleTypes[r.type].condition} ${r.time}`);
 const status = (r: ChargingRule) => (r.enabled ? 'Enabled' : 'Disabled');
 
 /** Figma "Text indicator names": a Silver Chalice pill with the ringed Mantis dot; Gray X when disabled. */
@@ -26,13 +29,15 @@ function RuleStatus({ enabled }: { enabled: boolean }) {
 
 /**
  * Administration → Workflows → Rules: Figma "Rules" (10562:37464) and its empty state (10552:7519).
- * The keyword search filters the list; "Rule" opens the Create Rule drawer; each row's "..." edits, enables or
- * disables, or deletes the rule.
+ * The keyword search filters the list; "Rule" asks for the kind (charging rule or Daily booking job) and opens its
+ * drawer; each row's "..." edits, enables or disables, or deletes the rule.
  */
 export function RulesPage({ startEmpty }: { startEmpty?: boolean }) {
   const [rules, setRules] = useState<ChargingRule[]>(() => (startEmpty ? [] : sampleRules));
   const [query, setQuery] = useState('');
-  const [drawer, setDrawer] = useState<{ rule: ChargingRule | null } | null>(null);
+  const [choosing, setChoosing] = useState(false);
+  const [drawer, setDrawer] = useState<{ kind: RuleKind; rule: ChargingRule | null } | null>(null);
+  const dailyExists = rules.some((r) => r.type === 'daily');
 
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -57,7 +62,7 @@ export function RulesPage({ startEmpty }: { startEmpty?: boolean }) {
           label="Search rules" hideLabel size="sm" iconStart="search" placeholder="By Keyword" value={query}
           onChange={(e) => setQuery(e.currentTarget.value)} onClear={() => setQuery('')} className="ep-rules__search"
         />
-        <Button variant="secondary" size="sm" iconStart="plus-in-circle" className="ep-rules__add" onClick={() => setDrawer({ rule: null })}>
+        <Button variant="secondary" size="sm" iconStart="plus-in-circle" className="ep-rules__add" onClick={() => setChoosing(true)}>
           Rule
         </Button>
       </div>
@@ -79,15 +84,15 @@ export function RulesPage({ startEmpty }: { startEmpty?: boolean }) {
               {shown.map((r) => (
                 <tr key={r.id} className={r.enabled ? undefined : 'is-off'}>
                   <td className="ep-rules-table__rule"><span className="syn-title-text">{ruleTypes[r.type].name}</span></td>
-                  <td>{condition(r)}</td>
+                  <td title={condition(r)}>{condition(r)}</td>
                   <td><RuleStatus enabled={r.enabled} /></td>
                   <td>{r.creator}</td>
                   <td>{dotted(r.created)}</td>
                   <td className="ep-rules-table__actions">
                     <ActionMenu
-                      label={`${ruleTypes[r.type].name} rule actions, ${dotted(r.created)}`}
+                      label={`${ruleTypes[r.type].name} actions, ${dotted(r.created)}`}
                       actions={[
-                        { id: 'edit', label: 'Edit', icon: 'edit', onSelect: () => setDrawer({ rule: r }) },
+                        { id: 'edit', label: 'Edit', icon: 'edit', onSelect: () => setDrawer({ kind: kindOf(r.type), rule: r }) },
                         { id: 'toggle', label: r.enabled ? 'Disable' : 'Enable', icon: 'status-change', onSelect: () => toggle(r.id) },
                         { id: 'delete', label: 'Delete', icon: 'trash-bin', onSelect: () => remove(r.id) },
                       ]}
@@ -106,7 +111,14 @@ export function RulesPage({ startEmpty }: { startEmpty?: boolean }) {
         )}
       </div>
 
-      <RuleDrawer open={drawer !== null} rule={drawer?.rule ?? null} onClose={() => setDrawer(null)} onSubmit={save} />
+      <RuleTypeDialog
+        open={choosing} dailyExists={dailyExists} onClose={() => setChoosing(false)}
+        onChoose={(kind) => { setChoosing(false); setDrawer({ kind, rule: null }); }}
+      />
+      <RuleDrawer
+        open={drawer !== null} kind={drawer?.kind ?? 'charging'} rule={drawer?.rule ?? null}
+        onClose={() => setDrawer(null)} onSubmit={save}
+      />
     </section>
   );
 }
