@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Button, ColorDot, Icon, TextField } from '@syn/design-system';
+import { Button, Card, ColorDot, Icon, Property, TextField } from '@syn/design-system';
 import { ActionMenu, type MenuAction } from '../shared/ActionMenu';
 import { dotted } from '../shared/forms';
 import { currentAdmin, dailyJob, ruleTypes, sampleRules, type ChargingRule } from '../data/rules';
@@ -30,33 +30,46 @@ function RuleStatus({ enabled }: { enabled: boolean }) {
 }
 
 /**
- * The Daily booking job in the summary card of the general layout (Design system library "Settings templates",
- * 7966:19001: the card with the "1st" chip): one per organization, so it is not a row of the list. Edit opens its
- * drawer; Disable / Activate switches it.
+ * The Daily booking job in the summary place of the general layout (Design system library "Settings templates",
+ * 7966:19001), drawn with the SAM / RAM parts: a Syn Card (the SAM widget card) titled "Daily booking job", the RAM
+ * status pill and "..." in its header, and Property tiles for what it does. One per organization, so not a row.
  */
 function DailyJobCard({ job, onEdit, onToggle }: { job: ChargingRule; onEdit: () => void; onToggle: () => void }) {
   return (
-    <article className={job.enabled ? 'ep-summary' : 'ep-summary is-off'} aria-labelledby="ep-summary-chip">
-      <div className="ep-summary__text">
-        <span className="ep-summary__chip syn-title-text" id="ep-summary-chip">{ruleTypes.daily.name}</span>
-        <p className="ep-summary__value syn-title-text">
-          In progress bookings that end today move to tomorrow, daily at {job.time}
-        </p>
+    <Card
+      title={ruleTypes.daily.name}
+      className={job.enabled ? 'ep-job-card' : 'ep-job-card is-off'}
+      actions={(
+        <>
+          <RuleStatus enabled={job.enabled} />
+          <ActionMenu
+            label="Daily booking job actions"
+            actions={[{ id: 'edit', label: 'Edit', icon: 'edit', onSelect: onEdit }, toggleAction(job.enabled, onToggle)]}
+          />
+        </>
+      )}
+    >
+      <div className="ep-job-card__tiles">
+        <Property variant="tile" label="When a booking">
+          <span className="ep-job-card__line"><ColorDot color={job.enabled ? 'var(--syn-status-success)' : 'var(--syn-text-disabled)'} />is In progress and ends today</span>
+        </Property>
+        <Property variant="tile" label="Then">
+          <span className="ep-job-card__line">End date<Icon name="arrow" size={16} />tomorrow</span>
+        </Property>
+        <Property variant="tile" label="Not changed">
+          <span className="ep-job-card__line">Completed, Planned, Reserved</span>
+        </Property>
+        <Property variant="tile" label="Runs daily at" icon="time">
+          <span className="ep-job-card__line">{job.time}</span>
+        </Property>
       </div>
-      <div className="ep-summary__end">
-        <RuleStatus enabled={job.enabled} />
-        <ActionMenu
-          label="Daily booking job actions"
-          actions={[{ id: 'edit', label: 'Edit', icon: 'edit', onSelect: onEdit }, toggleAction(job.enabled, onToggle)]}
-        />
-      </div>
-    </article>
+    </Card>
   );
 }
 
 /**
  * Administration → Workflows → Rules on the general layout (Design system library "Settings templates", 7966:19001):
- * the page label, then on Cultured the summary card (the Daily booking job) and the list card: search and Rule over
+ * the page label, then on Cultured the Daily booking job card and the list card: search and Rule over
  * the charging rules (RAM Figma "Rules", 10562:37464, and its empty state, 10552:7519), with the count in the footer.
  * Each row's "..." edits, disables or activates, or deletes the rule.
  */

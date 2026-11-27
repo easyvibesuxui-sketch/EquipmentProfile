@@ -78,30 +78,15 @@
   background: var(--syn-surface-muted);
 }
 
-/* "Table Row" summary card: white, 8px corners, 8 / 16 padding; the Candy Apple chip ("1st") over a Title 3 value. */
-.ep-summary {
-  display: flex;
-  flex: none;
-  align-items: center;
-  gap: var(--syn-space-12);
-  padding: var(--syn-space-8) var(--syn-space-16);
-  border-radius: var(--syn-radius-element);
-  background: var(--syn-surface-default);
-}
-.ep-summary__text { display: flex; flex: 1; flex-direction: column; align-items: flex-start; gap: var(--syn-space-12); min-width: 0; }
-.ep-summary__chip {
-  padding: var(--syn-space-6) var(--syn-space-8);
-  border-radius: var(--syn-radius-element);
-  background: color-mix(in srgb, var(--syn-action-brand) 20%, transparent);
-  color: var(--syn-action-brand);
-  font: var(--syn-type-titles-title-5);
-  white-space: nowrap;
-}
-.ep-summary__value { margin: 0; font: var(--syn-type-titles-title-3); }
-.ep-summary.is-off .ep-summary__value { color: var(--syn-text-disabled); }
-.ep-summary.is-off .ep-summary__chip { background: var(--syn-surface-muted); color: var(--syn-text-disabled); }
-.ep-summary__end { display: flex; flex: none; align-items: center; gap: var(--syn-space-16); }
-.ep-summary .ep-menu { display: inline-flex; }
+/* Daily booking job: the Syn Card (SAM widget card), the status pill and "..." in its header, four Property tiles. */
+.ep-job-card.syn-card { flex: none; }
+.ep-job-card .syn-card__actions { gap: var(--syn-space-16); }
+.ep-job-card .ep-menu { display: inline-flex; }
+.ep-job-card__tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--syn-space-8); }
+.ep-job-card__line { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--syn-space-6); }
+.ep-job-card.is-off .syn-card__title, .ep-job-card.is-off .syn-property__value { color: var(--syn-text-disabled); }
+@media (max-width: 900px) { .ep-job-card__tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .ep-job-card__tiles { grid-template-columns: minmax(0, 1fr); } }
 
 /* List card: white, 12px corners; toolbar, list, footer. */
 .ep-rules__body { display: flex; flex: 1; flex-direction: column; min-height: 0; border-radius: var(--syn-radius-widget); background: var(--syn-surface-default); }
@@ -262,8 +247,6 @@
 @media (max-width: 639px) {
   .ep-shell__main.ep-admin-main { padding-inline: var(--syn-space-16); }
   .ep-rule-form { padding-left: var(--syn-space-16); }
-  .ep-summary { flex-wrap: wrap; }
-  .ep-summary__text { flex-basis: 100%; }
 }
 
 /* Daily booking job: what it does, as three labelled rows of chips. */

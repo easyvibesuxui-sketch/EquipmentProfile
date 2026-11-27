@@ -127,8 +127,10 @@ The sidebar's **Settings** button (`#administration`) opens RAM's Administration
   "..." edits (Edit Rule, Update), enables or disables, or deletes it. *By Keyword* filters every column.
 - The page follows the general layout of the Design system library
   ([Settings templates](https://www.figma.com/design/uNTCaDLpRs00HJFMOWXxP6/Design-system-library--Copy-?node-id=7966-19001)):
-  the page label ("Rules"), then on Cultured a summary card and the list card (search, **Rule**, the list, "Count").
-- **Daily booking job** (one per organization, already running in RAM's admin) is the summary card, not a row: every
+  the page label ("Rules"), then on Cultured the Daily booking job card and the list card (search, **Rule**, the list,
+  "Count"). The job card is the SAM widget card (Syn `Card`): its name, the status pill and "..." in the header, and
+  `Property` tiles: When a booking (In progress, ends today), Then (End date → tomorrow), Not changed, Runs daily at.
+- **Daily booking job** (one per organization, already running in RAM's admin) is that card, not a row: every
   day at its time (23:00 by default), a booking that **ends today** and is still **In progress** (green in the planner)
   gets its end date moved to tomorrow; it was not brought back, so it runs one more day. Completed, Planned and Reserved
   bookings are not changed (RAM's booking statuses: RESERVED, PLANNED, IN_PROGRESS, COMPLETED). Its "..." has Edit
