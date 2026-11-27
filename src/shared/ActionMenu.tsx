@@ -55,6 +55,8 @@ export function ActionMenu({ label, actions, note, compact }: { label: string; a
         icon="dotshorizontal"
         label={label}
         variant="outline"
+        // Tooltips open below, where the menu opens too: no tooltip while the menu is open.
+        tooltip={open ? false : undefined}
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={open ? baseId : undefined}

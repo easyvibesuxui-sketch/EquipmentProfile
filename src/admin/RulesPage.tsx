@@ -93,7 +93,10 @@ export function RulesPage({ startEmpty }: { startEmpty?: boolean }) {
                       label={`${ruleTypes[r.type].name} actions, ${dotted(r.created)}`}
                       actions={[
                         { id: 'edit', label: 'Edit', icon: 'edit', onSelect: () => setDrawer({ kind: kindOf(r.type), rule: r }) },
-                        { id: 'toggle', label: r.enabled ? 'Disable' : 'Enable', icon: 'status-change', onSelect: () => toggle(r.id) },
+                        // As in the SAM Notification Center: Disable is the stop circle, Enable the check circle.
+                        r.enabled
+                          ? { id: 'disable', label: 'Disable', icon: 'stop-in-circle', onSelect: () => toggle(r.id) }
+                          : { id: 'enable', label: 'Enable', icon: 'check-in-circle', onSelect: () => toggle(r.id) },
                         { id: 'delete', label: 'Delete', icon: 'trash-bin', onSelect: () => remove(r.id) },
                       ]}
                     />
