@@ -1,5 +1,5 @@
 import { useState, type CSSProperties, type ReactNode } from 'react';
-import { Button, Tooltip } from '@syn/design-system';
+import { Button, Icon, Tooltip } from '@syn/design-system';
 import expandIcon from '../assets/icons/nav-expand.png';
 import plannerIcon from '../assets/icons/nav-planner.png';
 import rentalsIcon from '../assets/icons/nav-rentals.png';
@@ -71,18 +71,26 @@ function Sidebar({ current }: { current: string }) {
   );
 }
 
-/** Figma "TopNavigation": module name, the SAM wordmark, Create, notifications and the profile button. */
-function TopBar({ module }: { module: string }) {
+/**
+ * Figma "TopNavigation": module name, the product wordmark (SAM, or RAM in Administration), Create, notifications
+ * and the profile button. RAM's Administration bar has no Create, a menu button before the profile and a 20px title.
+ */
+function TopBar({ module, brand, admin }: { module: string; brand: string; admin: boolean }) {
   const [profileOpen, setProfileOpen] = useState(false);
   return (
-    <header className="ep-topbar">
+    <header className={admin ? 'ep-topbar ep-topbar--admin' : 'ep-topbar'}>
       <p className="ep-topbar__module">{module}</p>
-      <p className="ep-topbar__brand" aria-hidden>SAM</p>
+      <p className="ep-topbar__brand" aria-hidden>{brand}</p>
       <div className="ep-topbar__actions">
-        <Button variant="secondary" size="sm" iconStart="plus-in-circle" className="ep-topbar__create">Create</Button>
+        {!admin && <Button variant="secondary" size="sm" iconStart="plus-in-circle" className="ep-topbar__create">Create</Button>}
         <button type="button" className="ep-topbar__bell" aria-label="Notifications">
           <MaskIcon src={bellIcon} size={[16, 18]} />
         </button>
+        {admin && (
+          <button type="button" className="ep-topbar__menu" aria-label="Menu">
+            <Icon name="burger" size={16} />
+          </button>
+        )}
         <button
           type="button"
           className="ep-topbar__profile"
@@ -97,13 +105,15 @@ function TopBar({ module }: { module: string }) {
   );
 }
 
-export function AppShell({ module, current, children }: { module: string; current: string; children: ReactNode }) {
+export function AppShell({ module, current, brand = 'SAM', admin = false, mainClassName, children }: {
+  module: string; current: string; brand?: string; admin?: boolean; mainClassName?: string; children: ReactNode;
+}) {
   return (
     <div className="ep-shell syn-root">
       <Sidebar current={current} />
       <div className="ep-shell__body">
-        <TopBar module={module} />
-        <main className="ep-shell__main">{children}</main>
+        <TopBar module={module} brand={brand} admin={admin} />
+        <main className={mainClassName ? `ep-shell__main ${mainClassName}` : 'ep-shell__main'}>{children}</main>
       </div>
     </div>
   );

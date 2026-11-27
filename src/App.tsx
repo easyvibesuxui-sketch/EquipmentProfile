@@ -13,13 +13,14 @@ import {
 } from './widgets/layout';
 import { ManageWidgetsDrawer } from './widgets/ManageWidgetsDrawer';
 import { EditBanner, EditBar } from './widgets/EditMode';
+import { AdministrationPage } from './admin/AdministrationPage';
 // Last, so the breakpoints win over the component stylesheets.
 import './styles/responsive.css';
 
 type Draft = { views: Views; scope: Scope };
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 
-export function App() {
+export function ProfileApp() {
   const [tab, setTab] = useState(profileTabs[0]);
   // The saved Overviews: the organization's (set by a manager) and the person's own, if any.
   const [views, setViews] = useViews();
@@ -143,6 +144,29 @@ export function App() {
           onChange={(next) => { lastChange.current = 0; change(next); }} onClose={() => setManaging(false)}
         />
       )}
+    </AppShell>
+  );
+}
+
+/** The hash route: "#settings" (the sidebar's Settings) opens Administration; "#settings/<section>[/empty]" picks a
+ * section and, with "/empty", starts its list empty. Anything else is the Equipment Profile. */
+function readRoute() {
+  const parts = window.location.hash.replace(/^#/, '').split('/');
+  if (parts[0] !== 'settings') return null;
+  return { section: parts[1] || 'rules', empty: parts[2] === 'empty' };
+}
+
+export function App() {
+  const [route, setRoute] = useState(readRoute);
+  useEffect(() => {
+    const onHash = () => setRoute(readRoute());
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+  if (!route) return <ProfileApp />;
+  return (
+    <AppShell module="Administration" current="settings" brand="RAM" admin mainClassName="ep-admin-main">
+      <AdministrationPage section={route.section} empty={route.empty} />
     </AppShell>
   );
 }

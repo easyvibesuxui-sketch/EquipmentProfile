@@ -124,6 +124,24 @@
   cursor: pointer;
 }
 .ep-topbar__bell:hover { color: var(--syn-text-primary); }
+/* RAM Administration (Figma 10552:7521): Title 1 module name; the 16px menu sits 8px before the profile button. */
+.ep-topbar--admin .ep-topbar__module { font: var(--syn-type-titles-title-1); }
+.ep-topbar__menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--syn-size-control-xs);
+  height: var(--syn-size-control-xs);
+  margin-right: calc(var(--syn-space-8) - var(--syn-space-24));
+  padding: 0;
+  border: 0;
+  border-radius: var(--syn-radius-xs);
+  background: var(--syn-surface-default);
+  color: var(--syn-text-primary);
+  cursor: pointer;
+}
+.ep-topbar__menu:hover { background: var(--syn-surface-muted); }
+.ep-topbar__menu:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
 .ep-topbar__profile {
   width: 40px;
   height: 40px;
