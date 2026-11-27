@@ -148,11 +148,12 @@ export function ProfileApp() {
   );
 }
 
-/** The hash route: "#settings" (the sidebar's Settings) opens Administration; "#settings/<section>[/empty]" picks a
- * section and, with "/empty", starts its list empty. Anything else is the Equipment Profile. */
+/** The hash route: "#administration" (the sidebar's Settings) opens Administration; "#administration-<section>"
+ * picks a section, and "-empty" after it starts its list empty ("#administration-rules-empty"). Anything else is the
+ * Equipment Profile. Plain names with hyphens, so the link survives where the page is embedded. */
 function readRoute() {
-  const parts = window.location.hash.replace(/^#/, '').split('/');
-  if (parts[0] !== 'settings') return null;
+  const parts = window.location.hash.replace(/^#/, '').split('-');
+  if (parts[0] !== 'administration') return null;
   return { section: parts[1] || 'rules', empty: parts[2] === 'empty' };
 }
 
@@ -165,7 +166,7 @@ export function App() {
   }, []);
   if (!route) return <ProfileApp />;
   return (
-    <AppShell module="Administration" current="settings" brand="RAM" admin mainClassName="ep-admin-main">
+    <AppShell module="Administration" current="administration" brand="RAM" admin mainClassName="ep-admin-main">
       <AdministrationPage section={route.section} empty={route.empty} />
     </AppShell>
   );

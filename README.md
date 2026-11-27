@@ -111,7 +111,7 @@ move/resize rules, `src/widgets/EditMode.tsx` the banner, the edit grid and the 
 
 ## Administration: Rules (charging rules / release policy)
 
-The sidebar's **Settings** button (`#settings`) opens RAM's Administration, built from the RAM Figma frames
+The sidebar's **Settings** button (`#administration`) opens RAM's Administration, built from the RAM Figma frames
 [Rules, empty](https://www.figma.com/design/9ae7MptHeaaaC1wdeq3jGo/RAM--Copy-?node-id=10552-7519),
 [Create Rule, Pick up](https://www.figma.com/design/9ae7MptHeaaaC1wdeq3jGo/RAM--Copy-?node-id=10562-37833),
 [Create Rule, Return](https://www.figma.com/design/9ae7MptHeaaaC1wdeq3jGo/RAM--Copy-?node-id=10563-41093) and
@@ -119,7 +119,7 @@ The sidebar's **Settings** button (`#settings`) opens RAM's Administration, buil
 
 - The top bar reads "Administration" with the RAM wordmark, no Create, and a menu button before the profile.
 - The secondary navigation groups the sections; only **Rules** is designed, the others say so
-  (`#settings/<section>`). `#settings/rules/empty` opens the list empty ("List is empty").
+  (`#administration-<section>`). `#administration-rules-empty` opens the list empty ("List is empty").
 - **Rule** opens *Create Rule*: Type (Pick up / Return), the time ("Later than" for a pick-up: picked up later, the
   pick-up day is not charged; "Earlier than" for a return: returned earlier, the return day is not charged), typed as
   `930`, `9:30` or `09:30`, and Status (Enabled by default). Create stays off until the time is valid.

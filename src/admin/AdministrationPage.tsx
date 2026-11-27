@@ -29,7 +29,7 @@ export const adminSections = allItems.map((i) => i.id);
 
 function NavLink({ id, label, current }: { id: string; label: string; current: boolean }) {
   return (
-    <a href={`#settings/${id}`} className="ep-subnav__item" aria-current={current ? 'page' : undefined}>
+    <a href={`#administration-${id}`} className="ep-subnav__item" aria-current={current ? 'page' : undefined}>
       <Icon name="secondary-navigation-icons" size={18} />
       <span className="syn-title-text">{label}</span>
     </a>
@@ -56,7 +56,7 @@ export function AdministrationPage({ section, empty }: { section: string; empty?
           ))}
         </div>
         {/* Figma pins "Automatic Jobs /Rules" at the bottom, filled like the current item. */}
-        <a href="#settings/rules" className="ep-subnav__item ep-subnav__item--pinned">
+        <a href="#administration-rules" className="ep-subnav__item ep-subnav__item--pinned">
           <Icon name="secondary-navigation-icons" size={18} />
           <span className="syn-title-text">Automatic Jobs / Rules</span>
         </a>

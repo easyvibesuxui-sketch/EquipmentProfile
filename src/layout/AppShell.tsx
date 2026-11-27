@@ -65,7 +65,7 @@ function Sidebar({ current }: { current: string }) {
         <li>
           <button type="button" className="ep-nav__item ep-nav__lang" aria-label="Language: Deutsch. Click to change"><span className="syn-title-text">DE</span></button>
         </li>
-        <NavButton item={{ id: 'settings', label: 'Settings', hint: 'Settings', icon: settingsIcon }} current={current === 'settings'} />
+        <NavButton item={{ id: 'administration', label: 'Settings', hint: 'Administration', icon: settingsIcon }} current={current === 'administration'} />
       </ul>
     </nav>
   );
