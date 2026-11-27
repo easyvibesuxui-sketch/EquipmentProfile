@@ -9,7 +9,7 @@
  */
 export type ChargingType = 'pickup' | 'return';
 export type RuleType = ChargingType | 'daily';
-/** The two kinds the "Rule" button offers. */
+/** A charging rule (the list) or the Daily booking job (the card). */
 export type RuleKind = 'charging' | 'daily';
 export const kindOf = (t: RuleType): RuleKind => (t === 'daily' ? 'daily' : 'charging');
 
@@ -62,25 +62,13 @@ export const bookingStatuses = [
   { id: 'RESERVED', label: 'Reserved' },
 ] as const;
 
-/** The two cards of the "Choose rule type" popup. */
-export const ruleKinds: Array<{ kind: RuleKind; title: string; description: string; icon: 'time' | 'calendar'; tone: 'sienna' | 'brand' }> = [
-  {
-    kind: 'charging', title: 'Charging rule', icon: 'time', tone: 'sienna',
-    description: 'Do not charge the pick-up day after a set time, or the return day before one.',
-  },
-  {
-    kind: 'daily', title: 'Daily booking job', icon: 'calendar', tone: 'brand',
-    description: 'Every day, move the end date of In progress bookings that end today to tomorrow.',
-  },
-];
-
 export const currentAdmin = 'Max Mustermann';
 
-/** The Daily booking job that already runs in RAM's admin, then the 15 rows of the Figma "Rules" frame (Pick-up and
- * Return in turn, the 11th disabled). */
+/** The Daily booking job: one per organization, already running in RAM's admin; it sits in the card above the list. */
 export const dailyJob: ChargingRule = { id: 'daily', type: 'daily', time: '23:00', enabled: true, creator: currentAdmin, created: '2027-12-15' };
 
-const chargingSamples: ChargingRule[] = Array.from({ length: 15 }, (_, i) => {
+/** The 15 rows of the Figma "Rules" frame: Pick-up and Return in turn, the 11th disabled. */
+export const sampleRules: ChargingRule[] = Array.from({ length: 15 }, (_, i) => {
   const type: ChargingType = i % 2 === 0 ? 'pickup' : 'return';
   return {
     id: `r${i + 1}`,
@@ -91,7 +79,6 @@ const chargingSamples: ChargingRule[] = Array.from({ length: 15 }, (_, i) => {
     created: `2028-01-${String(i + 1).padStart(2, '0')}`,
   };
 });
-export const sampleRules: ChargingRule[] = [dailyJob, ...chargingSamples];
 
 /** Accepts "9", "930", "0930", "9:30", "09:30"; returns "09:30", or null when it is not a time of day. */
 export function parseTime(raw: string): string | null {

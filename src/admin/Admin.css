@@ -53,30 +53,71 @@
   font: var(--syn-type-titles-title-3);
 }
 
-/* Rules */
+/* Rules on the general layout (Design system library "Settings templates", 7966:19001). */
 .ep-rules { display: flex; flex: 1; flex-direction: column; min-height: 0; }
+/* "Label Container": no tabs, so the page label; white, Cultured line under it, 12px top-right corner. */
+.ep-rules__label {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: var(--syn-space-12) var(--syn-space-16);
+  border-bottom: 1px solid var(--syn-border-default);
+  border-radius: 0 var(--syn-radius-widget) 0 0;
+  background: var(--syn-surface-default);
+}
+.ep-rules__title { margin: 0; font: var(--syn-type-titles-title-5); }
+/* "Content Frame": Cultured, 12px around, the summary card 16px above the list card. */
+.ep-rules__frame {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--syn-space-16);
+  min-height: 0;
+  padding: var(--syn-space-12);
+  border-radius: 0 0 var(--syn-radius-widget) 0;
+  background: var(--syn-surface-muted);
+}
+
+/* "Table Row" summary card: white, 8px corners, 8 / 16 padding; the Candy Apple chip ("1st") over a Title 3 value. */
+.ep-summary {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--syn-space-12);
+  padding: var(--syn-space-8) var(--syn-space-16);
+  border-radius: var(--syn-radius-element);
+  background: var(--syn-surface-default);
+}
+.ep-summary__text { display: flex; flex: 1; flex-direction: column; align-items: flex-start; gap: var(--syn-space-12); min-width: 0; }
+.ep-summary__chip {
+  padding: var(--syn-space-6) var(--syn-space-8);
+  border-radius: var(--syn-radius-element);
+  background: color-mix(in srgb, var(--syn-action-brand) 20%, transparent);
+  color: var(--syn-action-brand);
+  font: var(--syn-type-titles-title-5);
+  white-space: nowrap;
+}
+.ep-summary__value { margin: 0; font: var(--syn-type-titles-title-3); }
+.ep-summary.is-off .ep-summary__value { color: var(--syn-text-disabled); }
+.ep-summary.is-off .ep-summary__chip { background: var(--syn-surface-muted); color: var(--syn-text-disabled); }
+.ep-summary__end { display: flex; flex: none; align-items: center; gap: var(--syn-space-16); }
+.ep-summary .ep-menu { display: inline-flex; }
+
+/* List card: white, 12px corners; toolbar, list, footer. */
+.ep-rules__body { display: flex; flex: 1; flex-direction: column; min-height: 0; border-radius: var(--syn-radius-widget); background: var(--syn-surface-default); }
+/* "Tabs Container": 8 / 16 padding, Cultured line under it; 280px search; the primary Create. */
 .ep-rules__bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--syn-space-16);
   padding: var(--syn-space-8) var(--syn-space-16);
-  border: 2px solid var(--syn-surface-default);
-  border-radius: 0 var(--syn-radius-widget) 0 0;
-  background: var(--syn-surface-subtle);
+  border-bottom: 1px solid var(--syn-border-default);
 }
-.ep-rules__search { width: min(288px, 100%); }
-/* "Smallest Button": white, Cultured border, the 14px Candy Apple plus, Medium 14 (as the top bar's Create). */
-.ep-rules__add.syn-button--secondary {
-  flex: none;
-  gap: var(--syn-space-6);
-  padding-inline: var(--syn-space-12);
-  border-color: var(--syn-border-default);
-  background: var(--syn-surface-default);
-  font: var(--syn-type-button-text-button-secondary-m);
-}
-.ep-rules__add.syn-button--secondary:hover:not(:disabled) { border-color: var(--syn-border-default); background: var(--syn-surface-muted); }
-.ep-rules__add .syn-icon { width: 14px; height: 14px; color: var(--syn-action-brand); }
+.ep-rules__search { width: min(280px, 100%); }
+/* "Smallest Button" (Create): Eerie Black, the 14px plus, Medium 14, 16px sides. */
+.ep-rules__add.syn-button { flex: none; gap: var(--syn-space-6); padding-inline: var(--syn-space-16); font: var(--syn-type-button-text-button-secondary-m); }
+.ep-rules__add .syn-icon { width: 14px; height: 14px; }
 
 .ep-rules__list {
   display: flex;
@@ -85,13 +126,21 @@
   min-height: 0;
   overflow: auto;
   padding: 0 var(--syn-space-16) var(--syn-space-16);
-  border: 2px solid var(--syn-surface-default);
-  border-top: 0;
-  border-radius: 0 0 var(--syn-radius-widget) 0;
-  background: var(--syn-surface-subtle);
 }
-/* Empty, the list shows the grey page (Figma 10552:7519). */
-.ep-rules__list.is-empty { background: transparent; }
+/* "Footer": 48px, white, a soft shadow up, Count in Body S Silver Chalice. */
+.ep-rules__foot {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--syn-space-8);
+  height: var(--syn-size-control-md);
+  padding: 0 var(--syn-space-8);
+  border-radius: 0 0 var(--syn-radius-widget) var(--syn-radius-widget);
+  background: var(--syn-surface-default);
+  box-shadow: 1px -3px 3px rgb(21 21 21 / 0.08);
+  color: var(--syn-text-muted);
+  font: var(--syn-type-text-body-s);
+}
 .ep-rules__list:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: -1px; }
 
 .ep-rules-table {
@@ -135,7 +184,7 @@
   /* Figma pads 24 on the right; 8 keeps "Earlier than 09:00" whole in the narrower columns of a 1280px window. */
   padding: 0 var(--syn-space-8) 0 var(--syn-space-16);
   overflow: hidden;
-  border-top: 2px solid var(--syn-surface-subtle);
+  border-top: 2px solid var(--syn-surface-default);
   background: var(--syn-surface-default);
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -207,57 +256,14 @@
   .ep-subnav__list { flex-direction: row; }
   .ep-subnav__item > span { overflow: visible; }
   .ep-subnav__item--pinned { display: none; }
-  .ep-rules__bar { border-radius: 0; }
-  .ep-rules__list { min-height: 60vh; border-radius: 0 0 var(--syn-radius-widget) var(--syn-radius-widget); }
+  .ep-rules__label { border-radius: 0; }
+  .ep-rules__list { min-height: 60vh; }
 }
 @media (max-width: 639px) {
   .ep-shell__main.ep-admin-main { padding-inline: var(--syn-space-16); }
   .ep-rule-form { padding-left: var(--syn-space-16); }
-}
-
-/* "Choose rule type" (laid out like SAM Figma "Choose alert type", 14085:94424) on the Syn Dialog: Title 3 header,
-   240px cards 10px apart, 32 / 32 / 48 padding. Two cards, so the popup is as wide as two. */
-.ep-kind-dialog.syn-dialog { max-width: 556px; }
-.ep-kind-dialog .syn-dialog__title { font: var(--syn-type-titles-title-3); }
-.ep-kind-dialog .syn-dialog__body { padding: var(--syn-space-32) var(--syn-space-32) var(--syn-space-48); }
-.ep-kind-dialog__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 240px)); gap: 10px; justify-content: center; width: 100%; }
-.ep-kind {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--syn-space-12);
-  min-height: 240px;
-  padding: var(--syn-space-16) var(--syn-space-12) var(--syn-space-24);
-  border: 1px solid var(--syn-border-default);
-  border-radius: var(--syn-radius-widget);
-  background: transparent;
-  color: var(--syn-text-primary);
-  text-align: center;
-  cursor: pointer;
-  transition: background var(--syn-duration-fast), border-color var(--syn-duration-fast);
-}
-.ep-kind:hover:not(:disabled) { border-color: var(--syn-border-strong); background: var(--syn-surface-default); }
-.ep-kind:focus-visible { outline: 1px solid var(--syn-border-strong); outline-offset: 2px; }
-.ep-kind:disabled { cursor: not-allowed; }
-.ep-kind:disabled .ep-kind__icon { background: var(--syn-text-disabled); }
-.ep-kind:disabled .ep-kind__title { color: var(--syn-text-disabled); }
-.ep-kind__icon {
-  display: grid;
-  place-items: center;
-  width: 56px;
-  height: 56px;
-  margin-block: var(--syn-space-4);
-  border-radius: var(--syn-radius-full);
-  color: var(--syn-color-white-white);
-}
-.ep-kind__icon.is-sienna { background: var(--syn-color-secondary-dark-sienna); }
-.ep-kind__icon.is-brand { background: var(--syn-action-brand); }
-.ep-kind__title { display: flex; align-items: center; min-height: 40px; font: var(--syn-type-titles-title-3); }
-.ep-kind__text { color: var(--syn-text-muted); font: var(--syn-type-text-body-s); line-height: 1.4; }
-@media (max-width: 560px) {
-  .ep-kind-dialog__grid { grid-template-columns: minmax(0, 1fr); }
-  .ep-kind { min-height: 0; }
-  .ep-kind-dialog .syn-dialog__body { padding: var(--syn-space-16); }
+  .ep-summary { flex-wrap: wrap; }
+  .ep-summary__text { flex-basis: 100%; }
 }
 
 /* Daily booking job: what it does, as three labelled rows of chips. */

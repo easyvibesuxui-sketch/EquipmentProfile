@@ -125,14 +125,15 @@ The sidebar's **Settings** button (`#administration`) opens RAM's Administration
   `930`, `9:30` or `09:30`, and Status (Enabled by default). Create stays off until the time is valid.
 - The list: Rule, Condition (with the time), Status, Creator, Creation date; a disabled rule is greyed. Each row's
   "..." edits (Edit Rule, Update), enables or disables, or deletes it. *By Keyword* filters every column.
-- **Rule** first asks for the kind in *Choose rule type* (laid out like SAM's
-  [Choose alert type](https://www.figma.com/design/Y9mIWBhREjY2aJotdjw3YQ/SAM--Design-?node-id=14085-94424), on Syn
-  `Dialog`): **Charging rule** (the drawer above) or **Daily booking job**.
-- **Daily booking job** (already running in RAM's admin, so the list starts with it): every day at its time
-  (23:00 by default), a booking that **ends today** and is still **In progress** (green in the planner) gets its end
-  date moved to tomorrow: it was not brought back, so it runs one more day. Completed, Planned and Reserved bookings
-  are not changed (RAM's booking statuses: RESERVED, PLANNED, IN_PROGRESS, COMPLETED). There is one per organization,
-  so its card is off while it exists; its drawer shows what it does, the time it runs and Status.
+- The page follows the general layout of the Design system library
+  ([Settings templates](https://www.figma.com/design/uNTCaDLpRs00HJFMOWXxP6/Design-system-library--Copy-?node-id=7966-19001)):
+  the page label ("Rules"), then on Cultured a summary card and the list card (search, **Rule**, the list, "Count").
+- **Daily booking job** (one per organization, already running in RAM's admin) is the summary card, not a row: every
+  day at its time (23:00 by default), a booking that **ends today** and is still **In progress** (green in the planner)
+  gets its end date moved to tomorrow; it was not brought back, so it runs one more day. Completed, Planned and Reserved
+  bookings are not changed (RAM's booking statuses: RESERVED, PLANNED, IN_PROGRESS, COMPLETED). Its "..." has Edit
+  (what it does, the time it runs, Status) and Disable / Activate; it cannot be deleted.
+- The row menus use Disable (stop circle) and Activate (check circle), as the SAM Notification Center does.
 - Rules are in memory (`src/data/rules.ts`: the Daily booking job and the 15 Figma rows) until the API exists.
 
 Syn parts: `Drawer` (via `PanelDrawer`), `TextField`, `Switch`, `Button`, `IconButton` (row menu), `ColorDot`, `Icon`.
