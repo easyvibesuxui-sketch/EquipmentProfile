@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Button, Icon, Switch, TextField } from '@syn/design-system';
+import { Button, Switch, TextField } from '@syn/design-system';
 import { PanelDrawer } from '../shared/PanelDrawer';
 import { ChoiceSwitch } from '../shared/forms';
-import { ColorDot } from '../shared/ColorDot';
 import {
-  bookingStatuses, kindOf, parseTime, ruleTypes, type ChargingRule, type ChargingType, type RuleKind, type RuleType,
+  kindOf, parseTime, ruleTypes, type ChargingRule, type ChargingType, type RuleKind, type RuleType,
 } from '../data/rules';
 
 export interface RuleForm { type: RuleType; time: string; enabled: boolean }
@@ -15,45 +14,11 @@ const blank = (kind: RuleKind): RuleForm => (kind === 'daily'
 
 const chargingTypes: ChargingType[] = ['pickup', 'return'];
 
-/** What the Daily booking job does, drawn as its condition, its action and what it leaves alone. */
-function DailyJobScope() {
-  const skipped = bookingStatuses.filter((s) => s.id !== 'IN_PROGRESS');
-  return (
-    <div className="ep-job" role="group" aria-labelledby="ep-job-l">
-      <span className="ep-rule-form__heading" id="ep-job-l">What it does</span>
-      <ol className="ep-job__steps">
-        <li className="ep-job__step">
-          <span className="ep-job__label">When a booking</span>
-          <span className="ep-job__chips">
-            <span className="ep-job__chip"><ColorDot color="success" />is In progress</span>
-            <span className="ep-job__chip"><Icon name="calendar" size={16} />ends today</span>
-          </span>
-        </li>
-        <li className="ep-job__step">
-          <span className="ep-job__label">Then</span>
-          <span className="ep-job__chips">
-            <span className="ep-job__chip is-action">End date<Icon name="arrow" size={16} />tomorrow</span>
-          </span>
-        </li>
-        <li className="ep-job__step">
-          <span className="ep-job__label">Not changed</span>
-          <span className="ep-job__chips">
-            {skipped.map((s) => <span key={s.id} className="ep-job__chip is-muted">{s.label}</span>)}
-          </span>
-        </li>
-      </ol>
-      <p className="ep-rule-form__hint">
-        A booking still In progress on its last day was not brought back, so it runs one more day. It is checked again
-        tomorrow.
-      </p>
-    </div>
-  );
-}
-
 /**
  * Create / Edit Rule. A charging rule follows Figma "Create Rule Pick up" (10562:37833) and "Create Rule Return"
  * (10563:41093): the Type switcher, the muted explanation, the time ("Later than" / "Earlier than") and the Status
- * box. The Daily booking job keeps the same drawer: what it does, the time it runs every day, and Status.
+ * box. The Daily booking job has the same drawer without the Type: its logic is fixed, so the muted line says what it
+ * does and only the time it runs and Status can change.
  */
 export function RuleDrawer({ open, kind, rule, onClose, onSubmit }: {
   open: boolean;
@@ -101,9 +66,7 @@ export function RuleDrawer({ open, kind, rule, onClose, onSubmit }: {
       )}
     >
       <form className="ep-rule-form" onSubmit={(e) => { e.preventDefault(); submit(); }} noValidate>
-        {daily ? (
-          <div className="ep-rule-form__type"><DailyJobScope /></div>
-        ) : (
+        {!daily && (
           <div className="ep-rule-form__type">
             <span className="ep-rule-form__heading" id="ep-rule-type-l">Type</span>
             <ChoiceSwitch
@@ -113,7 +76,7 @@ export function RuleDrawer({ open, kind, rule, onClose, onSubmit }: {
           </div>
         )}
 
-        <div className="ep-rule-form__time">
+        <div className={daily ? 'ep-rule-form__time is-first' : 'ep-rule-form__time'}>
           <p className="ep-rule-form__hint" id="ep-rule-hint">{type.hint}</p>
           <label className="ep-rule-form__label" htmlFor="ep-rule-time">{timeLabel}</label>
           <TextField

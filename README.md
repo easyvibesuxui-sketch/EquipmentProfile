@@ -134,7 +134,8 @@ The sidebar's **Settings** button (`#administration`) opens RAM's Administration
   day at its time (23:00 by default), a booking that **ends today** and is still **In progress** (green in the planner)
   gets its end date moved to tomorrow; it was not brought back, so it runs one more day. Completed, Planned and Reserved
   bookings are not changed (RAM's booking statuses: RESERVED, PLANNED, IN_PROGRESS, COMPLETED). Its "..." has Edit
-  (what it does, the time it runs, Status) and Disable / Activate; it cannot be deleted.
+  (the Create Rule drawer without Type: the muted line says what it does; the time it runs and Status) and
+  Disable / Activate; it cannot be deleted.
 - The row menus use Disable (stop circle) and Activate (check circle), as the SAM Notification Center does.
 - Rules are in memory (`src/data/rules.ts`: the Daily booking job and the 15 Figma rows) until the API exists.
 

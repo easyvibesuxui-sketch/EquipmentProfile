@@ -50,17 +50,9 @@ export const ruleTypes: Record<RuleType, {
     name: 'Daily booking job',
     option: 'Daily booking job',
     condition: 'In progress, ending today',
-    hint: 'The job runs once a day, at this time.',
+    hint: 'Every day at this time, bookings that end today and are still In progress move their end date to tomorrow. Completed, Planned and Reserved bookings are not changed.',
   },
 };
-
-/** RAM booking statuses (RESERVED, PLANNED, IN_PROGRESS, COMPLETED); the job changes In progress only. */
-export const bookingStatuses = [
-  { id: 'IN_PROGRESS', label: 'In progress' },
-  { id: 'COMPLETED', label: 'Completed' },
-  { id: 'PLANNED', label: 'Planned' },
-  { id: 'RESERVED', label: 'Reserved' },
-] as const;
 
 export const currentAdmin = 'Max Mustermann';
 

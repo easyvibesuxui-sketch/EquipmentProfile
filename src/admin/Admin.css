@@ -214,6 +214,8 @@
 .ep-rule-form__heading { position: relative; top: var(--syn-title-offset); font: var(--syn-type-titles-title-4); }
 .ep-rule-form .ep-choice__option { width: 120px; }
 .ep-rule-form__time { display: flex; flex-direction: column; align-items: flex-start; gap: var(--syn-space-12); padding: var(--syn-space-8) 0 var(--syn-space-12); }
+/* The Daily booking job has no Type above: its explanation opens the drawer, 16px down as the Type does. */
+.ep-rule-form__time.is-first { padding-top: var(--syn-space-16); }
 .ep-rule-form__hint { margin: 0; color: var(--syn-text-muted); font: var(--syn-type-text-body-xs); }
 .ep-rule-form__label { position: relative; top: var(--syn-title-offset); font: var(--syn-type-titles-title-5); }
 .ep-rule-form__field { width: min(320px, 100%); }
@@ -249,35 +251,3 @@
   .ep-rule-form { padding-left: var(--syn-space-16); }
 }
 
-/* Daily booking job: what it does, as three labelled rows of chips. */
-.ep-job { display: flex; flex-direction: column; gap: var(--syn-space-12); width: 100%; }
-.ep-job__steps {
-  display: flex;
-  flex-direction: column;
-  gap: var(--syn-space-8);
-  margin: 0;
-  padding: var(--syn-space-12);
-  border: 1px solid var(--syn-border-default);
-  border-radius: var(--syn-radius-element);
-  background: var(--syn-surface-default);
-  list-style: none;
-}
-.ep-job__step { display: grid; grid-template-columns: 112px minmax(0, 1fr); align-items: center; gap: var(--syn-space-12); }
-.ep-job__step + .ep-job__step { padding-top: var(--syn-space-8); border-top: 1px solid var(--syn-border-default); }
-.ep-job__label { position: relative; top: var(--syn-title-offset); font: var(--syn-type-titles-title-5); }
-.ep-job__chips { display: flex; flex-wrap: wrap; gap: var(--syn-space-6); }
-.ep-job__chip {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--syn-space-6);
-  height: var(--syn-size-control-xs);
-  padding: 0 var(--syn-space-10);
-  border: 1px solid var(--syn-border-muted);
-  border-radius: var(--syn-radius-full);
-  background: var(--syn-surface-default);
-  font: var(--syn-type-text-body-xs);
-  white-space: nowrap;
-}
-.ep-job__chip.is-action { border-color: var(--syn-border-strong); background: var(--syn-surface-inverse); color: var(--syn-color-white-white); }
-.ep-job__chip.is-muted { border-color: var(--syn-border-default); background: var(--syn-surface-muted); color: var(--syn-text-muted); }
-@media (max-width: 480px) { .ep-job__step { grid-template-columns: minmax(0, 1fr); gap: var(--syn-space-6); } }
